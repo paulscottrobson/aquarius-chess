@@ -1,0 +1,53 @@
+# *****************************************************************************
+# *****************************************************************************
+#
+#		Name:		shiftrotate.src
+#		Author:		Paul Robson (paul@robsons.org.uk)
+#		Date:		11th September 2021
+#		Reviewed: 	No
+#		Purpose:	Shift & Rotates (pp218-256)
+#
+# *****************************************************************************
+# *****************************************************************************
+
+#
+#		8080 inherited Rotates
+#
+07 		"RLCA"
+		SETCARRY((A & 0x80) != 0);
+		A = (A << 1) | (A >> 7);
+		SETHALFCARRY(0);SETNFLAG(0);
+
+17 		"RLA"
+		temp16 = (A << 1) | (c_Flag ? 1 : 0);		
+		SETCARRY((A & 0x80) != 0);
+		A = temp16;
+		SETHALFCARRY(0);SETNFLAG(0);		
+
+0F 		"RRCA"
+		SETCARRY((A & 0x01) != 0);
+		A = (A >> 1) | (A << 7);
+		SETHALFCARRY(0);SETNFLAG(0);
+
+1F 		"RRA"
+		temp16 = A | (c_Flag ? 0x100 : 0);		
+		SETCARRY((A & 0x01) != 0);
+		A = temp16 >> 1;
+		SETHALFCARRY(0);SETNFLAG(0);		
+
+#
+#		Z80 CB Group
+#
+CB00 	"@rotate @source.8.nohl"
+		@source.8.nohl = SR@rotate(@source.8.nohl)
+
+CB06 	"@rotate (HL)"
+		temp8 = READ8(HL());
+		temp8 = SR@rotate(temp8);		
+		WRITE8(HL(),temp8);
+
+DDCB06	"@rotate ($I$S)"	
+		temp16 = IZ()+offset;
+		temp8 = READ8(temp16);
+		temp8 = SR@rotate(temp8);		
+		WRITE8(temp16,temp8);

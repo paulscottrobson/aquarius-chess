@@ -1,0 +1,199 @@
+
+; 64tass Turbo Assembler Macro V1.55.2200 listing file
+; 64tass -c -b -o monitor.rom -L test\test.lst test\test.asm
+; Tue Jan 19 15:20:12 2021
+
+;Offset	;Hex		;Monitor	;Source
+
+;******  Processing input file: test\test.asm
+
+=$00					temp0 = $00
+=$02					temp1 = $02
+=53381					videoLow = $D000+5+4*32
+=53578					videoHigh = $D000+10+5*64
+=53578					video = videoHigh
+>e000	5a 7e 5a 18 18 5a 7e 5a			.binary "character.rom",$0000,32*8
+>e008	42 7e 5a 18 18 5a 7e 42 81 42 24 24 24 24 42 81
+>e018	81 42 3c 00 00 3c 42 81 00 00 00 24 99 5a ff 00
+>e028	80 00 00 c0 c0 fc fe fc 01 01 01 03 c7 ff ff 7f
+>e038	80 80 80 c0 e3 ff ff fe 01 00 00 03 03 3f 7f 3f
+>e048	00 00 fe 20 20 f8 e0 00 00 00 18 fe 07 1f 1f 00
+>e058	00 00 18 7f e0 f8 f8 00 00 00 7f 04 04 1f 07 00
+>e068	18 3c 7e fe 7e 3c 10 10 00 00 18 3c 7e 7e 6a 7a
+>e078	18 bc fe ff b5 ff b5 fd 18 3c 5a 18 18 18 18 3c
+>e088	f0 e0 f0 b8 1d 0e 04 08 00 20 41 ff ff 41 20 00
+>e098	08 04 0e 1d b8 f0 e0 f0 3c 18 18 18 18 5a 3c 18
+>e0a8	10 20 70 b8 1d 0f 07 0f 00 04 82 ff ff 82 04 00
+>e0b8	0f 07 0f 1d b8 70 20 10 00 7c 52 7c 50 50 50 00
+>e0c8	00 00 00 40 7e 02 00 00 00 1c 14 14 3e 14 1c 00
+>e0d8	00 1c 14 14 14 14 1c 00 00 7e 40 48 4c 4e 0c 08
+>e0e8	18 24 42 81 18 24 42 81 00 7e 42 24 18 18 18 18
+>e0f8	81 42 24 18 81 42 24 18
+>e100	00 00 00 00 00 00 00 00			.binary "cpc6128.rom",$3900,96*8
+>e108	18 18 18 18 18 00 18 00 6c 6c 6c 00 00 00 00 00
+>e118	6c 6c fe 6c fe 6c 6c 00 18 3e 58 3c 1a 7c 18 00
+>e128	00 c6 cc 18 30 66 c6 00 38 6c 38 76 dc cc 76 00
+>e138	18 18 30 00 00 00 00 00 0c 18 30 30 30 18 0c 00
+>e148	30 18 0c 0c 0c 18 30 00 00 66 3c ff 3c 66 00 00
+>e158	00 18 18 7e 18 18 00 00 00 00 00 00 00 18 18 30
+>e168	00 00 00 7e 00 00 00 00 00 00 00 00 00 18 18 00
+>e178	06 0c 18 30 60 c0 80 00 7c c6 ce d6 e6 c6 7c 00
+>e188	18 38 18 18 18 18 7e 00 3c 66 06 3c 60 66 7e 00
+>e198	3c 66 06 1c 06 66 3c 00 1c 3c 6c cc fe 0c 1e 00
+>e1a8	7e 62 60 7c 06 66 3c 00 3c 66 60 7c 66 66 3c 00
+>e1b8	7e 66 06 0c 18 18 18 00 3c 66 66 3c 66 66 3c 00
+>e1c8	3c 66 66 3e 06 66 3c 00 00 00 18 18 00 18 18 00
+>e1d8	00 00 18 18 00 18 18 30 0c 18 30 60 30 18 0c 00
+>e1e8	00 00 7e 00 00 7e 00 00 60 30 18 0c 18 30 60 00
+>e1f8	3c 66 66 0c 18 00 18 00 7c c6 de de de c0 7c 00
+>e208	18 3c 66 66 7e 66 66 00 fc 66 66 7c 66 66 fc 00
+>e218	3c 66 c0 c0 c0 66 3c 00 f8 6c 66 66 66 6c f8 00
+>e228	fe 62 68 78 68 62 fe 00 fe 62 68 78 68 60 f0 00
+>e238	3c 66 c0 c0 ce 66 3e 00 66 66 66 7e 66 66 66 00
+>e248	7e 18 18 18 18 18 7e 00 1e 0c 0c 0c cc cc 78 00
+>e258	e6 66 6c 78 6c 66 e6 00 f0 60 60 60 62 66 fe 00
+>e268	c6 ee fe fe d6 c6 c6 00 c6 e6 f6 de ce c6 c6 00
+>e278	38 6c c6 c6 c6 6c 38 00 fc 66 66 7c 60 60 f0 00
+>e288	38 6c c6 c6 da cc 76 00 fc 66 66 7c 6c 66 e6 00
+>e298	3c 66 60 3c 06 66 3c 00 7e 5a 18 18 18 18 3c 00
+>e2a8	66 66 66 66 66 66 3c 00 66 66 66 66 66 3c 18 00
+>e2b8	c6 c6 c6 d6 fe ee c6 00 c6 6c 38 38 6c c6 c6 00
+>e2c8	66 66 66 3c 18 18 3c 00 fe c6 8c 18 32 66 fe 00
+>e2d8	3c 30 30 30 30 30 3c 00 c0 60 30 18 0c 06 02 00
+>e2e8	3c 0c 0c 0c 0c 0c 3c 00 18 3c 7e 18 18 18 18 00
+>e2f8	00 00 00 00 00 00 00 ff 30 18 0c 00 00 00 00 00
+>e308	00 00 78 0c 7c cc 76 00 e0 60 7c 66 66 66 dc 00
+>e318	00 00 3c 66 60 66 3c 00 1c 0c 7c cc cc cc 76 00
+>e328	00 00 3c 66 7e 60 3c 00 1c 36 30 78 30 30 78 00
+>e338	00 00 3e 66 66 3e 06 7c e0 60 6c 76 66 66 e6 00
+>e348	18 00 38 18 18 18 3c 00 06 00 0e 06 06 66 66 3c
+>e358	e0 60 66 6c 78 6c e6 00 38 18 18 18 18 18 3c 00
+>e368	00 00 6c fe d6 d6 c6 00 00 00 dc 66 66 66 66 00
+>e378	00 00 3c 66 66 66 3c 00 00 00 dc 66 66 7c 60 f0
+>e388	00 00 76 cc cc 7c 0c 1e 00 00 dc 76 60 60 f0 00
+>e398	00 00 3c 60 3c 06 7c 00 30 30 7c 30 30 36 1c 00
+>e3a8	00 00 66 66 66 66 3e 00 00 00 66 66 66 3c 18 00
+>e3b8	00 00 c6 d6 d6 fe 6c 00 00 00 c6 6c 38 6c c6 00
+>e3c8	00 00 66 66 66 3e 06 7c 00 00 7e 4c 18 32 7e 00
+>e3d8	0e 18 18 70 18 18 0e 00 18 18 18 18 18 18 18 00
+>e3e8	70 18 18 0e 18 18 70 00 76 dc 00 00 00 00 00 00
+>e3f8	cc 33 cc 33 cc 33 cc 33
+>e400	00 00 00 00 00 00 00 ff			.binary "character.rom",$400,128*8
+>e408	00 00 00 00 00 00 ff 00 00 00 00 00 00 ff 00 00
+>e418	00 00 00 00 ff 00 00 00 00 00 00 ff 00 00 00 00
+>e428	00 00 ff 00 00 00 00 00 00 ff 00 00 00 00 00 00
+>e438	ff 00 00 00 00 00 00 00 01 01 01 01 01 01 01 01
+>e448	02 02 02 02 02 02 02 02 04 04 04 04 04 04 04 04
+>e458	08 08 08 08 08 08 08 08 10 10 10 10 10 10 10 10
+>e468	20 20 20 20 20 20 20 20 40 40 40 40 40 40 40 40
+>e478	80 80 80 80 80 80 80 80 00 00 00 00 00 00 ff ff
+>e488	ff ff 00 00 00 00 00 00 03 03 03 03 03 03 03 03
+>e498	c0 c0 c0 c0 c0 c0 c0 c0 00 00 00 ff ff 00 00 00
+>e4a8	18 18 18 18 18 18 18 18 00 00 00 00 00 ff ff ff
+>e4b8	ff ff ff 00 00 00 00 00 07 07 07 07 07 07 07 07
+>e4c8	e0 e0 e0 e0 e0 e0 e0 e0 00 00 00 00 ff ff ff ff
+>e4d8	ff ff ff ff 00 00 00 00 0f 0f 0f 0f 0f 0f 0f 0f
+>e4e8	f0 f0 f0 f0 f0 f0 f0 f0 00 00 00 ff ff ff ff ff
+>e4f8	00 00 ff ff ff ff ff ff 00 ff ff ff ff ff ff ff
+>e508	ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00 00
+>e518	ff ff ff ff ff ff 00 00 ff ff ff ff ff ff ff 00
+>e528	00 00 00 00 f0 f0 f0 f0 f0 f0 f0 f0 00 00 00 00
+>e538	00 00 00 00 0f 0f 0f 0f 0f 0f 0f 0f 00 00 00 00
+>e548	0f 0f 0f 0f f0 f0 f0 f0 f0 f0 f0 f0 0f 0f 0f 0f
+>e558	00 00 00 00 3c 3c 3c 3c 3c 3c 3c 3c 00 00 00 00
+>e568	00 00 f0 f0 f0 f0 00 00 00 00 0f 0f 0f 0f 00 00
+>e578	ff 7f 3f 1f 0f 07 03 01 80 c0 e0 f0 f8 fc fe ff
+>e588	ff fe fc f8 f0 e0 c0 80 01 03 07 0f 1f 3f 7f ff
+>e598	00 00 80 c2 ec ff ff ff 02 02 07 47 37 ff 7f 3f
+>e5a8	40 40 e0 e2 ec ff fe fc 00 00 01 43 37 ff ff ff
+>e5b8	55 aa 55 aa 00 00 00 00 00 00 00 00 55 aa 55 aa
+>e5c8	05 0a 05 0a 05 0a 05 0a 50 a0 50 a0 50 a0 50 a0
+>e5d8	55 aa 55 aa 55 aa 55 aa 81 42 24 18 18 24 42 81
+>e5e8	80 40 20 10 08 04 02 01 01 02 04 08 10 20 40 80
+>e5f8	81 42 24 18 00 00 00 00 80 40 20 10 10 20 40 80
+>e608	00 00 00 00 18 24 42 81 01 02 04 08 08 04 02 01
+>e618	c0 30 0c 03 00 00 00 00 00 00 00 00 c0 30 0c 03
+>e628	03 0c 30 c0 00 00 00 00 00 00 00 00 03 0c 30 c0
+>e638	10 10 20 20 40 40 80 80 01 01 02 02 04 04 08 08
+>e648	80 80 40 40 20 20 10 10 08 08 04 04 02 02 01 01
+>e658	10 10 10 f0 00 00 00 00 00 00 00 00 f0 10 10 10
+>e668	00 00 00 00 0f 08 08 08 08 08 08 0f 00 00 00 00
+>e678	ff 80 80 80 80 80 80 80 80 80 80 80 80 80 80 ff
+>e688	01 01 01 01 01 01 01 ff ff 01 01 01 01 01 01 01
+>e698	02 07 8f ff f9 ff 00 00 00 87 8f ff f0 ff 80 80
+>e6a8	00 e1 f1 ff 0f ff 01 01 40 e0 f1 ff 9f ff 00 00
+>e6b8	18 18 18 ff ff 00 00 00 18 18 18 f8 f8 18 18 18
+>e6c8	00 00 00 ff ff 18 18 18 18 18 18 1f 1f 18 18 18
+>e6d8	18 18 18 ff ff 18 18 18 10 10 20 c0 00 00 00 00
+>e6e8	00 00 00 00 c0 20 10 10 00 00 00 00 03 04 08 08
+>e6f8	08 08 04 03 00 00 00 00 c0 20 10 10 10 10 20 c0
+>e708	03 04 08 08 08 08 04 03 3c 42 81 81 81 81 42 3c
+>e718	f0 0c 03 03 03 03 0c f0 0f 30 c0 c0 c0 c0 30 0f
+>e728	66 ff ff ff 7e 3c 18 18 3c 3c 18 42 e7 e7 18 3c
+>e738	18 3c 7e ff ff 5a 18 3c 18 3c 7e ff ff 7e 3c 18
+>e748	e7 c3 81 00 00 81 c3 e7 c0 f0 fc ff ff fc f0 c0
+>e758	03 0f 3f ff ff 3f 0f 03 18 18 3c 7e ff db 18 3c
+>e768	0c 1c 39 ff ff 39 1c 0c 3c 18 db ff 7e 3c 18 18
+>e778	30 38 9c ff ff 9c 38 30 00 00 00 08 1c 2a 08 14
+>e788	00 00 40 48 3c 2a 18 14 10 10 10 90 f0 f0 f8 f8
+>e798	00 02 04 c8 f0 f0 f8 f8 00 00 00 c0 ff f0 f8 f8
+>e7a8	08 08 08 09 0f 0f 1f 1f 00 40 20 13 0f 0f 1f 1f
+>e7b8	00 00 00 03 ff 0f 1f 1f 00 10 10 54 7c 7c 7c 44
+>e7c8	00 80 50 38 7c 3e 18 08 00 1f 0e 7e 0e 1f 00 00
+>e7d8	08 18 3e 7c 38 50 80 00 44 7c 7c 7c 54 10 10 00
+>e7e8	20 30 f8 7c 38 14 02 00 00 f8 70 7e 70 f8 00 00
+>e7f8	00 01 0a 1c 3e 7c 18 10
+.e800					start:
+.e800	a9 e0		lda #$e0		lda 	#$E0
+.e802	20 3e e8	jsr $e83e		jsr 	UDGCopy
+.e805	a9 e8		lda #$e8		lda 	#$E8
+.e807	20 3e e8	jsr $e83e		jsr 	UDGCopy
+.e80a	a9 ff		lda #$ff		lda 	#$FF
+.e80c	8d 08 e3	sta $e308		sta 	$E000+97*8
+.e80f	8d 09 e3	sta $e309		sta 	$E001+97*8
+.e812	8d 0a e3	sta $e30a		sta 	$E002+97*8
+.e815	8d 0b eb	sta $eb0b		sta 	$E803+97*8
+.e818	8d 0d eb	sta $eb0d		sta 	$E805+97*8
+.e81b	8d 0f eb	sta $eb0f		sta 	$E807+97*8
+.e81e	a9 9b		lda #$9b		lda 	#$83+8+16
+.e820	8d ff ff	sta $ffff		sta 	$FFFF
+.e823	a9 00		lda #$00		lda 	#$00
+.e825	85 00		sta $00			sta 	temp0
+.e827	a9 d0		lda #$d0		lda 	#$D0
+.e829	85 01		sta $01			sta 	temp0+1
+.e82b	a0 00		ldy #$00		ldy 	#0
+.e82d					loop1:
+.e82d	98		tya			tya
+.e82e	91 00		sta ($00),y		sta 	(temp0),y
+.e830	c8		iny			iny
+.e831	d0 fa		bne $e82d		bne 	loop1
+.e833	e6 01		inc $01			inc 	temp0+1
+.e835	a5 01		lda $01			lda 	temp0+1
+.e837	c9 e0		cmp #$e0		cmp 	#$E0
+.e839	d0 f2		bne $e82d		bne 	loop1
+.e83b	4c 3b e8	jmp $e83b	h1:	jmp 	h1
+.e83e					UDGCopy:
+.e83e	85 03		sta $03			sta 	temp1+1
+.e840	a9 e0		lda #$e0		lda 	#$E0
+.e842	85 01		sta $01			sta 	temp0+1
+.e844	a9 00		lda #$00		lda 	#0
+.e846	85 00		sta $00			sta 	temp0
+.e848	85 02		sta $02			sta 	temp1
+.e84a	a8		tay			tay
+.e84b	a2 08		ldx #$08		ldx 	#8
+.e84d					_UCopy1:
+.e84d	b1 00		lda ($00),y		lda 	(temp0),y
+.e84f	29 aa		and #$aa		and 	#$AA
+.e851	91 02		sta ($02),y		sta 	(temp1),y
+.e853	c8		iny			iny
+.e854	d0 f7		bne $e84d		bne 	_UCopy1
+.e856	e6 01		inc $01			inc 	temp0+1
+.e858	e6 03		inc $03			inc 	temp1+1
+.e85a	ca		dex			dex
+.e85b	d0 f0		bne $e84d		bne 	_UCopy1
+.e85d	60		rts			rts
+>fffa	00 00					.word 	0								; NMI
+>fffc	00 e8					.word 	start 							; Reset
+>fffe	00 00					.word 	0 								; IRQ
+
+;******  End of listing

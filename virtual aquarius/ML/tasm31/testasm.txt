@@ -1,0 +1,306 @@
+	.org $38E1
+	.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+	.byte $00
+
+	; cassette tape file name, 6 characters
+	.byte "testsa"
+	; end name
+
+	.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+
+	; $3900
+	.byte $00
+	; line link, line number
+	.byte $25,$39,$0a,$00
+	; rem
+	.byte $8e
+	.byte " for Aquarius S2 (do not edit)"
+	.byte 00
+	; line link, line number
+	.byte $2d, $39, $14, $00
+	; B=0
+	.byte $42, $B0, $30
+	.byte 00
+	; line link, line number
+	.byte $49, $39, $1e, $00
+	; poke 14340,nnn:poke 14341,mmm
+	.byte $94, $20, "14340", $2C, "088"
+	.byte $3A
+	.byte $94, $20, "14341", $2C, "057"
+	.byte 00
+	; line link, line number
+	.byte (MLEND & 255)
+	.byte (MLEND >> 8)
+	.byte $28, $00
+	; B=USR(0):END
+	.byte $42, $B0,$B5,$28,$30,$29,$3A,$80
+	.byte $00
+	.byte $00,$00
+MLSTART
+
+
+;==================
+; playsong,
+;	play a song located at songstart
+;	James the Animal Tamer
+playsong
+	ld	hl,songstart
+playline
+	ld	a,(hl)			; get wait
+	inc	hl
+	ld	c,a				; hold wait in .c
+	ld	a,(hl)			; get number of registers
+	inc	hl
+	ld	b,a				; hold number of registers in .b
+	or	c
+	jr	z,playsongend
+;-
+	call	waittof		; wait top of frame, c times
+	; number of registers is in .b
+	; .hl points to register to change data
+_reglop
+	ld	a,(hl)
+	inc	hl
+	out	(247),a		; register select
+	ld	a,(hl)
+	inc	hl
+	out	(246),a
+	dec	b
+	jr	nz,_reglop
+	jr	playline
+;---
+playsongend
+	ret
+
+;==================
+; waittof,
+;	wait top of frame, c times
+;	preserve registers
+waittof
+	push	af
+	push	bc
+
+	ld	b,c
+
+    ld  c,253
+_lop1
+    in  a,(c)
+    bit 0,a
+    jr  z,_invblanka
+    jr  nz,_lop1
+_invblanka
+    in  a,(c)
+    bit 0,a
+    jr  z,_invblanka
+
+	dec		b
+	jr		nz,_lop1
+	pop		bc
+	pop		af
+	ret
+
+
+songstart
+	; rem  song
+	; rem wait, number of registers to change,
+	;	register number, new value
+	;	register number, new value
+	;	etc.
+	; ends when number of registers to change is 0.
+	.byte 1,4,  8,0, 9,0, 10,0, 7,56
+	;-- snip
+    .byte 1,9,0,71,1,6,8,15,2,44,3,1,9,15,4,89,5,2
+    .byte     10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,145,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,145,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,101,5,1,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,11,1,7,8,15,2,81,3,1,9,15,4,194,5,1
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,24,5,2,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,89,5,2,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,163,5,2,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,89,5,2,10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,24,5,2,10,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,71,1,6,8,15,2,44,3,1,9,15,4,89,5,2
+    .byte     10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,145,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,145,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,101,5,1,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,71,1,5,8,15,2,253,3,0,9,15,4,81,5,1
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,101,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,194,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 35,1,9,0
+    .byte 1,3,2,12,3,1,9,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,71,1,6,8,15,2,44,3,1,9,15,4,89,5,2
+    .byte     10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,145,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,145,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,101,5,1,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,11,1,7,8,15,2,12,3,1,9,15,4,81,5,1
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,194,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,250,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,194,5,1,10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,81,5,1,10,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,232,1,7,8,15,2,253,3,0,9,15,4,44,5,1
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,81,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,123,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,44,5,1,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,97,1,8,8,15,2,225,3,0,9,15,4,12,5,1
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,44,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,103,1,9,8,15,2,200,3,0,9,15,4,44,5,1
+    .byte     10,15
+    .byte 143,3,8,0,9,0,10,0
+    .byte 1,9,0,48,1,4,8,15,2,200,3,0,9,15,4,145,5,1
+    .byte     10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,12,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,12,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,238,5,0,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,179,1,4,8,15,2,225,3,0,9,15,4,44,5,1
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,101,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,194,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,145,5,1,10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,101,5,1,10,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,48,1,4,8,15,2,200,3,0,9,15,4,145,5,1
+    .byte     10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,12,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,12,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,238,5,0,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,133,1,3,8,15,2,168,3,0,9,15,4,225,5,0
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,238,5,0,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,44,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 35,1,9,0
+    .byte 1,3,2,178,3,0,9,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,48,1,4,8,15,2,200,3,0,9,15,4,145,5,1
+    .byte     10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,12,5,1,10,15
+    .byte 30,1,10,0
+    .byte 6,3,4,12,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,238,5,0,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,179,1,4,8,15,2,178,3,0,9,15,4,225,5,0
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,12,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,44,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,81,5,1,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,44,5,1,10,15
+    .byte 35,1,10,0
+    .byte 1,3,4,225,5,0,10,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,71,1,5,8,15,2,168,3,0,9,15,4,200,5,0
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,225,5,0,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,253,5,0,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,200,5,0,10,15
+    .byte 17,3,8,0,9,0,10,0
+    .byte 1,9,0,151,1,5,8,15,2,150,3,0,9,15,4,178,5,0
+    .byte     10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,200,5,0,10,15
+    .byte 17,1,10,0
+    .byte 1,3,4,178,5,0,10,15
+    .byte 35,3,8,0,9,0,10,0
+    .byte 1,9,0,71,1,6,8,15,2,134,3,0,9,15,4,200,5,0
+    .byte     10,15
+    .byte 147,3,8,0,9,0,10,0
+    ;-- unsnip
+    .byte 1,3,  8,0, 9,0, 10,0
+    .byte 0,0
+;=== end of song
+
+MLEND
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+	.byte $00,$00,$00,$00,$00,$00,$00,$00
+
+	
+
+	.end

@@ -1,0 +1,84 @@
+# *****************************************************************************
+# *****************************************************************************
+#
+#		Name:		exchange.src
+#		Author:		Paul Robson (paul@robsons.org.uk)
+#		Date:		10th September 2021
+#		Reviewed: 	No
+#		Purpose:	Exchange/Block Transfer (pp137..156)
+#
+# *****************************************************************************
+# *****************************************************************************
+
+#
+# 		Register exchanges
+#
+EB 		"EX DE,HL"
+		temp16 = DE();temp16a = HL();
+		SETDE(temp16a);SETHL(temp16);
+
+08 		"EX AF,AF'"		
+		temp16 = AF();SETAF(AFalt);AFalt = temp16;
+
+D9 		"EXX"		
+		temp16 = BC();SETBC(BCalt);BCalt = temp16;
+		temp16 = DE();SETDE(DEalt);DEalt = temp16;
+		temp16 = HL();SETHL(HLalt);HLalt = temp16;
+
+#
+# 		Exchange Register pair with top of stack.
+#
+
+E3 		"EX (SP),HL"
+		temp16 = READ16(SP);temp16a = HL();
+		WRITE16(SP,temp16a);SETHL(temp16);
+
+DDE3 	"EX (SP),$I"
+		temp16 = READ16(SP);temp16a =IZ();
+		WRITE16(SP,temp16a);IZ() = temp16;
+
+#
+# 		LDI/LDD/LDIR/LDDR
+#
+
+EDA0 	"LD@direction"
+		WRITE8(DE(),READ8(HL()));
+		@direction#DE();
+		@direction#HL();
+		DECBC();
+		SETOVERFLOW(BC() != 0);
+		SETHALFCARRY(0);
+		SETNFLAG(0);
+
+EDB0 	"LD@direction#R"
+		do {
+			WRITE8(DE(),READ8(HL()));
+			@direction#DE();
+			@direction#HL();
+			DECBC();
+			SETOVERFLOW(BC() != 0);
+		} while (BC() != 0);
+		SETHALFCARRY(0);
+		SETNFLAG(0);
+
+
+#
+# 		CPI/CPD/CPIR/CPDR
+#
+EDA1 	"CP@direction"
+		oldCarry = c_Flag;
+		ALUCP(READ8(HL()));
+		c_Flag = oldCarry;
+		@direction#HL();
+		DECBC()
+		SETOVERFLOW(BC() != 0);
+
+EDB1 	"CP@direction#R"
+		do {
+			oldCarry = c_Flag;
+			ALUCP(READ8(HL()));
+			c_Flag = oldCarry;
+			@direction#HL();
+			DECBC()
+			SETOVERFLOW(BC() != 0);
+		} while( (BC()!= 0) && (z_Flag == 0) );

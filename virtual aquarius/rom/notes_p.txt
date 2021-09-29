@@ -1,0 +1,20 @@
+ 
+Advanced D&D Treasure of Tarmin. Only Mattel title with picture on title screen. 
+
+BurgerTime
+The special chef color effects are altered in emulation.  He is supposed to just have a peachy face, not the whole background of his hat.
+
+MarqueeDemo 
+An extremely rare ROM. This was used as an in-store demo to show off the AQ's "impressive" abilites.
+
+MelodyChase 
+A rare title. Only Mattel game with music title screen and attract mode.  
+
+QuickDisk
+Here is a real rare gem. Of course, we need emulated drive support. (Ahem, James) 
+
+Shark! 
+Here is the prototype in all of its glory! Too bad the shark wasn't implemented yet. :( 
+
+SpaceSpeller 
+Another rare title. I think we all can still learn from this invaluable edutainment title. 

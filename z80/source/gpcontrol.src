@@ -1,0 +1,58 @@
+# *****************************************************************************
+# *****************************************************************************
+#
+#		Name:		gpcontrol.src
+#		Author:		Paul Robson (paul@robsons.org.uk)
+#		Date:		11th September 2021
+#		Reviewed: 	No
+#		Purpose:	General Purpose arithmetic/control (pp186-201)
+#
+# *****************************************************************************
+# *****************************************************************************
+
+
+27  "DAA"
+		DAA();
+
+2F 	"CPL"
+		A = A ^ 0xFF;
+		SETHALFCARRY(1);
+		SETNFLAG(1);
+
+ED44 "NEG"		
+		temp8 = A;A = 0;
+		ALUSUB(temp8);
+
+3F 	"CCF"
+		SETHALFCARRY(c_Flag);
+		SETCARRY(c_Flag == 0);
+		SETNFLAG(0);
+
+37 	"SCF"
+		SETCARRY(1);
+		SETHALFCARRY(0);
+		SETNFLAG(0);
+
+00 	"NOP"
+		{}
+
+76 	"HALT"
+		{}
+
+F3 	"DI"
+		intEnabled = 0
+
+FB 	"EI"
+		intEnabled = 1
+
+ED46 "IM0"
+		{}												
+
+ED56 "IM1"
+		{}												
+
+ED5E "IM2"
+		{}												
+
+
+################################################# TEST BAR ##################################################

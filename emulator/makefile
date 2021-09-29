@@ -1,0 +1,42 @@
+ifeq ($(OS),Windows_NT)
+include ..\documents\common.make
+else
+include ../documents/common.make
+endif
+
+APPNAME = aqnext$(APPSTEM)
+
+SOURCES = 	src$(S)sys_processor.o  framework$(S)main.o framework$(S)gfx.o framework$(S)debugger.o \
+			src$(S)sys_debug_aqnext.o src$(S)hardware.o
+  
+CC = g++
+
+.PHONY: all clean emulator test prebuild 
+all: emulator
+#	.$(S)$(APPNAME) 
+
+test : emulator
+	$(CDEL) memory.dump $(CDELQ)
+	zasm -u test.asm
+	.$(S)$(APPNAME) test.rom
+
+emulator: prebuild $(APPNAME)
+#	$(CCOPY) $(APPNAME) ..$(S)..$(S)bin$(S) $(CCOPYQ)
+
+prebuild:
+	make -C ..$(S)roms
+	make -C ..$(S)z80
+	$(CCOPY) ..$(S)z80$(S)code$(S)*.h cpu
+	$(CCOPY) ..$(S)roms$(S)*.h roms
+%.o:%.cpp
+	$(CC) $(CXXFLAGS) -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -c -o $@ $<
+
+clean:
+	$(CDEL) $(APPNAME) 
+	$(CDEL) src$(S)*.o 
+	$(CDEL) framework$(S)*.o
+
+$(APPNAME): $(SOURCES) include$(S)cpu_support.h
+	$(CC) $(SOURCES) $(LDFLAGS) $(SDL_LDFLAGS) -o $@
+	
+
