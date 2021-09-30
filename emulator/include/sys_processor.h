@@ -3,7 +3,7 @@
 //
 //		Name:		sys_processor.h
 //		Purpose:	Processor Emulation (header)
-//		Created:	9th September 2021
+//		Created:	30th September 2021
 //		Author:		Paul Robson (paul@robsons.org.uk)
 //
 // *******************************************************************************************************************************
