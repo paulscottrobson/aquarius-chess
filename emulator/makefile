@@ -15,6 +15,9 @@ CC = g++
 all: emulator
 #	.$(S)$(APPNAME) 
 
+run: emulator 
+	.$(S)$(APPNAME)
+	
 test : emulator
 	$(CDEL) memory.dump $(CDELQ)
 	zasm -u test.asm
@@ -29,7 +32,7 @@ prebuild:
 	$(CCOPY) ..$(S)z80$(S)code$(S)*.h cpu
 	$(CCOPY) ..$(S)roms$(S)*.h roms
 %.o:%.cpp
-	$(CC) $(CXXFLAGS) -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -c -o $@ $<
+	$(CC) $(CXXFLAGS) -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -I roms -c -o $@ $<
 
 clean:
 	$(CDEL) $(APPNAME) 

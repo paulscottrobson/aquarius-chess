@@ -23,7 +23,7 @@ class StandardROM
 
 	def export_include(include_file)
 		bytes = @data.collect { |b| b.to_s }.join(",")
-		open(include_file,"w").write("{ "+bytes+" }\n")
+		open(include_file,"w").write(bytes+"\n")
 		self
 	end
 

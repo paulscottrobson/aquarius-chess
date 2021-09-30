@@ -43,6 +43,15 @@ static BYTE8 temp8,oldCarry;
 static WORD16 cycles;																// Cycle Count.
 static WORD16 cyclesPerFrame = CYCLES_PER_FRAME;									// Cycles per frame
 
+const BYTE8 kernel_rom[] = {
+	#include "kernel_rom.h"
+};
+
+
+const BYTE8 character_rom[] = {
+	#include "character_rom.h"
+};
+
 // *******************************************************************************************************************************
 //											 Memory and I/O read and write macros.
 // *******************************************************************************************************************************
@@ -60,31 +69,23 @@ static inline BYTE8 _Read(WORD16 address);											// Need to be forward defin
 static inline void _Write(WORD16 address,BYTE8 data);								// used in support functions.
 
 #define INPORT(p) 	(0xAA)
-#define OUTPORT(p,d) { if (p == 0xFF) _VerifyCode(); }
-
-// *******************************************************************************************************************************
-//														Verify code
-// *******************************************************************************************************************************
-
-static void _VerifyCode(void) {
-	if (C == 9) {
-		int p = (D<<8)|E;
-		while (ramMemory[p] != '$') printf("%c",ramMemory[p++]);
-	} else {
-		printf("%x %x %x\n",C,D,E);
-	}
-}
+#define OUTPORT(p,d) { }
 
 // *******************************************************************************************************************************
 //											   Read and Write Inline Functions
 // *******************************************************************************************************************************
 
 static inline BYTE8 _Read(WORD16 address) {
-	return ramMemory[address];							
+	if (address < RAMSIZE) {
+		return ramMemory[address];							
+	}
+	return 0xFF;
 }
 
 static void _Write(WORD16 address,BYTE8 data) {
-	ramMemory[address] = data;
+	if (address >= 0x3000 && address <= RAMSIZE) {
+		ramMemory[address] = data;
+	}
 }
 
 static WORD16 _Fetch16(void) {
@@ -117,6 +118,7 @@ static void CPULoadChunk(FILE *f,BYTE8* memory,int count);
 void CPUReset(void) {
 	HWReset();																		// Reset Hardware
 	BuildParityTable();																// Build the parity flag table.
+	for (int i = 0;i < sizeof(kernel_rom);i++) ramMemory[i] = kernel_rom[i]; 		// Copy the Kernel ROM
 	PC = 0; 																		// Zero PC.
 }
 
