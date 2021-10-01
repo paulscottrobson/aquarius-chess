@@ -1,0 +1,21 @@
+TODO List
+---------
+
+Patch 1 : Remove initial beep.
+
+(0x50 = 0x21)
+
+Patch 2 : Fix Keys
+
+Shift 6 ^
+Shift 7 &
+Shift 8 *
+Shift 9 (
+Shift 0 )
+Shift / ?
+Shift ; :
+Shift ' @
+
+ROM Loading, test some.
+
+Cassette Input
