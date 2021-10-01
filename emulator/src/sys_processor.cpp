@@ -85,6 +85,7 @@ static inline BYTE8 _Read(WORD16 address) {
 static void _Write(WORD16 address,BYTE8 data) {
 	if (address >= 0x3000 && address <= RAMSIZE) {
 		ramMemory[address] = data;
+		if (address < 0x3800) HWWriteVRAM(address,data);
 	}
 }
 

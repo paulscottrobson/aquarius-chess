@@ -14,5 +14,6 @@
 
 void HWReset(void);
 void HWSync(void);
+void HWWriteVRAM(WORD16 address,BYTE8 data);
 
 #endif
