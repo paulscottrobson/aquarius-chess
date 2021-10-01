@@ -169,6 +169,11 @@ void CPUWriteMemory(WORD16 address,BYTE8 data) {
 	WRITE8(address,data);
 }
 
+
+BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row) {
+	return character_rom[(((WORD16)nchar) << 3)+row];
+}
+
 #ifdef INCLUDE_DEBUGGING_SUPPORT
 
 // *******************************************************************************************************************************

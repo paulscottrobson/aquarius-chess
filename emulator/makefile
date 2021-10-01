@@ -16,7 +16,7 @@ all: emulator
 #	.$(S)$(APPNAME) 
 
 run: emulator 
-	.$(S)$(APPNAME)
+	.$(S)$(APPNAME) go xxx
 	
 test : emulator
 	$(CDEL) memory.dump $(CDELQ)

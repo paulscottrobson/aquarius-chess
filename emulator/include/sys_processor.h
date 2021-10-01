@@ -42,6 +42,7 @@ void CPUWriteMemory(WORD16 address,BYTE8 data);
 void CPUEndRun(void);
 void CPULoadBinary(char *fileName);
 void CPUExit(void);
+BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row);
 
 #endif
 #endif

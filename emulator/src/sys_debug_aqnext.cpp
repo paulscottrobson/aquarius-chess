@@ -40,6 +40,11 @@ static const char *_mnemonics_ddcb[256] = {
 	#include "_mnemonics_group_ddcb.h"
 };
 
+static const int palette4[16] = { 
+	0x000,0xC02,0x0B0,0xCB0,0x00B,0xB0C,0x0CA,0xFFF,
+	0xBBB,0x4A9,0x828,0x016,0xBA5,0x493,0x712,0x000
+};
+
 // *******************************************************************************************************************************
 //											This renders the debug screen
 // *******************************************************************************************************************************
@@ -145,31 +150,54 @@ void DBGXRender(int *address,int showDisplay) {
 		while (*t != '\0') {
 			*t = tolower(*t);t++;
 		}
-//		char *at = strchr(buffer,'@');												// Look for '@'
-//		if (at != NULL) {															// Operand ?
-//			char hex[6],temp[32];	
-//			if (at[1] == '1') {
-//				sprintf(hex,"%02x",CPUReadMemory(p));
-//				p = (p+1) & 0xFFFF;
-//			}
-//			if (at[1] == '2') {
-//				sprintf(hex,"%02x%02x",CPUReadMemory(p+1),CPUReadMemory(p));
-//				p = (p+2) & 0xFFFF;
-//			}
-//			if (at[1] == 'r') {
-//				int addr = CPUReadMemory(p);
-//				p = (p+1) & 0xFFFF;
-//				if ((addr & 0x80) != 0) addr = addr-256;
-//				sprintf(hex,"%04x",addr+p);
-//			}
-//			strcpy(temp,buffer);
-//			strcpy(temp+(at-buffer),hex);
-//			strcat(temp,at+2);
-//			strcpy(buffer,temp);
-//		}
 		GFXString(GRID(5,row),buffer,GRIDSIZE,isPC ? DBGC_HIGHLIGHT:DBGC_DATA,-1);	// Print the mnemonic
 	}
 
 	if (showDisplay) {
+		int xs = 40;
+		int ys = 24;
+		int xSize = 3;
+		int ySize = 3;
+		if (showDisplay) {
+			int x1 = WIN_WIDTH/2-xs*xSize*8/2;
+			int y1 = WIN_HEIGHT/2-ys*ySize*8/2;
+			SDL_Rect r;
+			int b = 32;
+			r.x = x1-b;r.y = y1-b;r.w = xs*xSize*8+b*2;r.h=ys*ySize*8+b*2;
+			GFXRectangle(&r,0xFFFF);
+			b = b - 4;
+			r.x = x1-b;r.y = y1-b;r.w = xs*xSize*8+b*2;r.h=ys*ySize*8+b*2;
+			GFXRectangle(&r,0);
+			for (int x = 0;x < xs;x++) 
+			{
+				for (int y = 0;y < ys;y++)
+			 	{
+			 		int ch = CPUReadMemory(0x3028+x+y*40);
+			 		int xc = x1 + x * 8 * xSize;
+			 		int yc = y1 + y * 8 * ySize;
+			 		SDL_Rect rc;
+			 		int cb = CPUReadMemory(0x3428+x+y*40);
+
+					SDL_Rect rcf = rc;
+					rcf.x = xc;rcf.y = yc;rcf.w = xSize*8;rcf.h = ySize*8;
+					GFXRectangle(&rcf,palette4[cb & 0x0F]);
+
+	 				int col = palette4[cb >> 4];
+			 		rc.w = xSize;rc.h = ySize;							// Width and Height of pixel.
+		 			for (int y = 0;y < 8;y++) {							// 7 Down
+		 				rc.x = xc;
+		 				rc.y = yc + y * ySize;
+		 				int f = CPUReadCharacterROM(ch,y);
+				 		for (int x = 0;x < 8;x++) {						// 5 Across
+			 				if (f & 0x80) {		
+			 					GFXRectangle(&rc,col);			
+			 				}
+			 				f <<= 1;
+			 				rc.x += xSize;
+			 			}
+			 		}
+			 	}
+			}
+		}
 	}
 }	
