@@ -20,7 +20,7 @@
 
 #define CYCLE_RATE 		(3540*1000)													// Cycles per second (3.54Mhz)
 #define FRAME_RATE		(60)														// Frames per second (50 arbitrary)
-#define CYCLES_PER_FRAME (CYCLE_RATE / FRAME_RATE / 6)								// We count in units of multiple Z80 Cycles.				
+#define CYCLES_PER_FRAME (CYCLE_RATE / FRAME_RATE / 8)								// We count in units of multiple Z80 Cycles.				
 
 // *******************************************************************************************************************************
 //														CPU / Memory
