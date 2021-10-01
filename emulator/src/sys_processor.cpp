@@ -68,8 +68,8 @@ const BYTE8 character_rom[] = {
 static inline BYTE8 _Read(WORD16 address);											// Need to be forward defined as 
 static inline void _Write(WORD16 address,BYTE8 data);								// used in support functions.
 
-#define INPORT(p) 	(0xAA)
-#define OUTPORT(p,d) { }
+#define INPORT(p) 	HWReadPort(p)
+#define OUTPORT(p,d) HWWritePort(p,d)
 
 // *******************************************************************************************************************************
 //											   Read and Write Inline Functions

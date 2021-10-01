@@ -47,8 +47,8 @@ void HWWriteVRAM(WORD16 address,BYTE8 data) {
 
 static int keys[][8] = {
 	{ '=',GFXKEY_BACKSPACE,':',GFXKEY_RETURN,';','.',0,0 },
-	{ '-','/','-','P','L',',',0,0 },
-	{ '9','O','L','M','N','J',0,0 },
+	{ '-','/','0','P','L',',',0,0 },
+	{ '9','O','K','M','N','J',0,0 },
 	{ '8','I','7','U','H','B',0,0 },
 	{ '6','Y','G','V','C','F',0,0 },
 	{ '5','T','4','R','D','X',0,0 },
@@ -76,7 +76,7 @@ int HWGetKeyboardRow(int row) {
 		if (GFXIsKeyPressed(keys[row][p])) word |= (1 << p);
 		p++;
 	}
-	return word ^ 0xFF;
+	return word;
 }
 
 // ****************************************************************************

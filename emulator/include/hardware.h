@@ -14,8 +14,13 @@
 
 void HWReset(void);
 void HWSync(void);
+BYTE8 HWReadPort(WORD16 addr);
+void HWWritePort(WORD16 addr,BYTE8 data);
+
+int HWGetKeyboardRow(int row);
 void HWWriteVRAM(WORD16 address,BYTE8 data);
 void HWSyncImplementation(LONG32 iCount);
+
 
 #ifdef LINUX
 #define FILESEP '/'
