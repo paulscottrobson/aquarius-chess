@@ -39,6 +39,7 @@ CPUSTATUS *CPUGetStatus(void);
 BYTE8 CPUExecute(WORD16 breakPoint1,WORD16 breakPoint2);
 WORD16 CPUGetStepOverBreakpoint(void);
 void CPUWriteMemory(WORD16 address,BYTE8 data);
+WORD16 CPUGetCycles(void);
 void CPUEndRun(void);
 void CPULoadBinary(char *fileName);
 void CPUExit(void);

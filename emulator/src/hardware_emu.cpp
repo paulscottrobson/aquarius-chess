@@ -46,7 +46,7 @@ void HWWriteVRAM(WORD16 address,BYTE8 data) {
 // ****************************************************************************
 
 static int keys[][8] = {
-	{ '=',GFXKEY_BACKSPACE,':',GFXKEY_RETURN,';','.',0,0 },
+	{ '=',GFXKEY_BACKSPACE,'@',GFXKEY_RETURN,';','.',0,0 },
 	{ '-','/','0','P','L',',',0,0 },
 	{ '9','O','K','M','N','J',0,0 },
 	{ '8','I','7','U','H','B',0,0 },
