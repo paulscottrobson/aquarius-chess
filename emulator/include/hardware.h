@@ -15,5 +15,12 @@
 void HWReset(void);
 void HWSync(void);
 void HWWriteVRAM(WORD16 address,BYTE8 data);
+void HWSyncImplementation(LONG32 iCount);
+
+#ifdef LINUX
+#define FILESEP '/'
+#else
+#define FILESEP '\\'
+#endif
 
 #endif

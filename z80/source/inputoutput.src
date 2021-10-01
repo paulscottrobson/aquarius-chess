@@ -19,7 +19,7 @@ DB 		"IN A,($1)"
 		A = INPORT(A)
 
 ED40 	"IN @source.8.nohl3,(C)"		
-		@source.8.nohl3 = INPORT(C);
+		@source.8.nohl3 = INPORT(BC());
 		SETNZ(@source.8.nohl3);
 		SETHALFCARRY(0);
 		SETPARITY(@source.8.nohl3);
@@ -37,7 +37,7 @@ ED41 	"OUT (C),@source.8.nohl3"
 #
 
 EDA2 	"IN@direction"
-		WRITE8(HL(),INPORT(C));
+		WRITE8(HL(),INPORT(BC()));
 		B--;
 		@direction#HL();
 		SETNZ(B);
@@ -55,7 +55,7 @@ EDA3 	"OUT@direction"
 #
 EDB2 	"IN@direction#R"
 		do {
-			WRITE8(HL(),INPORT(C));
+			WRITE8(HL(),INPORT(BC()));
 			B--;
 			@direction#HL();
 			SETNZ(B);

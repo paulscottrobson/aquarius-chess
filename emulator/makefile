@@ -7,7 +7,7 @@ endif
 APPNAME = aqnext$(APPSTEM)
 
 SOURCES = 	src$(S)sys_processor.o  framework$(S)main.o framework$(S)gfx.o framework$(S)debugger.o \
-			src$(S)sys_debug_aqnext.o src$(S)hardware.o
+			src$(S)sys_debug_aqnext.o src$(S)hardware.o src$(S)hardware_emu.o
   
 CC = g++
 

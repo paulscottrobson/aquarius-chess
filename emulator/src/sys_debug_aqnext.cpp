@@ -167,7 +167,7 @@ void DBGXRender(int *address,int showDisplay) {
 			GFXRectangle(&r,0xFFFF);
 			b = b - 4;
 			r.x = x1-b;r.y = y1-b;r.w = xs*xSize*8+b*2;r.h=ys*ySize*8+b*2;
-			GFXRectangle(&r,0);
+			GFXRectangle(&r,palette4[CPUReadMemory(0x3400) & 0x0F]); 	// Not going to tile with $3000 ...
 			for (int x = 0;x < xs;x++) 
 			{
 				for (int y = 0;y < ys;y++)
@@ -184,11 +184,11 @@ void DBGXRender(int *address,int showDisplay) {
 
 	 				int col = palette4[cb >> 4];
 			 		rc.w = xSize;rc.h = ySize;							// Width and Height of pixel.
-		 			for (int y = 0;y < 8;y++) {							// 7 Down
+		 			for (int y = 0;y < 8;y++) {							// 8 Down
 		 				rc.x = xc;
 		 				rc.y = yc + y * ySize;
 		 				int f = CPUReadCharacterROM(ch,y);
-				 		for (int x = 0;x < 8;x++) {						// 5 Across
+				 		for (int x = 0;x < 8;x++) {						// 8 Across
 			 				if (f & 0x80) {		
 			 					GFXRectangle(&rc,col);			
 			 				}
