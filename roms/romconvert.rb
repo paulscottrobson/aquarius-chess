@@ -50,6 +50,8 @@ class EncodedROM < StandardROM
 		check_signature_match
 		xor = calculate_signature
 		@data = @data.collect { |a| a ^ xor }
+		rom_ident = [ 0x9C,0xB0,0x6C,0x64,0xA8,0x70 ]
+		(0..5).each { |i| @data[0x2005+i*2] = rom_ident[i] }
 	end 
 
 	def check_signature_match 	
@@ -68,9 +70,74 @@ class EncodedROM < StandardROM
 
 end 
 
+# *****************************************************************************
+#
+# 						Kernel ROM with patches
+#
+# *****************************************************************************
+
+class KernelROM < StandardROM
+	def initialize(binary_file)
+		super
+		#
+		# 		Patches a CALL xxxx to a dummy LD HL,xxxx to disable the initial boot up beep.
+		#
+		patch(0x50,0x21)
+		#
+		# 		Disables the beep entirely. Changes CALL xxxx to a dummy LD DE,xxxx
+		#
+		patch(0x1E1A,0x11)
+		#
+		# 		Skips the start screen, always Cold Starts 	JMP $00FD (Cold Start)
+		#
+		patch(0x89,0xC3)
+		patch(0x8A,0xFD)
+		patch(0x8B,0x00)
+		#
+		# 		Patch shifted characters to approximately match a standard PC keyboard rather than an Aquarius one.
+		#
+		key_fixes = {
+			"6"=>"^",
+			"7"=>"&",
+			"8"=>"*",
+			"9"=>"(",
+			"0"=>")",
+			"/"=>"?",
+			";"=>":",
+			":"=>"@" 																# note colon is a seperate key, we use the single quote.
+		}
+		key_fixes.each { |unshift,shift| patch_keyboard(unshift,shift) }
+	end 	
+	#
+	# 		Patch ROM byte
+	#
+	def patch(addr,byte)
+		@data[addr] = byte 
+	end
+	#
+	# 		Patch keyboard shift/unshift table.
+	#
+	def patch_keyboard(unshift,shift)
+		unshift_table = 0x1F38 														# table of unshifted characters
+		shift_table = 0x1F66  														# table of shifted characters
+		table_size = 0x1F66-0x1F38 	 												# table length.
+		fixed = false
+		(0..table_size-1).each do |p|
+			if @data[unshift_table+p] == unshift.ord
+				@data[shift_table+p] = shift.ord 
+				fixed = true
+			end
+		end
+		raise "Couldn't find unshifted #{unshift}" unless fixed
+
+	end
+end 
+
 if __FILE__ == $0 
 	StandardROM.new("aquarius.chr").export_include("character_rom.h")
-	StandardROM.new("aquarius.rom").export_include("kernel_rom.h")
+	KernelROM.new("aquarius.rom").export_include("kernel_rom.h")
+	EncodedROM.new("add tarmin.bin").export_include("tarmin_rom.h")
+
 	EncodedROM.new("tron.bin").export_binary("tron.bin.decoded")
 	EncodedROM.new("add tarmin.bin").export_binary("add tarmin.bin.decoded")
 	EncodedROM.new("utopia.bin").export_binary("utopia.bin.decoded")

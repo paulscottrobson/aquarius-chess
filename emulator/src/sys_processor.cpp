@@ -52,6 +52,12 @@ const BYTE8 character_rom[] = {
 	#include "character_rom.h"
 };
 
+#ifdef INSTALL_TARMIN
+const BYTE8 tarmin_rom[] = {
+	#include "tarmin_rom.h"
+};
+#endif
+
 // *******************************************************************************************************************************
 //											 Memory and I/O read and write macros.
 // *******************************************************************************************************************************
@@ -83,7 +89,7 @@ static inline BYTE8 _Read(WORD16 address) {
 }
 
 static void _Write(WORD16 address,BYTE8 data) {
-	if (address >= 0x3000 && address <= RAMSIZE) {
+	if (address >= 0x3000 && address <= RAMSIZE && address < RAMPAKSIZE+0x4000) {
 		ramMemory[address] = data;
 		if (address < 0x3800) HWWriteVRAM(address,data);
 	}
@@ -124,6 +130,9 @@ void CPUReset(void) {
 	HWReset();																		// Reset Hardware
 	BuildParityTable();																// Build the parity flag table.
 	for (int i = 0;i < sizeof(kernel_rom);i++) ramMemory[i] = kernel_rom[i]; 		// Copy the Kernel ROM
+	#ifdef INSTALL_TARMIN
+	for (int i = 0;i < sizeof(tarmin_rom);i++) ramMemory[i+0xC000] = tarmin_rom[i];
+	#endif
 	PC = 0; 																		// Zero PC.
 }
 

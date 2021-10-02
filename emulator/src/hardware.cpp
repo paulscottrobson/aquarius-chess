@@ -33,7 +33,7 @@ void HWReset(void) {
 
 void HWSync(void) {
 	HWSyncImplementation(0);
-	if (lastToggleCycleTime != 0) {
+	if (lastToggleCycleTime != 0 && cycleToggleCount > 4) {
 		//
 		//		The actual frequency is Clock Frequency (3.54Mhz) / 64 / Sound parameter.
 		//

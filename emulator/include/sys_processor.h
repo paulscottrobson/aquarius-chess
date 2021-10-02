@@ -12,7 +12,8 @@
 #ifndef _PROCESSOR_H
 #define _PROCESSOR_H
 
-#define RAMSIZE 		(32768)														// 32k in Windows
+#define RAMSIZE 		(0x10000)													// Max memory in PC version
+#define RAMPAKSIZE  	(0x4000) 												 	// Size of RAM Pack (e.g. excluding $3000-$3FFF)
 
 typedef unsigned short WORD16;														// 8 and 16 bit types.
 typedef unsigned char  BYTE8;
