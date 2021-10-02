@@ -878,7 +878,7 @@ case 0xda: /**** $da:jp c,$2 ****/
 	break;
 
 case 0xdb: /**** $db:in a,($1) ****/
-	temp8 = FETCH8(); A = INPORT(A);
+	temp8 = FETCH8(); A = INPORT((A << 8)|temp8);
 	break;
 
 case 0xdc: /**** $dc:call c,$2 ****/

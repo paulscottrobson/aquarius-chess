@@ -1,4 +1,6 @@
 TODO List
 ---------
-Cassette Input
-ROM Loading
+Cassette Input from file.
+Get named tape from file. 
+ROM Loading (check for $FFFFFFF at start)
+Build/Run various tapes.

@@ -21,6 +21,8 @@ int HWGetKeyboardRow(int row);
 void HWWriteVRAM(WORD16 address,BYTE8 data);
 void HWSyncImplementation(LONG32 iCount);
 
+void HWReadTapeHeader(void);
+BYTE8 HWReadTapeByte(void);
 
 #ifdef LINUX
 #define FILESEP '/'

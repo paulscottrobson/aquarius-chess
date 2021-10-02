@@ -1,0 +1,17 @@
+Cassette Interface
+==================
+
+$1BCE READSYNC ($EDF0)
+
+Skips over the sync header ($FF), and the following $00 byte.
+
+By changing this so it skips any immediately preceding $00 bytes we can chain together CAQ files.
+
+$1B4D READCASSETTEBYTE ($EDF1)
+
+Read 1 byte into A. Z flag set. 
+
+
+CLOAD should load a directory ? like on C64/PET
+
+$1CD9 Skips sync reads 6 bytes.

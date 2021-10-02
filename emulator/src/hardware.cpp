@@ -79,3 +79,33 @@ void HWWritePort(WORD16 addr,BYTE8 data) {
 		lastToggleCycleTime = CPUGetCycles();
 	}
 }
+
+// *******************************************************************************************************************************
+// 									   Tape interface fake instructions
+// *******************************************************************************************************************************
+
+static const BYTE8 demo_tape[] = {
+	#include "aliens_bas.h"
+	,
+	#include "aliens_a.h"
+};
+
+static int demoPtr = 0;
+
+void HWReadTapeHeader(void) {
+	BYTE8 b;
+//	printf("Reading header.\n");
+	while(b = HWReadTapeByte(),b == 0x00) {}
+	while(b = HWReadTapeByte(),b == 0xFF) {}
+	if (b != 0x00) exit(fprintf(stderr,"Bad tape format ?\n"));
+}
+
+BYTE8 HWReadTapeByte(void) {
+	BYTE8 b = 0;
+	if (demoPtr == sizeof(demo_tape)) {
+		exit(fprintf(stderr,"Tape read overrun ?\n"));
+	}
+	b = demo_tape[demoPtr++];
+//	printf("Reading byte %d $%02x %c\n",b,b,(b & 0x7F) >= 0x20 ? (b & 0x7F) : '.');
+	return b;
+}

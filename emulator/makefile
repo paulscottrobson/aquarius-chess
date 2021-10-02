@@ -17,6 +17,9 @@ all: emulator
 
 run: emulator 
 	.$(S)$(APPNAME) go xxx
+
+debug: emulator 
+	.$(S)$(APPNAME) 
 	
 test : emulator
 	$(CDEL) memory.dump $(CDELQ)

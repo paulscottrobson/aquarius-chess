@@ -2373,10 +2373,10 @@ l0c63:	xor	a			; clear A
         rst     $10,GETNEXT		; 
         ld      a,$01			;
         ld      ($38cb),a
-        call    $10d1			;
+        call    $10d1			; get array address
         jp      nz,ERROR_FC,$0697	; report an FC Error
-        ld      ($38cb),a
-        call    $0975
+        ld      ($38cb),a                       
+        call    $0975 
         pop     af
         push    hl
         push    af
@@ -2395,11 +2395,11 @@ l0c63:	xor	a			; clear A
 
 l0c92:  call    TAPELD1,$1b2e	        ; display the 'Press <PLAY>' message 
 					; and wait for CR
-        call    BYTEREAD,$1bce		; read SYNC signal from tape.
+        call    READSYNC,$1bce		; read SYNC signal from tape.
 
 l0c98:  ld      c,$06
 
-l0c9a:  call    BYTEREAD2,$1b4d
+l0c9a:  call    READCASSETTEBYTE,$1b4d
         cp      b
         jr      nz,$0c98                ;  (-8)
         dec     c
@@ -2421,7 +2421,7 @@ l0cad:  rst     $20		; COMPARE HL,DE
         push    af
         ld      a,(hl)
         call    nz,TAPEBYTE,$1b8a
-        call    z,BYTEREAD2,$1b4d
+        call    z,READCASSETTEBYTE,$1b4d
         ld      (hl),a
         inc     hl
         jr      $0cad                   ;  (-16)
@@ -5216,9 +5216,9 @@ l1b3e:  call    UKEYCHK,$1e7e		; Loop until the user presses
         ret     
 
 ;
-; BYTEREAD2: Read part of the SYNC signal from tape.
+; READCASSETTEBYTE: Read part of the SYNC signal from tape.
 ; 
-BYTEREAD2:
+READCASSETTEBYTE:
 l1b4d:  exx     			; swap 16 bit register sets
         ld      c,$fc			; FC is the cassette port IO value
 
@@ -5352,18 +5352,18 @@ l1bc0:  ld      a,$ff			;
 ;
 ; Read the SYNC signal from the tape.
 ;
-BYTEREAD:
+READSYNC:
 l1bce:  push    af			; save AF
         push    bc			; save BC
 
 l1bd0:  ld      b,$06			; preload B with 6, for 6 loops
 
-l1bd2:  call    BYTEREAD2,$1b4d		; read data from tape.
+l1bd2:  call    READCASSETTEBYTE,$1b4d		; read data from tape.
         inc     a			; 
         jr      nz,$1bd0                ;  (-8)
         djnz    $1bd2                   ;  (-8)
 
-l1bda:  call    BYTEREAD2,$1b4d		; read a byte from tape
+l1bda:  call    READCASSETTEBYTE,$1b4d		; read a byte from tape
         or      a
         jr      z,$1be5                 ;  (5)
         inc     a
@@ -5424,18 +5424,18 @@ l1c46:  xor     a
         push    de
         call    TAPELD1,$1b2e       	; Display the TAPE LOAD message
 					; and wait for CR
-        call    $1cd9
+        call    $1cd9                   ; read SYNC and File Name.
         ld      hl,$3857
-        call    $1ced
+        call    $1ced                   ; compare against entered file name, or first byte is zero of name.
         pop     de
-        jr      z,$1c6c                 ;  (18)
+        jr      z,$1c6c                 ; if same, then continue.
         ld      hl,$1d06		; point to "Skip: "
         call    $1d0d			; print "Skip: " and the name of the program
 					; being skipped on tape.
 
-l1c60:  ld      b,$0a
-
-l1c62:  call    BYTEREAD2,$1b4d
+l1c60:  ld      b,$0a                   ; skip to end, go around.
+ 
+l1c62:  call    READCASSETTEBYTE,$1b4d
         or      a
         jr      nz,$1c60                ;  (-8)
         djnz    $1c62                   ;  (-8)
@@ -5446,12 +5446,12 @@ l1c6c:  ld      hl,$1cfe		; point to "Found: " message
 					; which was found.
         pop     af
         ld      ($38e4),a
-        call    c,$0bbe
+        call    c,$0bbe                 ; new program if CS.
         ld      a,($38e4)
         cp      $01
         ld      ($385e),a
-        ld      hl,(BASTART)
-        call    $1d51
+        ld      hl,(BASTART)            ; read sync & block of code in to BASIC start.
+        call    $1d51                   
         jr      nz,$1c9a                ;  (17)
         ld      (BASEND),hl		; send 'END OF BASIC' marker.
 
@@ -5507,13 +5507,13 @@ l1cd2:  ld      (hl),$00
 l1cd7:  pop     hl
         ret     
 
-l1cd9:  call    BYTEREAD,$1bce
+l1cd9:  call    READSYNC,$1bce
         xor     a
         ld      ($385d),a
         ld      hl,$3857
         ld      b,$06			; prepare to read 6 bytes.
 
-l1ce5:  call    BYTEREAD2,$1b4d		; read 1 byte from tape.
+l1ce5:  call    READCASSETTEBYTE,$1b4d		; read 1 byte from tape.
         ld      (hl),a			; store at (HL)
         inc     hl			; increment HL
         djnz    $1ce5                   ; and loop till we have read B bytes.
@@ -5596,7 +5596,7 @@ l1d4b:  dec     bc			; decrement the loop counter.
         jr      nz,SLEEPBC,$1d4b        ; Loop till BC = 00.
         ret     			; Then return.
 
-l1d51:  call    BYTEREAD,$1bce
+l1d51:  call    READSYNC,$1bce 
         ld      a,$ff
         ld      ($385d),a
         sbc     a,a
@@ -5605,7 +5605,7 @@ l1d51:  call    BYTEREAD,$1bce
 
 l1d5c:  ld      b,$0a
 
-l1d5e:  call    BYTEREAD2,$1b4d
+l1d5e:  call    READCASSETTEBYTE,$1b4d
         ld      e,a
         sub     (hl)
         and     d

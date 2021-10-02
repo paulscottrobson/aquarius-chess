@@ -57,6 +57,7 @@ EDB0 	"LD@direction#R"
 			@direction#HL();
 			DECBC();
 			SETOVERFLOW(BC() != 0);
+			cycles++;
 		} while (BC() != 0);
 		SETHALFCARRY(0);
 		SETNFLAG(0);

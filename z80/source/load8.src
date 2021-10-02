@@ -88,7 +88,7 @@ ED57 	"LD A,I"
 		SETNFLAG(0);
 
 ED5F 	"LD A,R"
-		A = R;
+		A = (cycles & 0x7F);
 		SETNZ(A);
 		SETPARITY(A);
 		SETHALFCARRY(0);

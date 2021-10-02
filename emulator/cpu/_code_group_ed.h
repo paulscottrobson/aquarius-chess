@@ -102,7 +102,7 @@ case 0x5e: /**** $5e:im2 ****/
 	break;
 
 case 0x5f: /**** $5f:ld a,r ****/
-	A = R; SETNZ(A); SETPARITY(A); SETHALFCARRY(0); SETNFLAG(0);;
+	A = (cycles & 0x7F); SETNZ(A); SETPARITY(A); SETHALFCARRY(0); SETNFLAG(0);;
 	break;
 
 case 0x60: /**** $60:in h,(c) ****/
@@ -194,7 +194,7 @@ case 0xab: /**** $ab:outd ****/
 	break;
 
 case 0xb0: /**** $b0:ldir ****/
-	do { WRITE8(DE(),READ8(HL())); INCDE(); INCHL(); DECBC(); SETOVERFLOW(BC() != 0); } while (BC() != 0); SETHALFCARRY(0); SETNFLAG(0);;
+	do { WRITE8(DE(),READ8(HL())); INCDE(); INCHL(); DECBC(); SETOVERFLOW(BC() != 0); cycles++; } while (BC() != 0); SETHALFCARRY(0); SETNFLAG(0);;
 	break;
 
 case 0xb1: /**** $b1:cpir ****/
@@ -210,7 +210,7 @@ case 0xb3: /**** $b3:otir ****/
 	break;
 
 case 0xb8: /**** $b8:lddr ****/
-	do { WRITE8(DE(),READ8(HL())); DECDE(); DECHL(); DECBC(); SETOVERFLOW(BC() != 0); } while (BC() != 0); SETHALFCARRY(0); SETNFLAG(0);;
+	do { WRITE8(DE(),READ8(HL())); DECDE(); DECHL(); DECBC(); SETOVERFLOW(BC() != 0); cycles++; } while (BC() != 0); SETHALFCARRY(0); SETNFLAG(0);;
 	break;
 
 case 0xb9: /**** $b9:cpdr ****/
@@ -223,6 +223,14 @@ case 0xba: /**** $ba:indr ****/
 
 case 0xbb: /**** $bb:otdr ****/
 	do { OUTPORT(C,READ8(HL())); B--; DECHL(); SETNZ(B); SETNFLAG(1); } while (B != 0);;
+	break;
+
+case 0xf0: /**** $f0:thdr ****/
+	HWReadTapeHeader();
+	break;
+
+case 0xf1: /**** $f1:tbyte ****/
+	A = HWReadTapeByte();SETNZ(0);;
 	break;
 
 

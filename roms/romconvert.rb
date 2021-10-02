@@ -79,6 +79,15 @@ end
 class KernelROM < StandardROM
 	def initialize(binary_file)
 		super
+		general_patches
+		keyboard_patches
+		tape_input_patches
+	end
+
+	#
+	# 		General changes to the ROM.
+	#
+	def general_patches
 		#
 		# 		Patches a CALL xxxx to a dummy LD HL,xxxx to disable the initial boot up beep.
 		#
@@ -93,9 +102,12 @@ class KernelROM < StandardROM
 		patch(0x89,0xC3)
 		patch(0x8A,0xFD)
 		patch(0x8B,0x00)
-		#
-		# 		Patch shifted characters to approximately match a standard PC keyboard rather than an Aquarius one.
-		#
+	end
+
+	#
+	# 		Patch shifted characters to approximately match a standard PC keyboard rather than an Aquarius one.
+	#
+	def keyboard_patches
 		key_fixes = {
 			"6"=>"^",
 			"7"=>"&",
@@ -107,6 +119,29 @@ class KernelROM < StandardROM
 			":"=>"@" 																# note colon is a seperate key, we use the single quote.
 		}
 		key_fixes.each { |unshift,shift| patch_keyboard(unshift,shift) }
+	end
+
+	#
+	# 		Fix Tape stuff so Header Read and Byte Read work with pseudo-instructions that do the work
+	# 		of whole Aquarius subroutines
+	#
+	def tape_input_patches
+		#
+		# 		Replace Skip Header routine
+		#
+		patch(0x1BCE,0xED);
+		patch(0x1BCF,0xF0);
+		patch(0x1BD0,0xC9);
+		#
+		# 		Replace Read byte routine
+		#
+		patch(0x1B4D,0xED);
+		patch(0x1B4E,0xF1);
+		patch(0x1B4F,0xC9);		
+		#
+		# 		Disable the Tape Load, Hit any Key routine, which isn't needed.
+		#
+		patch(0x1B2E,0xC9);
 	end 	
 	#
 	# 		Patch ROM byte
@@ -141,4 +176,7 @@ if __FILE__ == $0
 	EncodedROM.new("tron.bin").export_binary("tron.bin.decoded")
 	EncodedROM.new("add tarmin.bin").export_binary("add tarmin.bin.decoded")
 	EncodedROM.new("utopia.bin").export_binary("utopia.bin.decoded")
+
+	StandardROM.new("aliens_bas.caq").export_include("aliens_bas.h")
+	StandardROM.new("aliens_a.caq").export_include("aliens_a.h")
 end

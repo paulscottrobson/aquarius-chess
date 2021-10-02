@@ -209,7 +209,9 @@ BYTE8 CPUExecute(WORD16 breakPoint1,WORD16 breakPoint2) {
 // *******************************************************************************************************************************
 
 WORD16 CPUGetStepOverBreakpoint(void) {
-	// TODO: Complete for Z80 CALL CALL cond and RST
+	BYTE8 op = CPUReadMemory(PC); 	
+	if (op == 0xCD || (op & 0xC7) == 0xC4) return PC+3; 							// CALL/CALL xx
+	if ((op & 0xC7) == 0xC7) return PC+1;											// RST
 	return 0;																		// Do a normal single step
 }
 

@@ -55,4 +55,12 @@ ED5E "IM2"
 		{}												
 
 
-################################################# TEST BAR ##################################################
+#
+# 		These are specific internal ones for the tape interface
+#
+
+EDF0 	"THDR"
+		HWReadTapeHeader()
+
+EDF1 	"TBYTE"		
+		A = HWReadTapeByte();SETNZ(0);
