@@ -51,3 +51,24 @@ DDCB06	"@rotate ($I$S)" 23
 		temp8 = READ8(temp16);
 		temp8 = SR@rotate(temp8);		
 		WRITE8(temp16,temp8);
+
+#
+# 		RLD/RRD
+#
+ED6F 	"RLD" 	18
+		temp8 = READ8(HL());
+		WRITE8(HL(),(temp8 << 4) | (A & 0x0F));
+		A = (A & 0xF0) | (temp8 >> 4);
+		SETNZ(A);
+		SETPARITY(A);
+		SETNFLAG(0);
+		SETHALFCARRY(0);
+
+ED67 	"RRD" 	18
+		temp8 = READ8(HL());
+		WRITE8(HL(),(temp8 >> 4) | ((A & 0x0F) << 4));
+		A = (A & 0xF0) | (temp8 & 0x0F);
+		SETNZ(A);
+		SETPARITY(A);
+		SETNFLAG(0);
+		SETHALFCARRY(0);

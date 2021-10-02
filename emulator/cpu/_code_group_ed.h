@@ -121,6 +121,10 @@ case 0x63: /**** $63:ld ($2),hl ****/
 	temp16 = FETCH16();WRITE16(temp16,HL());
 	cycles += 15;break;
 
+case 0x67: /**** $67:rrd ****/
+	temp8 = READ8(HL()); WRITE8(HL(),(temp8 >> 4) | ((A & 0x0F) << 4)); A = (A & 0xF0) | (temp8 & 0x0F); SETNZ(A); SETPARITY(A); SETNFLAG(0); SETHALFCARRY(0);;
+	cycles += 15;break;
+
 case 0x68: /**** $68:in l,(c) ****/
 	L = INPORT(BC()); SETNZ(L); SETHALFCARRY(0); SETPARITY(L); SETNFLAG(0);;
 	cycles += 15;break;
@@ -135,6 +139,10 @@ case 0x6a: /**** $6a:adc hl,hl ****/
 
 case 0x6b: /**** $6b:ld hl,($2) ****/
 	temp16 = FETCH16();SETHL(READ16(temp16));
+	cycles += 15;break;
+
+case 0x6f: /**** $6f:rld ****/
+	temp8 = READ8(HL()); WRITE8(HL(),(temp8 << 4) | (A & 0x0F)); A = (A & 0xF0) | (temp8 >> 4); SETNZ(A); SETPARITY(A); SETNFLAG(0); SETHALFCARRY(0);;
 	cycles += 15;break;
 
 case 0x72: /**** $72:sbc hl,sp ****/

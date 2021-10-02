@@ -15,3 +15,5 @@ Read 1 byte into A. Z flag set.
 CLOAD should load a directory ? like on C64/PET
 
 $1CD9 Skips sync reads 6 bytes.
+
+CQC files are concatenated CAQ files - literally.

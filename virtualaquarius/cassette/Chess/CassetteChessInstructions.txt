@@ -1,0 +1,53 @@
+2) Cassette Chess.  I like this version.  I've bundled my homemade instructions in this .zip file.  Please post if you find other commands/features.  Why can't we have cursor controlled Chess games?  I know real Chess is recorded in coordinate form, but this version already lets you use a cursor for board setup, so why not in the game?  BTW, I assume there is an official Chess coordinate system.  Since the Chess has a different grid than Mattel's, who has the official grid?
+
+Cassette Chess User Guide
+-------------------------
+
+This is apparently only a 1 player vs. computer game.
+
+There is no 2 player or 0 player options.
+
+
+
+Set Up board (Y-N)
+------------------
+
+If you answer "Yes" to set up, this section will show how you set up a board.  If you answer no, then skip to instructions for "In Game Commands"
+
+
+<Ctrl>  = move cursor up
+<space> = move cursor down
+.       = move cursor right
+,       = move cursor left
+c       = clear board
+x       = start game as currently set up
+
+
+To place a piece, use the below options.  All pieces are initially placed as black.  To change the color to white, press <w> after the piece is placed.  To change a piece back to black, press press the piece letter again (e.g. press <q> for a black queen).
+
+q = queen
+k = king
+p = pawn
+b = bishop
+n = knight
+r = rook
+
+
+
+In Game Commands
+----------------
+
+The board is laid out in a grid with A-1 being the top left position, and H-8 being the bottom right.  (Notice that the numbers are opposite to Mattel's version, while the lettering is the same)
+
+L = change level
+k = switch sides (If you were black, you're now white and vice versa)
+r= load tape file
+w = save file
+
+Note, when you load a tape file, it puts you in the setup mode, with the pieces set up as you left them in the game.  So to restart the game, you must press "x" the same as in the Set up instructions above.
+
+
+
+The computer cheated me and called a stalemate when I was closing in for the kill!  LOL.  Then it asked me if I wanted to play again.  I only had the option to select yes.  The Aquarius doesn't like to lose.
+
+

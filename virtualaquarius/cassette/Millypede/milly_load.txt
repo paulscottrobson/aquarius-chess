@@ -1,0 +1,51 @@
+
+Tips on loading the program using an Aquarius computer
+------------------------------------------------------
+Millypede comes in two parts, a BASIC program (MILLY_BAS_Q.WAV) which
+is loaded first, followed by the ML program (MILLY_A_Q.WAV). A 16K RAM 
+memory expansion cartridge is also needed.
+
+
+Here are a couple methods to try:   
+
+1. Hook up the Aquarius to your PC's sound card:
+The Aquarius cassette cable input jack is hooked up directly to the 
+sound card's output, using about $7 worth of adaptors from the local 
+stereo supply store.  The WAV files are then played using Creative 
+Wave Studio or GOLDWAVE (www.goldwave.com). Windows Media player 
+does not work.  You can read about hooking up your system here:
+
+http://www.classicgaming.com/aqemu/aqfaq2.htm
+
+(just search the page for "goldwave")
+
+
+2. Transfer the files directly to a cassette tape:
+(This is theoretical as it hasn't been tested yet)
+- hook a cassette recorder to the PC soundcard output/speaker port.
+- play the WAV files on the PC and record it on a cassette. The 2
+  Millypede files need to be in the proper order, with a small gap
+  in between.
+- use that cassette with an Aquarius Data recorder and follow the
+  instructions listed below to load and play the game.
+
+
+Loading instructions (from the original documentation)
+------------------------------------------------------
+(1) Hold down the "CTL" key and press  "Z", then press "RTN".
+
+(2) Start the data recorder and press  "RTN" again.
+
+(3) When "OK" appears on the TV stop the tape.
+
+(4) Hold down the "CTL" key and press ''l ", then press "RTN", start
+    the data recorder and press " RTN " again.
+
+(5) The machine code will now load into your computer, once this has
+    loaded the programme will self run.
+
+(6) Don't forget to stop and rewind the tape.
+
+
+
+

@@ -1,0 +1,1 @@
+3) D-Fender.  Though we have this title already, James states that it is slightly different (byte-wise) than the currently available version, though neither appears to be buggy.  Was there a running change made to the code by the author during production?
