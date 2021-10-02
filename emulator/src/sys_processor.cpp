@@ -52,12 +52,6 @@ const BYTE8 character_rom[] = {
 	#include "character_rom.h"
 };
 
-#ifdef INSTALL_TARMIN
-const BYTE8 tarmin_rom[] = {
-	#include "tarmin_rom.h"
-};
-#endif
-
 // *******************************************************************************************************************************
 //											 Memory and I/O read and write macros.
 // *******************************************************************************************************************************
@@ -123,6 +117,10 @@ BYTE8 *CPUGetUpper8kAddress(void) {
 	return ramMemory+0xC000;
 }
 
+void CPUSetPC(WORD16 newPC) {
+	PC = newPC;
+}
+
 // *******************************************************************************************************************************
 //														Reset the CPU
 // *******************************************************************************************************************************
@@ -135,9 +133,6 @@ void CPUReset(void) {
 	HWReset();																		// Reset Hardware
 	BuildParityTable();																// Build the parity flag table.
 	for (int i = 0;i < sizeof(kernel_rom);i++) ramMemory[i] = kernel_rom[i]; 		// Copy the Kernel ROM
-	#ifdef INSTALL_TARMIN
-	for (int i = 0;i < sizeof(tarmin_rom);i++) ramMemory[i+0xC000] = tarmin_rom[i];
-	#endif
 	PC = 0; 																		// Zero PC.
 }
 

@@ -24,6 +24,8 @@ void HWSyncImplementation(LONG32 iCount);
 void HWReadTapeHeader(void);
 BYTE8 HWReadTapeByte(void);
 
+#define LOADFILENAME (0x3851)
+
 #ifdef LINUX
 #define FILESEP '/'
 #else

@@ -82,6 +82,7 @@ class KernelROM < StandardROM
 		general_patches
 		keyboard_patches
 		tape_input_patches
+		new_prompt
 	end
 
 	#
@@ -102,8 +103,17 @@ class KernelROM < StandardROM
 		patch(0x89,0xC3)
 		patch(0x8A,0xFD)
 		patch(0x8B,0x00)
+		#
+		# 		Disables printing
+		#
+		patch(0x1AE8,0xC9)
 	end
 
+	#
+	# 		Patch in new prompt.
+	#
+	def new_prompt
+	end
 	#
 	# 		Patch shifted characters to approximately match a standard PC keyboard rather than an Aquarius one.
 	#

@@ -30,6 +30,8 @@ BYTE8 CPUReadMemory(WORD16 address);
 BYTE8 *CPUGetUpper8kAddress(void);
 void CPUWriteMemory(WORD16 address,BYTE8 data);
 WORD16 CPUGetCycles(void);
+void CPUSetPC(WORD16 newPC);
+BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row);
 
 #ifdef INCLUDE_DEBUGGING_SUPPORT													// Only required for debugging
 
@@ -45,7 +47,6 @@ WORD16 CPUGetStepOverBreakpoint(void);
 void CPUEndRun(void);
 void CPULoadBinary(char *fileName);
 void CPUExit(void);
-BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row);
 
 #endif
 #endif

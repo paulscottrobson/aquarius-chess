@@ -24,6 +24,9 @@ debug: emulator
 tron : emulator 
 	.$(S)aqnext ..$(S)roms$(S)tron.bin.decoded  
 
+tarmin : emulator 
+	.$(S)aqnext "..$(S)roms$(S)add tarmin.bin.decoded"  
+
 test : emulator
 	$(CDEL) memory.dump $(CDELQ)
 	zasm -u test.asm
@@ -40,7 +43,7 @@ prebuild:
 	$(CCOPY) ..$(S)roms$(S)*.cqc roms
 
 %.o:%.cpp
-	$(CC) $(CXXFLAGS) -D INSTALL_TARMINX -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -I roms -c -o $@ $<
+	$(CC) $(CXXFLAGS) -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -I roms -c -o $@ $<
 
 clean:
 	$(CDEL) $(APPNAME) 

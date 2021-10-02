@@ -53,10 +53,11 @@ void HWSync(void) {
 // *******************************************************************************************************************************
 
 BYTE8 HWReadPort(WORD16 addr) {
-	BYTE8 v = 0;
+	BYTE8 v = 0xFF;
 	BYTE8 port = addr & 0xFF;
 
 	if (port == 0xFF) {
+		v = 0;
 		for (int i = 0;i < 8;i++) {
 			if ((addr & (0x0100 << i)) == 0) {
 				v |= HWGetKeyboardRow(i);
@@ -89,15 +90,15 @@ void HWWritePort(WORD16 addr,BYTE8 data) {
 
 void HWReadTapeHeader(void) {
 	BYTE8 b;
-//	printf("Reading header.\n");
+	printf("Reading header\n");
 	while(b = HWReadTapeByte(),b == 0x00) {}
 	while(b = HWReadTapeByte(),b == 0xFF) {}
-	if (b != 0x00) exit(fprintf(stderr,"Bad tape format ?\n"));
+	if (b != 0x00) CPUSetPC(0x1CA2);
 }
 
 BYTE8 HWReadTapeByte(void) {
 	if (tapeOffset == 0x4000) {
-		exit(fprintf(stderr,"Tape read overrun ?\n"));
+		CPUSetPC(0x1CA2);
 	}
 	BYTE8 b = *(CPUGetUpper8kAddress()+tapeOffset);
 	tapeOffset++;
