@@ -20,7 +20,7 @@
 
 #define CYCLE_RATE 		(3540*1000)													// Cycles per second (3.54Mhz)
 #define FRAME_RATE		(60)														// Frames per second (50 arbitrary)
-#define CYCLES_PER_FRAME (CYCLE_RATE / FRAME_RATE / 8)								// We count in units of multiple Z80 Cycles.				
+#define CYCLES_PER_FRAME (CYCLE_RATE / FRAME_RATE) 									// Cycles per frame.
 
 // *******************************************************************************************************************************
 //														CPU / Memory
@@ -101,6 +101,7 @@ static WORD16 _Fetch16(void) {
 	return w;
 }
 
+
 // *******************************************************************************************************************************
 //											 Support macros and functions
 // *******************************************************************************************************************************
@@ -116,6 +117,10 @@ static WORD16 _Fetch16(void) {
 
 WORD16 CPUGetCycles(void) {
 	return cycles;
+}
+
+BYTE8 *CPUGetUpper8kAddress(void) {
+	return ramMemory+0xC000;
 }
 
 // *******************************************************************************************************************************
@@ -164,7 +169,6 @@ BYTE8 CPUExecuteInstruction(void) {
 		default:
 			FAILOPCODE("-",opcode);
 	}
-	cycles++; 																		// One instruction/cycle approximation
 	if (cycles < cyclesPerFrame) return 0;											// Not completed a frame.
 	cycles = cycles - cyclesPerFrame;												// Adjust this frame rate.
 	HWSync();																		// Update any hardware
@@ -221,18 +225,12 @@ void CPUEndRun(void) {
 	fclose(f);
 }
 
-static void CPULoadChunk(FILE *f,BYTE8* memory,int count) {
-	while (count != 0) {
-		int qty = (count > 4096) ? 4096 : count;
-		fread(memory,1,qty,f);
-		count = count - qty;
-		memory = memory + qty;
-	}
-}
 void CPULoadBinary(char *fileName) {
 	FILE *f = fopen(fileName,"rb");
+	BYTE8 *romSpace = CPUGetUpper8kAddress();
+	for (int i = 0;i < 0x4000;i++) romSpace[i] = 0;
 	if (f != NULL) {
-		CPULoadChunk(f,ramMemory,RAMSIZE);
+		fread(romSpace,1,0x4000,f);
 		fclose(f);
 	}
 }

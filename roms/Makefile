@@ -6,6 +6,8 @@ endif
 
 all: 
 	ruby romconvert.rb
+	cat aliens_bas.caq aliens_a.caq >aliens.cqc
+	
 
 	
 

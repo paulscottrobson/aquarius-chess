@@ -18,6 +18,7 @@ static int soundPortState = 0;
 static int lastToggleCycleTime = 0;
 static int cycleToggleCount = 0;
 static int cycleToggleTotal = 0;
+static int tapeOffset = 0;
 
 // *******************************************************************************************************************************
 //												Reset Hardware
@@ -25,6 +26,8 @@ static int cycleToggleTotal = 0;
 
 void HWReset(void) {	
 	GFXSetFrequency(0);
+	tapeOffset = 0;
+	lastToggleCycleTime = 0;
 }
 
 // *******************************************************************************************************************************
@@ -84,14 +87,6 @@ void HWWritePort(WORD16 addr,BYTE8 data) {
 // 									   Tape interface fake instructions
 // *******************************************************************************************************************************
 
-static const BYTE8 demo_tape[] = {
-	#include "aliens_bas.h"
-	,
-	#include "aliens_a.h"
-};
-
-static int demoPtr = 0;
-
 void HWReadTapeHeader(void) {
 	BYTE8 b;
 //	printf("Reading header.\n");
@@ -101,11 +96,11 @@ void HWReadTapeHeader(void) {
 }
 
 BYTE8 HWReadTapeByte(void) {
-	BYTE8 b = 0;
-	if (demoPtr == sizeof(demo_tape)) {
+	if (tapeOffset == 0x4000) {
 		exit(fprintf(stderr,"Tape read overrun ?\n"));
 	}
-	b = demo_tape[demoPtr++];
+	BYTE8 b = *(CPUGetUpper8kAddress()+tapeOffset);
+	tapeOffset++;
 //	printf("Reading byte %d $%02x %c\n",b,b,(b & 0x7F) >= 0x20 ? (b & 0x7F) : '.');
 	return b;
 }

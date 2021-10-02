@@ -1,6 +1,5 @@
 TODO List
 ---------
-Cassette Input from file.
+Fix TRON startup
 Get named tape from file. 
-ROM Loading (check for $FFFFFFF at start)
 Build/Run various tapes.

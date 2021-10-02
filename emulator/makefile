@@ -16,11 +16,14 @@ all: emulator
 #	.$(S)$(APPNAME) 
 
 run: emulator 
-	.$(S)$(APPNAME) go xxx
+	.$(S)$(APPNAME) roms$(S)aliens.cqc go
 
 debug: emulator 
 	.$(S)$(APPNAME) 
 	
+tron : emulator 
+	.$(S)aqnext ..$(S)roms$(S)tron.bin.decoded  
+
 test : emulator
 	$(CDEL) memory.dump $(CDELQ)
 	zasm -u test.asm
@@ -34,8 +37,10 @@ prebuild:
 	make -C ..$(S)z80
 	$(CCOPY) ..$(S)z80$(S)code$(S)*.h cpu
 	$(CCOPY) ..$(S)roms$(S)*.h roms
+	$(CCOPY) ..$(S)roms$(S)*.cqc roms
+
 %.o:%.cpp
-	$(CC) $(CXXFLAGS) -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -I roms -c -o $@ $<
+	$(CC) $(CXXFLAGS) -D INSTALL_TARMINX -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -I roms -c -o $@ $<
 
 clean:
 	$(CDEL) $(APPNAME) 

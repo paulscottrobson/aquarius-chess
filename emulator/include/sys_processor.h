@@ -27,6 +27,9 @@ void CPUReset(void);
 BYTE8 CPUExecuteInstruction(void);
 BYTE8 CPUWriteKeyboard(BYTE8 pattern);
 BYTE8 CPUReadMemory(WORD16 address);
+BYTE8 *CPUGetUpper8kAddress(void);
+void CPUWriteMemory(WORD16 address,BYTE8 data);
+WORD16 CPUGetCycles(void);
 
 #ifdef INCLUDE_DEBUGGING_SUPPORT													// Only required for debugging
 
@@ -39,8 +42,6 @@ typedef struct __CPUSTATUS {
 CPUSTATUS *CPUGetStatus(void);
 BYTE8 CPUExecute(WORD16 breakPoint1,WORD16 breakPoint2);
 WORD16 CPUGetStepOverBreakpoint(void);
-void CPUWriteMemory(WORD16 address,BYTE8 data);
-WORD16 CPUGetCycles(void);
 void CPUEndRun(void);
 void CPULoadBinary(char *fileName);
 void CPUExit(void);

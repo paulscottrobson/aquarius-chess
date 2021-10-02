@@ -13,14 +13,14 @@
 #
 # 		Register exchanges
 #
-EB 		"EX DE,HL"
+EB 		"EX DE,HL" 4
 		temp16 = DE();temp16a = HL();
 		SETDE(temp16a);SETHL(temp16);
 
-08 		"EX AF,AF'"		
+08 		"EX AF,AF'"		4
 		temp16 = AF();SETAF(AFalt);AFalt = temp16;
 
-D9 		"EXX"		
+D9 		"EXX"	4	
 		temp16 = BC();SETBC(BCalt);BCalt = temp16;
 		temp16 = DE();SETDE(DEalt);DEalt = temp16;
 		temp16 = HL();SETHL(HLalt);HLalt = temp16;
@@ -29,11 +29,11 @@ D9 		"EXX"
 # 		Exchange Register pair with top of stack.
 #
 
-E3 		"EX (SP),HL"
+E3 		"EX (SP),HL" 19
 		temp16 = READ16(SP);temp16a = HL();
 		WRITE16(SP,temp16a);SETHL(temp16);
 
-DDE3 	"EX (SP),$I"
+DDE3 	"EX (SP),$I" 23
 		temp16 = READ16(SP);temp16a =IZ();
 		WRITE16(SP,temp16a);IZ() = temp16;
 
@@ -41,7 +41,7 @@ DDE3 	"EX (SP),$I"
 # 		LDI/LDD/LDIR/LDDR
 #
 
-EDA0 	"LD@direction"
+EDA0 	"LD@direction" 16
 		WRITE8(DE(),READ8(HL()));
 		@direction#DE();
 		@direction#HL();
@@ -50,14 +50,14 @@ EDA0 	"LD@direction"
 		SETHALFCARRY(0);
 		SETNFLAG(0);
 
-EDB0 	"LD@direction#R"
+EDB0 	"LD@direction#R" 16
 		do {
 			WRITE8(DE(),READ8(HL()));
 			@direction#DE();
 			@direction#HL();
 			DECBC();
 			SETOVERFLOW(BC() != 0);
-			cycles++;
+			cycles += 21;
 		} while (BC() != 0);
 		SETHALFCARRY(0);
 		SETNFLAG(0);
@@ -66,7 +66,7 @@ EDB0 	"LD@direction#R"
 #
 # 		CPI/CPD/CPIR/CPDR
 #
-EDA1 	"CP@direction"
+EDA1 	"CP@direction" 16
 		oldCarry = c_Flag;
 		ALUCP(READ8(HL()));
 		c_Flag = oldCarry;
@@ -74,7 +74,7 @@ EDA1 	"CP@direction"
 		DECBC()
 		SETOVERFLOW(BC() != 0);
 
-EDB1 	"CP@direction#R"
+EDB1 	"CP@direction#R" 16
 		do {
 			oldCarry = c_Flag;
 			ALUCP(READ8(HL()));
@@ -82,4 +82,5 @@ EDB1 	"CP@direction#R"
 			@direction#HL();
 			DECBC()
 			SETOVERFLOW(BC() != 0);
+			cycles += 21;
 		} while( (BC()!= 0) && (z_Flag == 0) );

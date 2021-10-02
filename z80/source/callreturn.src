@@ -13,32 +13,32 @@
 #
 # 		16 bit calls
 #
-CD 		"CALL $2"
+CD 		"CALL $2" 17
 		CALL(1)
 
-C4 		"CALL @test,$2"
+C4 		"CALL @test,$2" 14
 		CALL(TEST@test())
 
 #
 # 		Returns
 #
-C9 		"RET"
+C9 		"RET" 10
 		RETURN(1)		
 
-C0 		"RET @test"
+C0 		"RET @test" 8
 		RETURN(TEST@test())		
 
 #
 # 		Restarts
 #		
-C7 		"RST @reset_h"
+C7 		"RST @reset_h" 11
 		PUSH(PC);PC = 0x@reset;
 
 #
 # 		Semi functional interrupt returns.
 #
-ED4D 	"RETI"
+ED4D 	"RETI" 14
 		RETURN(1)		
 
-ED45 	"RETN"
+ED45 	"RETN" 14
 		RETURN(1)		

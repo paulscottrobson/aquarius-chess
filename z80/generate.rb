@@ -39,12 +39,12 @@ class Generator
 	end
 
 	def load_definition(d)
-		m = d.match(/([0-9a-fA-F]+)\s*\"(.*?)\"\s*(.*)/)
+		m = d.match(/([0-9a-fA-F]+)\s*\"(.*?)\"\s*(\d+)\s*(.*)/)
 		raise "Bad definition '#{d}'" if not m
 		opcode = m[1].to_i(16)
 		base_opcode = opcode & 0xFFFFFF00
-		@stores[base_opcode] = CodeStore.new(base_opcode,@dictionary) unless @stores.include? base_opcode
-		@stores[base_opcode].add(opcode,[m[2],m[3]])
+		@stores[base_opcode] = CodeStore.new(base_opcode,@dictionary,m[3].to_i) unless @stores.include? base_opcode
+		@stores[base_opcode].add(opcode,[m[2],m[4]])
 	end
 
 	def export
