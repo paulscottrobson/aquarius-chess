@@ -88,12 +88,41 @@ void HWWritePort(WORD16 addr,BYTE8 data) {
 // 									   Tape interface fake instructions
 // *******************************************************************************************************************************
 
+void HWSetTapeName(void) {
+	char buffer[12];
+	//
+	// 		Get the filename in LC
+	//
+	for (int i = 0;i < 6;i++) buffer[i] = tolower(CPUReadMemory(LOADFILENAME+i));
+	buffer[6] = '\0';
+	strcat(buffer,".cqc");
+	//
+	// 		BASIC doesn't know it now. So it will load whatever we give it.
+	//
+	CPUWriteMemory(LOADFILENAME,0x00);
+	//
+	// 		Load it into the 16k "ROM" area. If it's actually a cartridge we'll reset it.
+	//
+	//printf("Actually want file %s\n",buffer);
+	HWLoadFile(buffer,CPUGetUpper8kAddress());
+	//
+	// 		If it is really a cartridge, then reset the PC
+	//
+	if (CPUReadMemory(0xE005) == 0x9C && CPUReadMemory(0xE007) == 0xB0 && CPUReadMemory(0xE009) == 0x6C &&
+		CPUReadMemory(0xE00B) == 0x64 && CPUReadMemory(0xE00D) == 0xA8 && CPUReadMemory(0xE00F) == 0x70) {
+		CPUReset();
+	}
+	//
+	// 		Rewind the tape offset.
+	//
+	tapeOffset = 0;
+}
+
 void HWReadTapeHeader(void) {
 	BYTE8 b;
-	printf("Reading header\n");
+//	printf("Reading header\n");
 	while(b = HWReadTapeByte(),b == 0x00) {}
 	while(b = HWReadTapeByte(),b == 0xFF) {}
-	if (b != 0x00) CPUSetPC(0x1CA2);
 }
 
 BYTE8 HWReadTapeByte(void) {

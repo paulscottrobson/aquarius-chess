@@ -23,6 +23,9 @@ void HWSyncImplementation(LONG32 iCount);
 
 void HWReadTapeHeader(void);
 BYTE8 HWReadTapeByte(void);
+void HWSetTapeName(void);
+
+WORD16 HWLoadFile(char * fileName,BYTE8 *target);
 
 #define LOADFILENAME (0x3851)
 

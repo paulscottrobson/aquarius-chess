@@ -132,7 +132,7 @@ class KernelROM < StandardROM
 	end
 
 	#
-	# 		Fix Tape stuff so Header Read and Byte Read work with pseudo-instructions that do the work
+	# 		Fix Tape stuff so Set Name,Header Read and Byte Read work with pseudo-instructions that do the work
 	# 		of whole Aquarius subroutines
 	#
 	def tape_input_patches
@@ -147,11 +147,21 @@ class KernelROM < StandardROM
 		#
 		patch(0x1B4D,0xED);
 		patch(0x1B4E,0xF1);
-		patch(0x1B4F,0xC9);		
+		patch(0x1B4F,0xC9);	
+		#
+		# 		Patch 'give name' routine
+		#	
+		patch(0x1C4B,0xED);
+		patch(0x1C4C,0xF2);
+		patch(0x1C4D,0x00);	
 		#
 		# 		Disable the Tape Load, Hit any Key routine, which isn't needed.
 		#
 		patch(0x1B2E,0xC9);
+		#
+		# 		Stop printing "Found" files
+		#
+		patch(0x1c6f,0x21);	
 	end 	
 	#
 	# 		Patch ROM byte

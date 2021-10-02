@@ -233,4 +233,8 @@ case 0xf1: /**** $f1:tbyte ****/
 	A = HWReadTapeByte();SETNZ(0);;
 	cycles += 15;break;
 
+case 0xf2: /**** $f2:tname ****/
+	HWSetTapeName();
+	cycles += 15;break;
+
 

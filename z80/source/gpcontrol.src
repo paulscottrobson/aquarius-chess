@@ -64,3 +64,6 @@ EDF0 	"THDR" 0
 
 EDF1 	"TBYTE"	0	
 		A = HWReadTapeByte();SETNZ(0);
+
+EDF2 	"TNAME" 0
+		HWSetTapeName()		

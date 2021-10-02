@@ -104,22 +104,17 @@ WORD16 HWFileInformation(char *fileName,WORD16 *loadAddress,WORD16 *size) {
 //								Load file in
 // ****************************************************************************
 
-WORD16 HWLoadFile(char * fileName,WORD16 override) {
+WORD16 HWLoadFile(char * fileName,BYTE8 *target) {
 	char fullName[128];
 	if (fileName[0] == 0) return 1;
 	MKSTORAGE();
 	sprintf(fullName,"%sstorage%c%s",SDL_GetBasePath(),FILESEP,fileName);
 	FILE *f = fopen(fullName,"rb");
+	//printf("%s\n",fullName);
 	if (f != NULL) {
-		WORD16 addr = fgetc(f);
-		addr += (fgetc(f) << 8);
-		if (override != 0) addr = override;
 		while (!feof(f)) {
-			WORD16 data = fgetc(f);
-			data += (fgetc(f) << 8);
-			if (addr < 0xFF00) {
-				CPUWriteMemory(addr++,data);
-			}
+			BYTE8 data = fgetc(f);
+			*target++ = data;
 		}
 		fclose(f);
 	}
