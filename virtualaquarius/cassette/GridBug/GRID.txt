@@ -1,7 +1,0 @@
-GRIDBUG
-
-Have you ever wondered what it would be like to become a tiny little bug, with one objective in life, to stuff yourself full of strawberries.
-   Well with the Gridbug you can do just that. This totally original game puts you in that position.
-   However life could never be that easy, not even for an insignificant little bug, for lurking in the strawberry patches are giant bug eating spiders. These have to be avoided if you want life to go on.
-   The game begins at a relatively easy pace, with only a few spiders but their numbers will increase as you work your way through the strawberry fields.
-   Includes high score, bug-type noises and all machine code action.

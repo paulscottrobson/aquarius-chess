@@ -1,1 +1,0 @@
-4)  Another Invaders game.  In the limited world of Aquarius software, there can never be too much of anything. ;-)  While I like the graphics of the N-Vaders version better, this one still offers some attractive features, namely joystick control!  It's also fun to see how two different authors came up with different invader,shield, and missle graphics.  Cool stuff.

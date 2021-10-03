@@ -1,6 +1,0 @@
-"N"-VADERS
-The classic golden oldie but this time written all in machine code for first time computer players and classic golden oldie arcade game players.  The squadrons of coloured weirdos descend and try to land, you dash behind your bunkerhouse, and flamethrow them down.
-
-Then the mothership apears hurling plasma bombs and you blast it from the sky, another high score, registered in real time scoring.
-
-Then your partner takes over and blasts squadron after squadron of them as they descend even faster until your skys are clear. . . and then the mothership appears and another batch of coloured weirdos start advancing on you.

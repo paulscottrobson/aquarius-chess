@@ -36,8 +36,9 @@ emulator: prebuild $(APPNAME)
 #	$(CCOPY) $(APPNAME) ..$(S)..$(S)bin$(S) $(CCOPYQ)
 
 prebuild:
-	make -C ..$(S)roms
 	make -C ..$(S)z80
+	make -C ..$(S)roms
+	make -C ..$(S)images
 	$(CCOPY) ..$(S)z80$(S)code$(S)*.h cpu
 	$(CCOPY) ..$(S)roms$(S)*.h roms
 	$(CCOPY) ..$(S)roms$(S)*.cqc roms

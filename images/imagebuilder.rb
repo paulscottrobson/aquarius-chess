@@ -48,6 +48,38 @@ class CassetteFile < FileObject
 end
 
 class CassetteGroup
+	def initialize
+		@bas_root = nil 
+		@files = []
+	end 
+	#
+	def add(f)
+		if f.full_path.downcase.include?("_bas.")
+			raise "Duplicate bas for "+f.full_path if @bas_root
+			@bas_root = f
+		else
+			@files.append(f)
+		end
+	end
+	#
+	def export
+		if @bas_root 
+			files = [@bas_root] + @files 
+		else
+			files = @files
+		end
+		h = open(files[0].file_owner+".cqc","wb")
+		files.each do |f|
+			data = open(f.full_path,"rb").each_byte.collect { |a| a }
+			data.each { |b| h.write(b.chr) }
+		end
+		h.close
+	end
+	#
+	def to_s 
+		files = @files.collect { |f| f.to_s }.join(",")
+		@bas_root.to_s + " : " + files
+	end
 end 
 
 #
@@ -66,3 +98,13 @@ file_list = file_list.select { |l| l.file_owner.length <= 6 }
 # 		Do all the ROMs
 #
 file_list.select { |f| f.is_rom }.each { |f| f.export }
+#
+# 		Build group cassette objects
+#
+cassette_groups = {}
+file_list.select { |f| not f.is_rom }.each do |f|
+	key = f.file_owner 
+	cassette_groups[key] = CassetteGroup.new unless cassette_groups.include? key
+	cassette_groups[key].add(f)
+end
+cassette_groups.each { |k,v| v.export }

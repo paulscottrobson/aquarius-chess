@@ -1,6 +1,0 @@
-Chuckman is based on the popular arcade game but with w few improvements.
-  You have to direct your hero around the yellow paths to disarm the numerous time bombs.
-  The paths however extend outside the normal television screen so you also have to use your wits to remember the quickest route.
-  . . . That is not your only problem though, sometimes you won't be able to see where the bomb is, then it becomes chaotic as you chase around the paths trying to locate your time bomb, but even that isn't all. . . from time to time there are earthquakes which destroy part of the paths and these have to be repaired before you can continue, or wil you be able to work out another route before the bomb goes off.
-  . . . If that isn't enough to contend with there are also boots wondering about which are out to stomp you, so avoid these if you don;t want to be flattened. The pathways are generated randomly so that no two games are ever the same. It also has various levels to play. The machine code make this game thoroughly addictive, fast running and very taxing. This game, like all other <b>Adonic Electronics</b> arcade games is written entirely in machine code and uses machine generated cells and the graphics are of a very high standard.
-  Features include top ten scores, stunning sound effects and terrific animation, will also run on Kempston joystick.
