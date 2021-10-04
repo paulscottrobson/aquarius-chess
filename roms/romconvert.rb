@@ -107,6 +107,10 @@ class KernelROM < StandardROM
 		# 		Disables printing
 		#
 		patch(0x1AE8,0xC9)
+		#
+		# 		Disables Poke/Peek limits
+		#
+		patch(0x0B88,0xC9)
 	end
 
 	#

@@ -57,7 +57,7 @@ BYTE8 HWReadPort(WORD16 addr) {
 	BYTE8 port = addr & 0xFF;
 
 	if (port == 0xFD) {
-		v = CPUInVerticalSync() ? 0 : 1;
+		v = CPUInVerticalSync() ? 1 : 0;
 	}
 	if (port == 0xFF) {
 		v = 0;

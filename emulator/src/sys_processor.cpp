@@ -33,6 +33,7 @@ static WORD16 IX,IY; 																// IX IY accessed indirectly.
 
 static BYTE8 s_Flag,z_Flag,c_Flag,h_Flag,n_Flag,p_Flag; 							// Flag Registers
 static BYTE8 I,R,intEnabled; 														// We don't really bother with these much.
+static BYTE8 highSpeed = 0; 														// High speed running.
 
 static BYTE8 ramMemory[RAMSIZE];													// Memory at $0000 upwards
 
@@ -40,7 +41,7 @@ static LONG32 temp32;
 static WORD16 temp16,temp16a,*pIXY;
 static BYTE8 temp8,oldCarry;
 
-static WORD16 cycles;																// Cycle Count.
+static int cycles;																	// Cycle Count.
 static WORD16 cyclesPerFrame = CYCLES_PER_FRAME;									// Cycles per frame
 
 const BYTE8 kernel_rom[] = {
@@ -86,6 +87,9 @@ static void _Write(WORD16 address,BYTE8 data) {
 	if (address >= 0x3000 && address <= RAMSIZE && address < RAMPAKSIZE+0x4000) {
 		ramMemory[address] = data;
 		if (address < 0x3800) HWWriteVRAM(address,data);
+	}
+	if (address == 0x1000) { 														// POKE 4096,1 turns on fast mode.
+		highSpeed = (data != 0);
 	}
 }
 
@@ -164,14 +168,14 @@ BYTE8 CPUExecuteInstruction(void) {
 		default:
 			FAILOPCODE("-",opcode);
 	}
-	if (cycles < cyclesPerFrame) return 0;											// Not completed a frame.
-	cycles = cycles - cyclesPerFrame;												// Adjust this frame rate.
+	if (cycles >= 0 ) return 0;														// Not completed a frame.
+	cycles = cycles + cyclesPerFrame * (highSpeed ? 16 : 1);						// Adjust this frame rate, up to x16 on HS
 	HWSync();																		// Update any hardware
 	return FRAME_RATE;																// Return frame rate.
 }
 
 BYTE8 CPUInVerticalSync(void) {
-	return cycles < cyclesPerFrame / 4;	
+	return cycles < cyclesPerFrame / 6;	
 }
 
 // *******************************************************************************************************************************

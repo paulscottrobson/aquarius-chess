@@ -61,7 +61,7 @@ class CodeStore
 
 	def code 
 		(0..255).select { |n| @mnemonics.include? n }.collect do |n|
-			"case 0x%02x: /**** $%02x:%s ****/\n\t%s;\n\tcycles += %d;break;\n" % [n,n,@mnemonics[n].downcase,@code[n],@cycles]
+			"case 0x%02x: /**** $%02x:%s ****/\n\t%s;\n\tcycles -= %d;break;\n" % [n,n,@mnemonics[n].downcase,@code[n],@cycles]
 		end.join("\n")		
 	end
 
