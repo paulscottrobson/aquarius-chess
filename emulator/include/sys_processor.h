@@ -32,6 +32,7 @@ void CPUWriteMemory(WORD16 address,BYTE8 data);
 WORD16 CPUGetCycles(void);
 void CPUSetPC(WORD16 newPC);
 BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row);
+WORD16 CPUReadPalette(BYTE8 colour);
 BYTE8 CPUInVerticalSync(void);
 
 #ifdef INCLUDE_DEBUGGING_SUPPORT													// Only required for debugging

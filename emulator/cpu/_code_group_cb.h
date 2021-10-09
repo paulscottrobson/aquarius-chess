@@ -27,7 +27,7 @@ case 0x05: /**** $05:rlc l ****/
 
 case 0x06: /**** $06:rlc (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRRLC(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x07: /**** $07:rlc a ****/
 	A = SRRLC(A);
@@ -59,7 +59,7 @@ case 0x0d: /**** $0d:rrc l ****/
 
 case 0x0e: /**** $0e:rrc (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRRRC(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x0f: /**** $0f:rrc a ****/
 	A = SRRRC(A);
@@ -91,7 +91,7 @@ case 0x15: /**** $15:rl l ****/
 
 case 0x16: /**** $16:rl (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRRL(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x17: /**** $17:rl a ****/
 	A = SRRL(A);
@@ -123,7 +123,7 @@ case 0x1d: /**** $1d:rr l ****/
 
 case 0x1e: /**** $1e:rr (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRRR(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x1f: /**** $1f:rr a ****/
 	A = SRRR(A);
@@ -155,7 +155,7 @@ case 0x25: /**** $25:sla l ****/
 
 case 0x26: /**** $26:sla (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRSLA(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x27: /**** $27:sla a ****/
 	A = SRSLA(A);
@@ -187,7 +187,7 @@ case 0x2d: /**** $2d:sra l ****/
 
 case 0x2e: /**** $2e:sra (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRSRA(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x2f: /**** $2f:sra a ****/
 	A = SRSRA(A);
@@ -219,7 +219,7 @@ case 0x3d: /**** $3d:srl l ****/
 
 case 0x3e: /**** $3e:srl (hl) ****/
 	temp8 = READ8(HL()); temp8 = SRSRL(temp8); WRITE8(HL(),temp8);;
-	cycles -= 8;break;
+	cycles -= 15;break;
 
 case 0x3f: /**** $3f:srl a ****/
 	A = SRSRL(A);
@@ -251,7 +251,7 @@ case 0x45: /**** $45:bit 0,l ****/
 
 case 0x46: /**** $46:bit 0,(hl) ****/
 	bitOp(READ8(HL()) & 1);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x47: /**** $47:bit 0,a ****/
 	bitOp(A & 1);
@@ -283,7 +283,7 @@ case 0x4d: /**** $4d:bit 1,l ****/
 
 case 0x4e: /**** $4e:bit 1,(hl) ****/
 	bitOp(READ8(HL()) & 2);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x4f: /**** $4f:bit 1,a ****/
 	bitOp(A & 2);
@@ -315,7 +315,7 @@ case 0x55: /**** $55:bit 2,l ****/
 
 case 0x56: /**** $56:bit 2,(hl) ****/
 	bitOp(READ8(HL()) & 4);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x57: /**** $57:bit 2,a ****/
 	bitOp(A & 4);
@@ -347,7 +347,7 @@ case 0x5d: /**** $5d:bit 3,l ****/
 
 case 0x5e: /**** $5e:bit 3,(hl) ****/
 	bitOp(READ8(HL()) & 8);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x5f: /**** $5f:bit 3,a ****/
 	bitOp(A & 8);
@@ -379,7 +379,7 @@ case 0x65: /**** $65:bit 4,l ****/
 
 case 0x66: /**** $66:bit 4,(hl) ****/
 	bitOp(READ8(HL()) & 16);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x67: /**** $67:bit 4,a ****/
 	bitOp(A & 16);
@@ -411,7 +411,7 @@ case 0x6d: /**** $6d:bit 5,l ****/
 
 case 0x6e: /**** $6e:bit 5,(hl) ****/
 	bitOp(READ8(HL()) & 32);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x6f: /**** $6f:bit 5,a ****/
 	bitOp(A & 32);
@@ -443,7 +443,7 @@ case 0x75: /**** $75:bit 6,l ****/
 
 case 0x76: /**** $76:bit 6,(hl) ****/
 	bitOp(READ8(HL()) & 64);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x77: /**** $77:bit 6,a ****/
 	bitOp(A & 64);
@@ -475,7 +475,7 @@ case 0x7d: /**** $7d:bit 7,l ****/
 
 case 0x7e: /**** $7e:bit 7,(hl) ****/
 	bitOp(READ8(HL()) & 128);
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x7f: /**** $7f:bit 7,a ****/
 	bitOp(A & 128);
@@ -507,7 +507,7 @@ case 0x85: /**** $85:res 0,l ****/
 
 case 0x86: /**** $86:res 0,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~1));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x87: /**** $87:res 0,a ****/
 	A &= (~1);
@@ -539,7 +539,7 @@ case 0x8d: /**** $8d:res 1,l ****/
 
 case 0x8e: /**** $8e:res 1,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~2));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x8f: /**** $8f:res 1,a ****/
 	A &= (~2);
@@ -571,7 +571,7 @@ case 0x95: /**** $95:res 2,l ****/
 
 case 0x96: /**** $96:res 2,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~4));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x97: /**** $97:res 2,a ****/
 	A &= (~4);
@@ -603,7 +603,7 @@ case 0x9d: /**** $9d:res 3,l ****/
 
 case 0x9e: /**** $9e:res 3,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~8));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0x9f: /**** $9f:res 3,a ****/
 	A &= (~8);
@@ -635,7 +635,7 @@ case 0xa5: /**** $a5:res 4,l ****/
 
 case 0xa6: /**** $a6:res 4,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~16));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xa7: /**** $a7:res 4,a ****/
 	A &= (~16);
@@ -667,7 +667,7 @@ case 0xad: /**** $ad:res 5,l ****/
 
 case 0xae: /**** $ae:res 5,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~32));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xaf: /**** $af:res 5,a ****/
 	A &= (~32);
@@ -699,7 +699,7 @@ case 0xb5: /**** $b5:res 6,l ****/
 
 case 0xb6: /**** $b6:res 6,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~64));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xb7: /**** $b7:res 6,a ****/
 	A &= (~64);
@@ -731,7 +731,7 @@ case 0xbd: /**** $bd:res 7,l ****/
 
 case 0xbe: /**** $be:res 7,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8 & (~128));;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xbf: /**** $bf:res 7,a ****/
 	A &= (~128);
@@ -763,7 +763,7 @@ case 0xc5: /**** $c5:set 0,l ****/
 
 case 0xc6: /**** $c6:set 0,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|1);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xc7: /**** $c7:set 0,a ****/
 	A |= 1;
@@ -795,7 +795,7 @@ case 0xcd: /**** $cd:set 1,l ****/
 
 case 0xce: /**** $ce:set 1,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|2);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xcf: /**** $cf:set 1,a ****/
 	A |= 2;
@@ -827,7 +827,7 @@ case 0xd5: /**** $d5:set 2,l ****/
 
 case 0xd6: /**** $d6:set 2,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|4);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xd7: /**** $d7:set 2,a ****/
 	A |= 4;
@@ -859,7 +859,7 @@ case 0xdd: /**** $dd:set 3,l ****/
 
 case 0xde: /**** $de:set 3,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|8);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xdf: /**** $df:set 3,a ****/
 	A |= 8;
@@ -891,7 +891,7 @@ case 0xe5: /**** $e5:set 4,l ****/
 
 case 0xe6: /**** $e6:set 4,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|16);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xe7: /**** $e7:set 4,a ****/
 	A |= 16;
@@ -923,7 +923,7 @@ case 0xed: /**** $ed:set 5,l ****/
 
 case 0xee: /**** $ee:set 5,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|32);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xef: /**** $ef:set 5,a ****/
 	A |= 32;
@@ -955,7 +955,7 @@ case 0xf5: /**** $f5:set 6,l ****/
 
 case 0xf6: /**** $f6:set 6,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|64);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xf7: /**** $f7:set 6,a ****/
 	A |= 64;
@@ -987,7 +987,7 @@ case 0xfd: /**** $fd:set 7,l ****/
 
 case 0xfe: /**** $fe:set 7,(hl) ****/
 	temp8 = READ8(HL()); WRITE8(HL(),temp8|128);;
-	cycles -= 8;break;
+	cycles -= 12;break;
 
 case 0xff: /**** $ff:set 7,a ****/
 	A |= 128;

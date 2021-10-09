@@ -48,9 +48,13 @@ const BYTE8 kernel_rom[] = {
 	#include "kernel_rom.h"
 };
 
-
-const BYTE8 character_rom[] = {
+static BYTE8 character_rom[] = {
 	#include "character_rom.h"
+};
+
+static WORD16 palette4[16] = { 
+	0x000,0xC02,0x0B0,0xCB0,0x00B,0xB0C,0x0CA,0xFFF,
+	0xBBB,0x4A9,0x828,0x016,0xBA5,0x493,0x712,0x000
 };
 
 // *******************************************************************************************************************************
@@ -86,10 +90,11 @@ static inline BYTE8 _Read(WORD16 address) {
 static void _Write(WORD16 address,BYTE8 data) {
 	if (address >= 0x3000 && address <= RAMSIZE && address < RAMPAKSIZE+0x4000) {
 		ramMemory[address] = data;
-		if (address < 0x3800) HWWriteVRAM(address,data);
+		if (address < 0x3800) HWXWriteVRAM(address,data);
 	}
 	if (address == 0x1000) { 														// POKE 4096,1 turns on fast mode.
 		highSpeed = (data != 0);
+		printf("Poked at %x\n",PC);
 	}
 }
 
@@ -98,7 +103,6 @@ static WORD16 _Fetch16(void) {
 	PC += 2;
 	return w;
 }
-
 
 // *******************************************************************************************************************************
 //											 Support macros and functions
@@ -125,6 +129,14 @@ void CPUSetPC(WORD16 newPC) {
 	PC = newPC;
 }
 
+BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row) {
+	return character_rom[(((WORD16)nchar) << 3)+row];
+}
+
+WORD16 CPUReadPalette(BYTE8 colour) {
+	return palette4[colour & 0x0F];
+}
+
 // *******************************************************************************************************************************
 //														Reset the CPU
 // *******************************************************************************************************************************
@@ -138,6 +150,7 @@ void CPUReset(void) {
 	BuildParityTable();																// Build the parity flag table.
 	for (int i = 0;i < sizeof(kernel_rom);i++) ramMemory[i] = kernel_rom[i]; 		// Copy the Kernel ROM
 	PC = 0; 																		// Zero PC.
+	highSpeed = 0;
 }
 
 // *******************************************************************************************************************************
@@ -188,11 +201,6 @@ BYTE8 CPUReadMemory(WORD16 address) {
 
 void CPUWriteMemory(WORD16 address,BYTE8 data) {
 	WRITE8(address,data);
-}
-
-
-BYTE8 CPUReadCharacterROM(BYTE8 nchar,BYTE8 row) {
-	return character_rom[(((WORD16)nchar) << 3)+row];
 }
 
 #ifdef INCLUDE_DEBUGGING_SUPPORT

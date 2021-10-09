@@ -16,16 +16,17 @@ void HWReset(void);
 void HWSync(void);
 BYTE8 HWReadPort(WORD16 addr);
 void HWWritePort(WORD16 addr,BYTE8 data);
-
 int HWGetKeyboardRow(int row);
-void HWWriteVRAM(WORD16 address,BYTE8 data);
-void HWSyncImplementation(LONG32 iCount);
-
 void HWReadTapeHeader(void);
 BYTE8 HWReadTapeByte(void);
 void HWSetTapeName(void);
 
-WORD16 HWLoadFile(char * fileName,BYTE8 *target);
+void HWXWriteVRAM(WORD16 address,BYTE8 data);
+void HWXSyncImplementation(LONG32 iCount);
+void HWXSetFrequency(int frequency);
+int  HWXIsKeyPressed(int keyNumber);
+void HWXLoadDirectory(WORD16 target);
+WORD16 HWXLoadFile(char * fileName,BYTE8 *target);
 
 #define LOADFILENAME (0x3851)
 

@@ -3,7 +3,7 @@
 #
 #		Name:		jump.src
 #		Author:		Paul Robson (paul@robsons.org.uk)
-#		Date:		30th September 2021
+#		Date:		8th October 2021
 #		Reviewed: 	No
 #		Purpose:	Jump Group
 #
@@ -22,10 +22,10 @@ C2 	"JP @test,$2" 10
 #
 # 		8 bit relative jumps
 #
-18 	"JR $O"	10
+18 	"JR $O"	12
 	JUMPR(1)
 
-20 "JR @test.4,$O" 10
+20 "JR @test.4,$O" 12
 	JUMPR(TEST@test.4())
 
 #
@@ -40,5 +40,5 @@ DDE9 "JP ($I)" 8
 #
 # 		Decrement Jump Non Zero
 #
-10 	"DJNZ $O" 11
+10 	"DJNZ $O" 13
 	B--;JUMPR(B != 0)

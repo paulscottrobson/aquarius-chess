@@ -40,11 +40,6 @@ static const char *_mnemonics_ddcb[256] = {
 	#include "_mnemonics_group_ddcb.h"
 };
 
-static const int palette4[16] = { 
-	0x000,0xC02,0x0B0,0xCB0,0x00B,0xB0C,0x0CA,0xFFF,
-	0xBBB,0x4A9,0x828,0x016,0xBA5,0x493,0x712,0x000
-};
-
 // *******************************************************************************************************************************
 //											This renders the debug screen
 // *******************************************************************************************************************************
@@ -167,7 +162,7 @@ void DBGXRender(int *address,int showDisplay) {
 			GFXRectangle(&r,0xFFFF);
 			b = b - 4;
 			r.x = x1-b;r.y = y1-b;r.w = xs*xSize*8+b*2;r.h=ys*ySize*8+b*2;
-			GFXRectangle(&r,palette4[CPUReadMemory(0x3400) & 0x0F]); 	// Not going to tile with $3000 ...
+			GFXRectangle(&r,CPUReadPalette(CPUReadMemory(0x3400) & 0x0F));	// Not going to tile with $3000 ...
 			for (int x = 0;x < xs;x++) 
 			{
 				for (int y = 0;y < ys;y++)
@@ -180,9 +175,9 @@ void DBGXRender(int *address,int showDisplay) {
 
 					SDL_Rect rcf = rc;
 					rcf.x = xc;rcf.y = yc;rcf.w = xSize*8;rcf.h = ySize*8;
-					GFXRectangle(&rcf,palette4[cb & 0x0F]);
+					GFXRectangle(&rcf,CPUReadPalette(cb & 0x0F));
 
-	 				int col = palette4[cb >> 4];
+	 				int col = CPUReadPalette(cb >> 4);
 			 		rc.w = xSize;rc.h = ySize;							// Width and Height of pixel.
 		 			for (int y = 0;y < 8;y++) {							// 8 Down
 		 				rc.x = xc;

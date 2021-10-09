@@ -11,8 +11,10 @@
 
 #include "sys_processor.h"
 #include "hardware.h"
-#include "gfx.h"
+#include "gfxkeys.h"
 #include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 
 static int soundPortState = 0;
 static int lastToggleCycleTime = 0;
@@ -25,7 +27,7 @@ static int tapeOffset = 0;
 // *******************************************************************************************************************************
 
 void HWReset(void) {	
-	GFXSetFrequency(0);
+	HWXSetFrequency(0);
 	tapeOffset = 0;
 	lastToggleCycleTime = 0;
 }
@@ -35,15 +37,15 @@ void HWReset(void) {
 // *******************************************************************************************************************************
 
 void HWSync(void) {
-	HWSyncImplementation(0);
+	HWXSyncImplementation(0);
 	if (lastToggleCycleTime != 0 && cycleToggleCount > 4) {
 		//
 		//		The actual frequency is Clock Frequency (3.54Mhz) / 64 / Sound parameter.
 		//
 		int frequency = 280952*cycleToggleCount/cycleToggleTotal;
-		GFXSetFrequency(frequency);
+		HWXSetFrequency(frequency);
 	} else {
-		GFXSetFrequency(0);
+		HWXSetFrequency(0);
 	}
 	lastToggleCycleTime = 0;
 }
@@ -87,6 +89,37 @@ void HWWritePort(WORD16 addr,BYTE8 data) {
 	}
 }
 
+// ****************************************************************************
+//
+//							Key codes for the ports
+//
+// ****************************************************************************
+
+static int keys[][8] = {
+	{ '=',GFXKEY_BACKSPACE,'@',GFXKEY_RETURN,';','.',0,0 },
+	{ '-','/','0','P','L',',',0,0 },
+	{ '9','O','K','M','N','J',0,0 },
+	{ '8','I','7','U','H','B',0,0 },
+	{ '6','Y','G','V','C','F',0,0 },
+	{ '5','T','4','R','D','X',0,0 },
+	{ '3','E','S','Z',' ','A',0,0 },
+	{ '2','W','1','Q',GFXKEY_SHIFT,GFXKEY_CONTROL,0,0 }
+};
+
+// ****************************************************************************
+//					Get the keys pressed for a particular row
+// ****************************************************************************
+
+int HWGetKeyboardRow(int row) {
+	int word = 0;
+	int p = 0;
+	while (keys[row][p] != 0) {
+		if (HWXIsKeyPressed(keys[row][p])) word |= (1 << p);
+		p++;
+	}
+	return word;
+}
+
 // *******************************************************************************************************************************
 // 									   Tape interface fake instructions
 // *******************************************************************************************************************************
@@ -107,7 +140,7 @@ void HWSetTapeName(void) {
 	// 		Load it into the 16k "ROM" area. If it's actually a cartridge we'll reset it.
 	//
 	//printf("Actually want file %s\n",buffer);
-	HWLoadFile(buffer,CPUGetUpper8kAddress());
+	HWXLoadFile(buffer,CPUGetUpper8kAddress());
 	//
 	// 		If it is really a cartridge, then reset the PC
 	//

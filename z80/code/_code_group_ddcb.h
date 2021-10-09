@@ -3,31 +3,31 @@
 //
 case 0x06: /**** $06:rlc ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRRLC(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x0e: /**** $0e:rrc ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRRRC(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x16: /**** $16:rl ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRRL(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x1e: /**** $1e:rr ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRRR(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x26: /**** $26:sla ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRSLA(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x2e: /**** $2e:sra ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRSRA(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x3e: /**** $3e:srl ($i$s) ****/
 	temp16 = IZ()+offset; temp8 = READ8(temp16); temp8 = SRSRL(temp8); WRITE8(temp16,temp8);;
-	cycles -= 20;break;
+	cycles -= 23;break;
 
 case 0x46: /**** $46:bit 0,($i$s) ****/
 	temp16 = IZ()+offset; bitOp(READ8(temp16) & 1);;

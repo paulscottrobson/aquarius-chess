@@ -3,7 +3,7 @@
 #
 #		Name:		storage.rb
 #		Author:		Paul Robson (paul@robsons.org.uk)
-#		Date:		30th September 2021
+#		Date:		8th October 2021
 #		Reviewed: 	No
 #		Purpose:	Class for substitute definitions.
 #
@@ -19,20 +19,21 @@ require "./definitions.rb"
 # *****************************************************************************
 
 class CodeStore
-	def initialize(baseOpcode,dictionary,cycles)
+	def initialize(baseOpcode,dictionary)
 		@baseOpcode = baseOpcode
 		@dictionary = dictionary
 		@mnemonics = {}
 		@code = {}
-		@cycles = cycles
+		@cycles = {}
 	end 
 
-	def add_one(opcode,code,mnemonic,override = false)
+	def add_one(opcode,code,mnemonic,cycles)
 		raise "Wrong code store" if (opcode & 0xFFFFFF00) != @baseOpcode
 		opcode = opcode & 0xFF
 		raise "Duplicate #{mnemonic} #{opcode}" if @mnemonics.include?(opcode) and (not override)
 		@mnemonics[opcode] = mnemonic.downcase
 		@code[opcode] = code
+		@cycles[opcode] = cycles
 		self
 	end
 
@@ -46,12 +47,12 @@ class CodeStore
 			(0..defn.count-1).each do |n|
 				subst = defn.sub(n)
 				if subst != nil
-					add(opcode+(n << defn.shift),[parts[0].gsub(section[0],subst[0]),parts[1].gsub(section[0],subst[1])])
+					add(opcode+(n << defn.shift),[parts[0].gsub(section[0],subst[0]),parts[1].gsub(section[0],subst[1]),parts[2]])
 				end
 			end
 		else
 			raise "Imbalance in @ "+parts.to_s if parts[1].include? "@"
-			add_one(opcode,parts[1].gsub("#",""),parts[0].gsub("#",""))
+			add_one(opcode,parts[1].gsub("#",""),parts[0].gsub("#",""),parts[2].to_i)
 		end
 	end
 
@@ -61,7 +62,7 @@ class CodeStore
 
 	def code 
 		(0..255).select { |n| @mnemonics.include? n }.collect do |n|
-			"case 0x%02x: /**** $%02x:%s ****/\n\t%s;\n\tcycles -= %d;break;\n" % [n,n,@mnemonics[n].downcase,@code[n],@cycles]
+			"case 0x%02x: /**** $%02x:%s ****/\n\t%s;\n\tcycles -= %d;break;\n" % [n,n,@mnemonics[n].downcase,@code[n],@cycles[n]]
 		end.join("\n")		
 	end
 
