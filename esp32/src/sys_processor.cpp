@@ -18,7 +18,6 @@
 //														   Timing
 // *******************************************************************************************************************************
 
-#define CYCLE_RATE 		(3540*1000)													// Cycles per second (3.54Mhz)
 #define FRAME_RATE		(60)														// Frames per second (50 arbitrary)
 #define CYCLES_PER_FRAME (CYCLE_RATE / FRAME_RATE) 									// Cycles per frame.
 
@@ -185,7 +184,7 @@ BYTE8 CPUExecuteInstruction(void) {
 }
 
 BYTE8 CPUInVerticalSync(void) {
-	return cycles < cyclesPerFrame / 6;	
+	return cycles < cyclesPerFrame / 6;
 }
 
 // *******************************************************************************************************************************

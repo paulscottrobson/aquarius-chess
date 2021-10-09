@@ -200,7 +200,4 @@ if __FILE__ == $0
 	EncodedROM.new("tron.bin").export_binary("tron.bin.decoded")
 	EncodedROM.new("add tarmin.bin").export_binary("add tarmin.bin.decoded")
 	EncodedROM.new("utopia.bin").export_binary("utopia.bin.decoded")
-
-	StandardROM.new("aliens_bas.caq").export_include("aliens_bas.h")
-	StandardROM.new("aliens_a.caq").export_include("aliens_a.h")
 end

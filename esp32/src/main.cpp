@@ -40,8 +40,8 @@ void loop()
 {
     unsigned long frameRate = CPUExecuteInstruction();
     if (frameRate != 0) {
-		while (millis() < nextFrameTime) {}
-		nextFrameTime = nextFrameTime + 1000 / frameRate;
+//		while (millis() < nextFrameTime) {}
+//		nextFrameTime = nextFrameTime + 1000 / frameRate;
 	}
 }	
 

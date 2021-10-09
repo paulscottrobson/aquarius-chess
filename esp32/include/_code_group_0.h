@@ -771,7 +771,7 @@ case 0xbf: /**** $bf:cp a ****/
 
 case 0xc0: /**** $c0:ret nz ****/
 	RETURN(TESTNZ());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xc1: /**** $c1:pop bc ****/
 	temp16 = POP();SETBC(temp16);
@@ -803,7 +803,7 @@ case 0xc7: /**** $c7:rst 00_h ****/
 
 case 0xc8: /**** $c8:ret z ****/
 	RETURN(TESTZ());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xc9: /**** $c9:ret ****/
 	RETURN(1);
@@ -835,7 +835,7 @@ case 0xcf: /**** $cf:rst 08_h ****/
 
 case 0xd0: /**** $d0:ret nc ****/
 	RETURN(TESTNC());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xd1: /**** $d1:pop de ****/
 	temp16 = POP();SETDE(temp16);
@@ -867,7 +867,7 @@ case 0xd7: /**** $d7:rst 10_h ****/
 
 case 0xd8: /**** $d8:ret c ****/
 	RETURN(TESTC());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xd9: /**** $d9:exx ****/
 	temp16 = BC();SETBC(BCalt);BCalt = temp16; temp16 = DE();SETDE(DEalt);DEalt = temp16; temp16 = HL();SETHL(HLalt);HLalt = temp16;;
@@ -899,7 +899,7 @@ case 0xdf: /**** $df:rst 18_h ****/
 
 case 0xe0: /**** $e0:ret po ****/
 	RETURN(TESTPO());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xe1: /**** $e1:pop hl ****/
 	temp16 = POP();SETHL(temp16);
@@ -931,7 +931,7 @@ case 0xe7: /**** $e7:rst 20_h ****/
 
 case 0xe8: /**** $e8:ret pe ****/
 	RETURN(TESTPE());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xe9: /**** $e9:jp (hl) ****/
 	PC = HL();
@@ -963,7 +963,7 @@ case 0xef: /**** $ef:rst 28_h ****/
 
 case 0xf0: /**** $f0:ret p ****/
 	RETURN(TESTP());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xf1: /**** $f1:pop af ****/
 	temp16 = POP();SETAF(temp16);
@@ -995,7 +995,7 @@ case 0xf7: /**** $f7:rst 30_h ****/
 
 case 0xf8: /**** $f8:ret m ****/
 	RETURN(TESTM());
-	cycles -= 8;break;
+	cycles -= 5;break;
 
 case 0xf9: /**** $f9:ld sp,hl ****/
 	SETSP(HL());

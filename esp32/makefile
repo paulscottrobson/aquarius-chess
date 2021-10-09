@@ -7,11 +7,14 @@ endif
 EMUROOT = ..$(S)emulator$(S)
 EMUSRC = $(EMUROOT)src$(S)
 
-.PHONY: all serial
+.PHONY: all serial update
 
 all: update
+	pio run -t uploadfs	
 
-serial: update
+serial: update monitor
+
+monitor:
 	pio device monitor -b 115200
 	
 update:
@@ -26,4 +29,3 @@ update:
 	$(CCOPY) $(EMUROOT)storage/*.* data
 	pio lib install 6143 	
 	pio run -t upload
-	#pio run -t uploadfs	

@@ -39,7 +39,7 @@ void HWReset(void) {
 #include <stdio.h>
 void HWSync(void) {
 	HWXSyncImplementation(0);
-	if (lastToggleCycleTime != 0 && cycleToggleCount > 4) {
+	if (lastToggleCycleTime != 0 && cycleToggleCount > 0) {
 		//
 		//		The SOUND actual frequency is Clock Frequency (3.54Mhz) / 64 / Sound parameter.
 		//
@@ -158,7 +158,6 @@ void HWSetTapeName(void) {
 
 void HWReadTapeHeader(void) {
 	BYTE8 b;
-//	printf("Reading header\n");
 	while(b = HWReadTapeByte(),b == 0x00) {}
 	while(b = HWReadTapeByte(),b == 0xFF) {}
 }
@@ -169,6 +168,5 @@ BYTE8 HWReadTapeByte(void) {
 	}
 	BYTE8 b = *(CPUGetUpper8kAddress()+tapeOffset);
 	tapeOffset++;
-//	printf("Reading byte %d $%02x %c\n",b,b,(b & 0x7F) >= 0x20 ? (b & 0x7F) : '.');
 	return b;
 }

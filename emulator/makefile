@@ -11,10 +11,14 @@ SOURCES = 	src$(S)sys_processor.o  framework$(S)main.o framework$(S)gfx.o framew
   
 CC = g++
 
-.PHONY: all clean emulator test prebuild 
+.PHONY: all clean emulator test prebuild esp32
+
 all: emulator
 #	.$(S)$(APPNAME) 
 
+esp32: emulator
+	make -C ..$(S)esp32 
+	
 run: emulator 
 	.$(S)$(APPNAME) roms$(S)aliens.cqc go
 
@@ -23,6 +27,9 @@ debug: emulator
 	
 tron : emulator 
 	.$(S)aqnext ..$(S)roms$(S)tron.bin.decoded  
+
+asmash : emulator 
+	.$(S)aqnext storage$(S)asmash.cqc run
 
 tarmin : emulator 
 	.$(S)aqnext "..$(S)roms$(S)add tarmin.bin.decoded"  
@@ -41,7 +48,6 @@ prebuild:
 	make -C ..$(S)images
 	$(CCOPY) ..$(S)z80$(S)code$(S)*.h cpu
 	$(CCOPY) ..$(S)roms$(S)*.h roms
-	$(CCOPY) ..$(S)roms$(S)*.cqc roms
 
 %.o:%.cpp
 	$(CC) $(CXXFLAGS) -D INCLUDE_DEBUGGING_SUPPORT -I cpu -I framework -I include -I roms -c -o $@ $<

@@ -184,7 +184,7 @@ BYTE8 CPUExecuteInstruction(void) {
 }
 
 BYTE8 CPUInVerticalSync(void) {
-	return cycles < cyclesPerFrame / 6;	
+	return cycles < cyclesPerFrame / 6;
 }
 
 // *******************************************************************************************************************************

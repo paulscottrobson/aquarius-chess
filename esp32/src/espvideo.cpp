@@ -28,7 +28,7 @@ static uint8_t rawPixels[PALETTE_SIZE];
 #define DWIDTH 			320
 #define DHEIGHT 		240 
 #define XOFFSET 		0
-#define YOFFSET 		20
+#define YOFFSET 		24
 
 // ****************************************************************************
 //

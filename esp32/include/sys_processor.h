@@ -12,6 +12,8 @@
 #ifndef _PROCESSOR_H
 #define _PROCESSOR_H
 
+#define CYCLE_RATE 		(3540*1000)													// Cycles per second (3.54Mhz)
+
 #define RAMPAKSIZE  	(0x4000) 												 	// Size of RAM Pack (e.g. excluding $3000-$3FFF)
 
 typedef unsigned short WORD16;														// 8 and 16 bit types.

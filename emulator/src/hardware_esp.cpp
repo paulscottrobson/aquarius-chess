@@ -13,6 +13,7 @@
 #include "sys_processor.h"
 #include "gfxkeys.h"
 #include "hardware.h"
+#include "espinclude.h"
 
 int HWESPGetScanCode(void);
 void HWESPSetFrequency(int freq);
@@ -44,7 +45,6 @@ void HWXSyncImplementation(LONG32 iCount) {
 		else {
 			int isDown = (release == 0);
 			scanCode = (scanCode & 0x7F) | shift;
-			Serial.println(scanCode);
 			scanCode = scan_to_gfx[scanCode];
 			//writeCharacter(scanCode & 0x0F,(scanCode >> 4)+2,isDown ? '*' : '.');
 			keyStatus[scanCode] = isDown;
@@ -70,13 +70,13 @@ void HWXLog(char *logText) {
 void HWXWriteVRAM(WORD16 address,BYTE8 data) {
 	if (address != 0x3400) {
 		int p = (address & 0x3FF);
-		if (p >= 0x28 && p < 40*25+0x28) {
+		if (p >= 0x28 && p < 40*24+0x28) {
 			int colByte = CPUReadMemory(0x3400+p);
 			HWXPlotCharacter(p % 40,p / 40-1,colByte >> 4,colByte & 0x0F,CPUReadMemory(0x3000+p));
 		}
 	} else {
 		HWXClearScreen(data & 0x0F);
-		for (int i = 0x3000;i < 0x3400;i++) {
+		for (int i = 0x3028;i < 0x3400;i++) {
 		 	HWXWriteVRAM(i,CPUReadMemory(i));
 		}
 	}
@@ -94,8 +94,8 @@ int  HWXIsKeyPressed(int key) {
 //						Get System time in 1/100s
 // ****************************************************************************
 
-WORD16 HWGetSystemClock(void) {
-	return (millis() / 10) & 0xFFFF;
+WORD16 HWXGetSystemClock(void) {
+	return millis() & 0xFFFF;
 }
 
 // ****************************************************************************
@@ -110,6 +110,47 @@ void HWXSetFrequency(int frequency) {
 // 									Load file
 // ****************************************************************************
 
-WORD16 HWXLoadFile(char * fileName,BYTE8 *target) {
-	return -1;
+WORD16 HWXLoadFile(char * fName,BYTE8 *target) {
+	char fullName[64];
+	sprintf(fullName,"/%s",fName);									// SPIFFS doesn't do dirs
+	//fabgl::suspendInterrupts();										// And doesn't like interrupts
+	WORD16 exists = SPIFFS.exists(fullName);						// If file exitst
+	if (exists != 0) {
+		File file = SPIFFS.open(fullName);							// Open it
+		while (file.available()) {									// Read body in
+			BYTE8 b = file.read();
+			*target++ = b;
+		}
+		file.close();
+	}
+	//fabgl::resumeInterrupts();
+	return exists == 0;
 }
+
+// ****************************************************************************
+//						Directory of SPIFFS root
+// ****************************************************************************
+
+void HWXLoadDirectory(WORD16 target) {
+	//fabgl::suspendInterrupts();
+  	File root = SPIFFS.open("/");									// Open directory
+    int count = 0;
+   	File file = root.openNextFile();								// Work throughfiles
+   	while(file){
+       	if(!file.isDirectory()){									// Write non directories out
+       		if (count != 0) CPUWriteMemory(target++,32);			// Space if not first
+       		count++;
+           	const char *p = file.name();							// Then name
+           	while (*p != '\0') {	
+           		if (*p != '/') CPUWriteMemory(target++,*p);
+           		p++;
+           	}
+       	}
+       	file.close();
+       	file = root.openNextFile();
+   	}
+    CPUWriteMemory(target,0);										// Trailing NULL
+    root.close();
+	//fabgl::resumeInterrupts();
+}
+

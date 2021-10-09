@@ -1,17 +1,9 @@
 TODO List
 ---------
-Update Hardware emulator (sound right, 125 = A, keys)
-Hardware, Load Images
-Vsync on timer not the cpu cycles
+Speed up ESP32
+Directory
 
 Fixes ?
-=======
-Forest
-Inv-13 
-Marche 
-Monpat
-Musbda
-(same problem ?)
-
+======
 Postie (speed)
 
