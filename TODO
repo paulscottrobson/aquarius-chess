@@ -1,7 +1,11 @@
 TODO List
 ---------
-Test RLD and RRD.
-Hardware emulator
+Update Hardware emulator (sound right, 125 = A, keys)
+Hardware, Load Images
+Vsync on timer not the cpu cycles
+
+Fixes ?
+=======
 Forest
 Inv-13 
 Marche 
@@ -11,4 +15,3 @@ Musbda
 
 Postie (speed)
 
-Vsync ?

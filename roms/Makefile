@@ -6,6 +6,7 @@ endif
 
 all: 
 	ruby romconvert.rb
+	ruby scancodes.rb
 	cat aliens_bas.caq aliens_a.caq >aliens.cqc
 	
 

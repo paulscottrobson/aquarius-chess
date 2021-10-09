@@ -36,13 +36,15 @@ void HWReset(void) {
 //												  Reset CPU
 // *******************************************************************************************************************************
 
+#include <stdio.h>
 void HWSync(void) {
 	HWXSyncImplementation(0);
 	if (lastToggleCycleTime != 0 && cycleToggleCount > 4) {
 		//
-		//		The actual frequency is Clock Frequency (3.54Mhz) / 64 / Sound parameter.
+		//		The SOUND actual frequency is Clock Frequency (3.54Mhz) / 64 / Sound parameter.
 		//
-		int frequency = 280952*cycleToggleCount/cycleToggleTotal;
+		int frequency = CYCLE_RATE/2*cycleToggleCount/cycleToggleTotal;
+		printf("%d\n",frequency);
 		HWXSetFrequency(frequency);
 	} else {
 		HWXSetFrequency(0);

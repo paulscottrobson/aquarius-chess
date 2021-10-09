@@ -18,7 +18,6 @@
 //														   Timing
 // *******************************************************************************************************************************
 
-#define CYCLE_RATE 		(3540*1000)													// Cycles per second (3.54Mhz)
 #define FRAME_RATE		(60)														// Frames per second (50 arbitrary)
 #define CYCLES_PER_FRAME (CYCLE_RATE / FRAME_RATE) 									// Cycles per frame.
 
@@ -35,7 +34,7 @@ static BYTE8 s_Flag,z_Flag,c_Flag,h_Flag,n_Flag,p_Flag; 							// Flag Registers
 static BYTE8 I,R,intEnabled; 														// We don't really bother with these much.
 static BYTE8 highSpeed = 0; 														// High speed running.
 
-static BYTE8 ramMemory[RAMSIZE];													// Memory at $0000 upwards
+static BYTE8 ramMemory[0x10000];													// Memory at $0000 upwards, 64k off
 
 static LONG32 temp32;
 static WORD16 temp16,temp16a,*pIXY;
@@ -44,7 +43,7 @@ static BYTE8 temp8,oldCarry;
 static int cycles;																	// Cycle Count.
 static WORD16 cyclesPerFrame = CYCLES_PER_FRAME;									// Cycles per frame
 
-const BYTE8 kernel_rom[] = {
+static const BYTE8 kernel_rom[] = {
 	#include "kernel_rom.h"
 };
 
@@ -67,7 +66,7 @@ static WORD16 palette4[16] = {
 #define READ16(a) 	(READ8(a) | ((READ8((a)+1) << 8)))								// Read 16 bits.
 #define WRITE16(a,d) { WRITE8(a,(d) & 0xFF);WRITE8((a)+1,(d) >> 8); } 				// Write 16 bits
 
-#define FETCH8() 	READ8(PC++)														// Fetch byte
+#define FETCH8() 	ramMemory[PC++]													// Fetch byte
 #define FETCH16()	_Fetch16()	 													// Fetch word
 
 static inline BYTE8 _Read(WORD16 address);											// Need to be forward defined as 
@@ -81,14 +80,11 @@ static inline void _Write(WORD16 address,BYTE8 data);								// used in support 
 // *******************************************************************************************************************************
 
 static inline BYTE8 _Read(WORD16 address) {
-	if (address < RAMSIZE) {
-		return ramMemory[address];							
-	}
-	return 0xFF;
+	return ramMemory[address];							
 }
 
 static void _Write(WORD16 address,BYTE8 data) {
-	if (address >= 0x3000 && address <= RAMSIZE && address < RAMPAKSIZE+0x4000) {
+	if (address >= 0x3000 && address < RAMPAKSIZE+0x4000) {
 		ramMemory[address] = data;
 		if (address < 0x3800) HWXWriteVRAM(address,data);
 	}
@@ -98,8 +94,8 @@ static void _Write(WORD16 address,BYTE8 data) {
 	}
 }
 
-static WORD16 _Fetch16(void) {
-	WORD16 w = READ16(PC);
+static inline WORD16 _Fetch16(void) {
+	WORD16 w = ramMemory[PC] + (ramMemory[PC+1] << 8);
 	PC += 2;
 	return w;
 }
@@ -232,7 +228,7 @@ WORD16 CPUGetStepOverBreakpoint(void) {
 
 void CPUEndRun(void) {
 	FILE *f = fopen("memory.dump","wb");
-	fwrite(ramMemory,1,RAMSIZE,f);
+	fwrite(ramMemory,1,sizeof(ramMemory),f);
 	fclose(f);
 }
 
