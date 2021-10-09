@@ -131,25 +131,23 @@ WORD16 HWXLoadFile(char * fName,BYTE8 *target) {
 //						Directory of SPIFFS root
 // ****************************************************************************
 
-void HWXLoadDirectory(WORD16 target) {
+void HWXLoadDirectory(BYTE8 *target) {
 	//fabgl::suspendInterrupts();
   	File root = SPIFFS.open("/");									// Open directory
-    int count = 0;
    	File file = root.openNextFile();								// Work throughfiles
    	while(file){
        	if(!file.isDirectory()){									// Write non directories out
-       		if (count != 0) CPUWriteMemory(target++,32);			// Space if not first
-       		count++;
            	const char *p = file.name();							// Then name
            	while (*p != '\0') {	
-           		if (*p != '/') CPUWriteMemory(target++,*p);
+           		if (*p != '/') *target++ = *p;
            		p++;
            	}
+	       	*target++ = '\0';
        	}
        	file.close();
        	file = root.openNextFile();
    	}
-    CPUWriteMemory(target,0);										// Trailing NULL
+    *target = '\0';
     root.close();
 	//fabgl::resumeInterrupts();
 }

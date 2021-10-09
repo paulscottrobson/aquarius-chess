@@ -25,7 +25,7 @@ void HWXWriteVRAM(WORD16 address,BYTE8 data);
 void HWXSyncImplementation(LONG32 iCount);
 void HWXSetFrequency(int frequency);
 int  HWXIsKeyPressed(int keyNumber);
-void HWXLoadDirectory(WORD16 target);
+void HWXLoadDirectory(BYTE8 *target);
 WORD16 HWXLoadFile(char * fileName,BYTE8 *target);
 WORD16 HWXGetSystemClock(void);
 

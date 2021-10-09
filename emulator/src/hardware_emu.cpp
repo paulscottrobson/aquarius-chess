@@ -121,8 +121,7 @@ WORD16 HWXSaveFile(char *fileName,WORD16 start,WORD16 size) {
 //							  Load Directory In
 // ****************************************************************************
 
-void HWXLoadDirectory(WORD16 target) {
-	int count = 0;
+void HWXLoadDirectory(BYTE8 *target) {
 	DIR *dp;
 	struct dirent *ep;
 	char fullName[128];
@@ -132,14 +131,13 @@ void HWXLoadDirectory(WORD16 target) {
 	if (dp != NULL) {
 		while (ep = readdir(dp)) {
 			if (ep->d_name[0] != '.') {
-				if (count != 0) CPUWriteMemory(target++,32);
 				char *p = ep->d_name;
-				while (*p != '\0') CPUWriteMemory(target++,*p++);
-				count++;
+				while (*p != '\0') *target++ =*p++;
+				*target++ = '\0';
 			}
 		}
 		closedir(dp);
 	}
-	CPUWriteMemory(target,0);
+	*target = '\0';
 }
 

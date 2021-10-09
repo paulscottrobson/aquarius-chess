@@ -117,7 +117,7 @@ WORD16 CPUGetCycles(void) {
 	return cycles;
 }
 
-BYTE8 *CPUGetUpper8kAddress(void) {
+BYTE8 *CPUGetUpper16kAddress(void) {
 	return ramMemory+0xC000;
 }
 
@@ -234,7 +234,7 @@ void CPUEndRun(void) {
 
 void CPULoadBinary(char *fileName) {
 	FILE *f = fopen(fileName,"rb");
-	BYTE8 *romSpace = CPUGetUpper8kAddress();
+	BYTE8 *romSpace = CPUGetUpper16kAddress();
 	for (int i = 0;i < 0x4000;i++) romSpace[i] = 0;
 	if (f != NULL) {
 		fread(romSpace,1,0x4000,f);

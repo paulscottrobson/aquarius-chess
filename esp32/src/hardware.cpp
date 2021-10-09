@@ -22,6 +22,8 @@ static int cycleToggleCount = 0;
 static int cycleToggleTotal = 0;
 static int tapeOffset = 0;
 
+static void HWLoadDirectoryAsBASIC(void);
+
 // *******************************************************************************************************************************
 //												Reset Hardware
 // *******************************************************************************************************************************
@@ -135,14 +137,10 @@ void HWSetTapeName(void) {
 	buffer[6] = '\0';
 	strcat(buffer,".cqc");
 	//
-	// 		BASIC doesn't know it now. So it will load whatever we give it.
-	//
-	CPUWriteMemory(LOADFILENAME,0x00);
-	//
 	// 		Load it into the 16k "ROM" area. If it's actually a cartridge we'll reset it.
 	//
 	//printf("Actually want file %s\n",buffer);
-	HWXLoadFile(buffer,CPUGetUpper8kAddress());
+	HWXLoadFile(buffer,CPUGetUpper16kAddress());
 	//
 	// 		If it is really a cartridge, then reset the PC
 	//
@@ -150,6 +148,17 @@ void HWSetTapeName(void) {
 		CPUReadMemory(0xE00B) == 0x64 && CPUReadMemory(0xE00D) == 0xA8 && CPUReadMemory(0xE00F) == 0x70) {
 		CPUReset();
 	}
+	//
+	// 		No file name (e.g. directory)
+	//
+	if (CPUReadMemory(LOADFILENAME) == 0) {
+		HWLoadDirectoryAsBASIC();
+		CPUSetPC(0x0402); 
+	}
+	//
+	// 		BASIC doesn't know it now. So it will load whatever we give it.
+	//
+	CPUWriteMemory(LOADFILENAME,0x00);
 	//
 	// 		Rewind the tape offset.
 	//
@@ -166,7 +175,47 @@ BYTE8 HWReadTapeByte(void) {
 	if (tapeOffset == 0x4000) {
 		CPUSetPC(0x1CA2);
 	}
-	BYTE8 b = *(CPUGetUpper8kAddress()+tapeOffset);
+	BYTE8 b = *(CPUGetUpper16kAddress()+tapeOffset);
 	tapeOffset++;
 	return b;
+}
+
+// ****************************************************************************
+//							Load Directory as BASIC
+// ****************************************************************************
+
+static void HWLoadDirectoryAsBASIC(void) {
+	int basicPtr = CPUReadMemory(0x384F)+CPUReadMemory(0x3850)*256; 						// Basic program starts here.
+	int pBasicEnd = 0x38D6; 																// End pointer here.
+	int lineNumber = 1000;
+	char line[16],name[16];
+	BYTE8 *storeAddr = CPUGetUpper16kAddress();
+	HWXLoadDirectory(storeAddr);
+	char *store = (char *)storeAddr;
+
+	while (*store != '\0') {
+		if (strlen(store) > 4 && strcmp(store+strlen(store)-4,".cqc") == 0) {
+			strcpy(name,store);
+			name[strlen(name)-4] = '\0';
+			sprintf(line,"%c\" %-6s\"",0x95,name);
+			if (lineNumber % 5 != 4) strcat(line,";");
+			int endLine = basicPtr + 4 + 1 + strlen(line);
+			CPUWriteMemory(basicPtr,endLine & 0xFF); 										// Write out the next pointer
+			CPUWriteMemory(basicPtr+1,endLine >> 8);
+			CPUWriteMemory(basicPtr+2,lineNumber & 0xFF);									// Write out the line number.
+			CPUWriteMemory(basicPtr+3,lineNumber >> 8);
+			for (int i = 0;i < strlen(line)+1;i++) { 										// Copy string and terminating zero.
+				CPUWriteMemory(basicPtr+4+i,line[i]);
+			}
+			lineNumber += 1; 																// Next line number.
+			basicPtr = endLine; 															// Go to next line.
+		}
+		while (*store != '\0') store++;
+		store++;
+	}
+	CPUWriteMemory(basicPtr,0);																// Write end marker
+	CPUWriteMemory(basicPtr+1,0);
+	basicPtr += 2;
+	CPUWriteMemory(pBasicEnd,basicPtr & 0xFF);												// Write end of program.
+	CPUWriteMemory(pBasicEnd+1,basicPtr >> 8); 
 }

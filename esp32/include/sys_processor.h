@@ -28,7 +28,7 @@ void CPUReset(void);
 BYTE8 CPUExecuteInstruction(void);
 BYTE8 CPUWriteKeyboard(BYTE8 pattern);
 BYTE8 CPUReadMemory(WORD16 address);
-BYTE8 *CPUGetUpper8kAddress(void);
+BYTE8 *CPUGetUpper16kAddress(void);
 void CPUWriteMemory(WORD16 address,BYTE8 data);
 WORD16 CPUGetCycles(void);
 void CPUSetPC(WORD16 newPC);
