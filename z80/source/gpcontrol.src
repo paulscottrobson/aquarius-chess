@@ -53,17 +53,3 @@ ED56 "IM1" 8
 
 ED5E "IM2" 8
 		{}												
-
-
-#
-# 		These are specific internal ones for the tape interface
-#
-
-EDF0 	"THDR" 0
-		HWReadTapeHeader()
-
-EDF1 	"TBYTE"	0	
-		A = HWReadTapeByte();SETNZ(0);
-
-EDF2 	"TNAME" 0
-		HWSetTapeName()		

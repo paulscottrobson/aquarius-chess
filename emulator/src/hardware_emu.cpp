@@ -53,7 +53,7 @@ void HWXSyncImplementation(LONG32 iCount) {
 // ****************************************************************************
 
 WORD16 HWXGetSystemClock(void) {
-	printf("%d ",GFXTimer());
+	//printf("%d ",GFXTimer());
 	return (GFXTimer()) & 0xFFFF;
 }
 
