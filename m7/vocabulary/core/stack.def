@@ -1,75 +1,75 @@
 ; ***************************************************************************************
 ; ***************************************************************************************
 ;
-;		Name : 		stack.asm
+;		Name : 		stack.def
 ;		Author :	Paul Robson (paul@robsons.org.uk)
-;		Date : 		5th January 2019
+;		Date : 		14th October 2021
 ;		Purpose :	Stack words
 ;
 ; ***************************************************************************************
 ; ***************************************************************************************
 
-@macro 	push
+@copies 	push compile
 	push 	hl
 @end
 
-@macro	pop
+@copies	pop  compile
 	ex 		de,hl
 	pop 	hl
 @end
 
 ; ***************************************************************************************
 
-@macro 	a>r
+@copies 	a>r  compile
 	push 	hl
 @end
 
-@macro 	r>a
+@copies 	r>a  compile
 	pop 	hl
 @end
 
 ; ***************************************************************************************
 
-@macro 	b>r
+@copies 	b>r  compile
 	push 	de
 @end
 
-@macro 	r>b
+@copies 	r>b  compile
 	pop 	de
 @end
 
 ; ***************************************************************************************
 
-@macro 	c>r
+@copies 	c>r  compile
 	push 	bc
 @end
 
-@macro 	r>c
+@copies 	r>c  compile
 	pop 	bc
 @end
 
 
 ; ***************************************************************************************
 
-@macro 	ab>r
+@copies 	ab>r  compile
 	push 	de
 	push 	hl
 @end
 
-@macro 	r>ab
+@copies 	r>ab  compile
 	pop 	hl
 	pop 	de
 @end
 
 ; ***************************************************************************************
 
-@macro 	abc>r
+@copies 	abc>r  compile
 	push 	bc
 	push 	de
 	push 	hl
 @end
 
-@macro 	r>abc
+@copies 	r>abc  compile
 	pop 	hl
 	pop 	de
 	pop 	bc
