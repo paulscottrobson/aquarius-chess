@@ -3,7 +3,7 @@
 //
 //		Name:		start.cpp
 //		Purpose:	Setup/Loop for Arduino implementation
-//		Created:	30th September 2021
+//		Created:	1st October 2021
 //		Author:		Paul Robson (paul@robsons.org.uk)
 //
 // *******************************************************************************************************************************

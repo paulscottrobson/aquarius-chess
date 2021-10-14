@@ -3,7 +3,7 @@
 #
 #		Name:		definitions.rb
 #		Author:		Paul Robson (paul@robsons.org.uk)
-#		Date:		8th October 2021
+#		Date:		1st October 2021
 #		Reviewed: 	No
 #		Purpose:	Class for substitute definitions.
 #

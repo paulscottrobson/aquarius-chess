@@ -3,7 +3,7 @@
 //
 //		Name:		sys_processor.cpp
 //		Purpose:	Processor Emulation.
-//		Created:	30th September 2021
+//		Created:	1st October 2021
 //		Author:		Paul Robson (paul@robsons.org.uk)
 //
 // *******************************************************************************************************************************
@@ -42,6 +42,8 @@ static BYTE8 temp8,oldCarry;
 
 static int cycles;																	// Cycle Count.
 static WORD16 cyclesPerFrame = CYCLES_PER_FRAME;									// Cycles per frame
+
+#define CYCLES(n) cycles -= (n)
 
 static const BYTE8 kernel_rom[] = {
 	#include "kernel_rom.h"

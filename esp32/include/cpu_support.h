@@ -3,7 +3,7 @@
 //
 //		Name:		cpu_support.h
 //		Purpose:	CPU Support file , functions and macros included.
-//		Created:	30th September 2021
+//		Created:	1st October 2021
 //		Author:		Paul Robson (paul@robsons.org.uk)
 //
 // *******************************************************************************************************************************
@@ -185,6 +185,7 @@ static BYTE8 _add(BYTE8 n,BYTE8 c) {
 	SETNZ(temp16);
 	SETOVERFLOW((A & 0x80) == (n & 0x80) && (temp16 & 0x80) != (n & 0x80));
 	SETCARRY((temp16 & 0x100) != 0);
+	SETNFLAG(0);
 	SETHALFCARRY(((A & 0xF)+(n & 0xF) + c) >= 0x10);
 	return temp16;
 }
@@ -196,34 +197,52 @@ static BYTE8 _sub(BYTE8 n,BYTE8 c) {
 	SETNZ(temp16);
 	SETOVERFLOW((A & 0x80) == ((n ^ 0x80) & 0x80) && (temp16 & 0x80) != (A & 0x80));
 	SETCARRY((temp16 & 0x100) != 0);
-	SETHALFCARRY((((A & 0xF)-(n & 0xF) - c) & 0x80) != 0);
+	SETHALFCARRY((((A & 0xF)-(n & 0xF) - c) & 0x100) != 0);
+	SETNFLAG(1);
 	return temp16;
 }
 
-static void DAA(void) {
-	temp16 = A;
-	temp8 = temp16 & 0x0F;
-	if (n_Flag != 0) {											/* last operation was a subtract */
-		int hd = (c_Flag != 0) || temp16 > 0x99;
-		if ((h_Flag != 0) || (temp8 > 9)) { 				/* adjust low digit */
-			if (temp8 > 5)
-				SETHALFCARRY(0);
-			temp16 -= 6;
-			temp16 &= 0xff;
-		}
-		if (hd)													/* adjust high digit */
-			temp16 -= 0x160;
-	}
-	else {														/* last operation was an add */
-		if ((h_Flag != 0) || (temp8 > 9)) { 				/* adjust low digit */
-			SETHALFCARRY(temp8 > 9);
-			temp16 += 6;
-		}
-		if ((c_Flag != 0) || ((temp16 & 0x1f0) > 0x90)) 		/* adjust high digit */
-			temp16 += 0x60;
-	}
-	c_Flag = (temp16 >> 8) & 1;
-	A = temp16 & 0xff;
+static void DAA()
+{
+   int t = 0;
+    
+   if(h_Flag != 0 || (A & 0xF) > 9) {
+         t++;
+    }
+    
+   if(c_Flag != 0 || A > 0x99)
+   {
+         t += 2;
+         c_Flag = 1;
+   }
+    
+   // builds final H flag
+   if (n_Flag != 0 && h_Flag == 0) {
+      h_Flag = 0;
+   }
+   else
+   {
+       if (n_Flag != 0 && h_Flag != 0)
+          h_Flag = (((A & 0x0F)) < 6);
+       else
+          h_Flag = ((A & 0x0F) >= 0x0A);
+   }
+    
+   switch(t)
+   {
+        case 1:
+            A += (n_Flag != 0)?0xFA:0x06; // -6:6
+            break;
+        case 2:
+            A += (n_Flag != 0)?0xA0:0x60; // -0x60:0x60
+            break;
+        case 3:
+            A += (n_Flag != 0)?0x9A:0x66; // -0x66:0x66
+            break;
+   }
+
+	SETNZ(A);    
+	SETPARITY(A);
 }
 
 // *******************************************************************************************************************************
@@ -311,10 +330,10 @@ static void bitOp(BYTE8 test) {
 // *******************************************************************************************************************************
 
 #define 	JUMP(t) 	{ temp16 = FETCH16(); if (t) { PC = temp16; }}
-#define 	JUMPR(t) 	{ temp16 = FETCHDISP8(); if (t) { PC += temp16; }}
+#define 	JUMPR(t) 	{ temp16 = FETCHDISP8(); if (t) { PC += temp16;CYCLES(5); }}
 
-#define 	CALL(t) 	{ temp16 = FETCH16(); if (t) { PUSH(PC);PC = temp16; }}
-#define 	RETURN(t) 	{ if (t) { PC = POP(); }}
+#define 	CALL(t) 	{ temp16 = FETCH16(); if (t) { PUSH(PC);PC = temp16;CYCLES(7); }}
+#define 	RETURN(t) 	{ if (t) { PC = POP();CYCLES(6); }}
 
 #define 	TESTNZ() 	(z_Flag == 0)
 #define 	TESTNC()	(c_Flag == 0)

@@ -3,7 +3,7 @@
 //
 //		Name:		hardware.c
 //		Purpose:	Hardware Emulation
-//		Created:	30th September 2021
+//		Created:	1st October 2021
 //		Author:		Paul Robson (paul@robsons.org.uk)
 //
 // *******************************************************************************************************************************
@@ -46,7 +46,7 @@ void HWSync(void) {
 		//		The SOUND actual frequency is Clock Frequency (3.54Mhz) / 64 / Sound parameter.
 		//
 		int frequency = CYCLE_RATE/2*cycleToggleCount/cycleToggleTotal;
-		printf("%d\n",frequency);
+//		printf("%d\n",frequency);
 		HWXSetFrequency(frequency);
 	} else {
 		HWXSetFrequency(0);

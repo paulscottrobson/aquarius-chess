@@ -9,7 +9,7 @@ if (HWXIsKeyPressed('=')) v = HWForceKey(addr,v,0x12004,0x18010,0x0);
 if (HWXIsKeyPressed('[')) v = HWForceKey(addr,v,0x14002,0x14002,0x0);
 if (HWXIsKeyPressed(']')) v = HWForceKey(addr,v,0x14010,0x14010,0x0);
 if (HWXIsKeyPressed(';')) v = HWForceKey(addr,v,0x0,0x8004,0x0);
-if (HWXIsKeyPressed('@')) v = HWForceKey(addr,v,0x12020,0x12010,0x0);
+if (HWXIsKeyPressed('@')) v = HWForceKey(addr,v,0x12021,0x12010,0x0);
 if (HWXIsKeyPressed('#')) v = HWForceKey(addr,v,0x10808,0x10808,0x0);
 if (HWXIsKeyPressed('\\')) v = HWForceKey(addr,v,0x11020,0x11020,0x0);
 if (HWXIsKeyPressed('/')) v = HWForceKey(addr,v,0x18008,0x18002,0x0);

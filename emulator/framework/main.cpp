@@ -3,7 +3,7 @@
 //
 //		Name:		main.c
 //		Purpose:	Main program
-//		Created:	8th October 2021
+//		Created:	1st October 2021
 //		Author:		Paul Robson (paul@robsons.org.uk)
 //
 // *******************************************************************************************************************************
