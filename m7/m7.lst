@@ -1,6 +1,6 @@
               	; --------------------------------------
               	; zasm: assemble "m7.asm"
-              	; date: 2021-10-15 14:32:08
+              	; date: 2021-10-15 18:42:08
               	; --------------------------------------
 
 
@@ -824,6 +824,18 @@ E00E: 5F70
               		.org 	$E010
 E010: C300C0  		jp 		start 							; BIOS enters here.
               	
+              	
+E013:         	testCode:
+              		.include "test/test.inc"
+E013: 00544553		.db	$0,$54,$45,$53,$54,$80,$49,$4d,$4d,$45,$44,$49,$41,$54,$45,$40,$43,$4f,$4d,$50,$49,$4c,$45,$44,$ff
+E017: 5480494D	
+E01B: 4D454449	
+E01F: 41544540	
+E023: 434F4D50	
+E027: 494C4544	
+E02B: FF      	
+              	
+              	
               	; ***************************************************************************************
               	;
               	; 				Load the Dictionary into High memory, it works down.
@@ -832,8 +844,8 @@ E010: C300C0  		jp 		start 							; BIOS enters here.
               	
               		.include "vocabulary/dictionary.inc" 	; get length
 014D:         	DictionarySize = 333
-E013: FFFFFFFF		.org 	CodeEnd-DictionarySize+1 		; set start pointer
-E017: FF...   	
+E02C: FFFFFFFF		.org 	CodeEnd-DictionarySize+1 		; set start pointer
+E030: FF...   	
 FEB3:         	DictionaryInstalledBase:
               		.include "vocabulary/dictionary.asm" 	; pregenerated dictionary.
 FEB3: 81      		.db	$81
@@ -1079,5 +1091,5 @@ FFFC: 0E0F54  		.db	$e,$f,$54
 FFFF: FF      		.db	$FF
 
 
-total time: 0.0035 sec.
+total time: 0.0072 sec.
 no errors

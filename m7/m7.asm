@@ -58,6 +58,10 @@ FreeSpace:
 	.org 	$E010
 	jp 		start 							; BIOS enters here.
 
+
+testCode:
+	.include "test/test.inc"
+
 ; ***************************************************************************************
 ;
 ; 				Load the Dictionary into High memory, it works down.

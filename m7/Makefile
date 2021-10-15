@@ -11,6 +11,7 @@ run: m7.rom
 
 m7.rom:	m7.asm
 	cd vocabulary && ruby builder.rb
+	ruby tom7.rb >test$(S)test.inc
 	zasm -u m7.asm
 	
 
