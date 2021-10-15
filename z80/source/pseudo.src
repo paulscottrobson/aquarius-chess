@@ -23,4 +23,6 @@ EDF1 	"TBYTE"	0
 EDF2 	"TNAME" 0
 		HWSetTapeName()		
 
-		
+EDF3 	"PROMPT" 0
+		H = 0x40;L = 0x00;
+		HWLoadPrompt()		

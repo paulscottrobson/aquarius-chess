@@ -20,6 +20,7 @@ int HWGetKeyboardRow(int row);
 void HWReadTapeHeader(void);
 BYTE8 HWReadTapeByte(void);
 void HWSetTapeName(void);
+void HWLoadPrompt(void);
 
 void HWXWriteVRAM(WORD16 address,BYTE8 data);
 void HWXSyncImplementation(LONG32 iCount);

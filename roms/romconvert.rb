@@ -32,6 +32,14 @@ class StandardROM
 		@data.each { |b| h.write(b.chr) }
 		self 
 	end
+	#
+	# 		Import CH8 font file replacing stock Aquarius font, char rom only
+	#
+	def import_font(font_file)
+		font = open(font_file,"rb").each_byte.collect { |a| a }
+		(0..font.length-1-8).each { |n| @data[n+32*8] = font[n] }
+		self
+	end
 end
 
 # *****************************************************************************
@@ -111,12 +119,16 @@ class KernelROM < StandardROM
 		# 		Disables Poke/Peek limits
 		#
 		patch(0x0B88,0xC9)
+		#
 	end
 
 	#
 	# 		Patch in new prompt.
 	#
 	def new_prompt
+		patch(0x1FF2,0xED)
+		patch(0x1FF3,0xF3)
+		patch(0x1FF4,0x00)
 	end
 	#
 	# 		Patch shifted characters to approximately match a standard PC keyboard rather than an Aquarius one.
@@ -188,12 +200,11 @@ class KernelROM < StandardROM
 			end
 		end
 		raise "Couldn't find unshifted #{unshift}" unless fixed
-
 	end
 end 
 
 if __FILE__ == $0 
-	StandardROM.new("aquarius.chr").export_include("character_rom.h")
+	StandardROM.new("aquarius.chr").import_font("carton.ch8").export_include("character_rom.h")
 	KernelROM.new("aquarius.rom").export_include("kernel_rom.h")
 	EncodedROM.new("add tarmin.bin").export_include("tarmin_rom.h")
 
@@ -201,3 +212,7 @@ if __FILE__ == $0
 	EncodedROM.new("add tarmin.bin").export_binary("add tarmin.bin.decoded")
 	EncodedROM.new("utopia.bin").export_binary("utopia.bin.decoded")
 end
+
+#
+# 	 	Font from https://damieng.com/typography/zx-origins/
+#

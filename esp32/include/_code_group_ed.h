@@ -245,4 +245,8 @@ case 0xf2: /**** $f2:tname ****/
 	HWSetTapeName();
 	CYCLES(0);break;
 
+case 0xf3: /**** $f3:prompt ****/
+	H = 0x40;L = 0x00; HWLoadPrompt();
+	CYCLES(0);break;
+
 

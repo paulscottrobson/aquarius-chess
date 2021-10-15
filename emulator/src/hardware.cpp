@@ -219,3 +219,12 @@ static void HWLoadDirectoryAsBASIC(void) {
 	CPUWriteMemory(pBasicEnd,basicPtr & 0xFF);												// Write end of program.
 	CPUWriteMemory(pBasicEnd+1,basicPtr >> 8); 
 }
+
+// ****************************************************************************
+//								New Prompt
+// ****************************************************************************
+
+void HWLoadPrompt(void) {
+	const char *s = "Aquarius Emulator v0.0 (15-10-21)\r\n\r\nWritten by Paul Robson\r\n\r\nBASIC (C) Microsoft 1982 S2\r\n\r\n";
+	for (int i = 0;i < strlen(s)+1;i++) CPUWriteMemory(0x4000+i,s[i]);
+}

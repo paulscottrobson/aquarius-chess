@@ -92,7 +92,6 @@ static void _Write(WORD16 address,BYTE8 data) {
 	}
 	if (address == 0x1000) { 														// POKE 4096,1 turns on fast mode.
 		highSpeed = (data != 0);
-		printf("Poked at %x\n",PC);
 	}
 }
 
