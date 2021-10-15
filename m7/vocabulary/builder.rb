@@ -10,27 +10,30 @@
 # ***************************************************************************************
 
 class BaseWord 
+	@@id = 1000
+
 	def initialize(name,modifiers,body)
 		@name = name.upcase.strip
 		validate @name
 		@body = body 
 		@compile_only = modifiers.index("compile") 
+		@unique = @@id 
+		@@id += 1
 	end 
 
-	def render(handle,this_link,last_link,unique_id)
-		@unique = unique_id
-		type_byte = type + (@compile_only ? 0x80 : 0x00)
-		handle.write("#{this_link}:\n")
+	def render(handle)
 		handle.write("; --------------------------------------\n")
 		handle.write(";             #{@name}\n")
 		handle.write("; --------------------------------------\n")
-		handle.write(" .dw #{last_link}\n")
-		handle.write(" .db $#{type_byte.to_s(16)}\n")
-		handle.write(" .db #{to_6bit(@name)}\n")
+		handle.write("#{exec_label}:\n")
 		open_define(handle)
 		handle.write(@body.join("\n")+"\n")
 		close_define(handle)
 	end
+
+	def exec_label 
+		"word_#{@unique}"
+	end 
 
 	def validate(n) 
 		n.each_char do |c|
@@ -40,7 +43,7 @@ class BaseWord
 
 	def to_6bit(n)
 		n = n.each_char.collect { |a| (a.ord & 0x3F) }		
-		n[-1] |= 0x80
+		n[-1] |= 0x40
 		n.collect { |a| "$"+a.to_s(16) }.join(",")
 	end
 
@@ -49,22 +52,28 @@ class BaseWord
 
 	def close_define(handle) 		
 	end
+
+	def render_dictionary(handle)
+		type_byte = @compile_only ? 0x80:0x81
+		handle.write("\t.db\t$#{type_byte.to_s(16)}\n")
+		handle.write("\t.dw\t#{exec_label}\n")
+		handle.write("\t.db\t#{to_6bit(@name)}\n")		
+		handle.write("\n")
+		@name.length+3
+	end
+
 end
 
 class CallingWord < BaseWord
-	def type 
-		0 end
 	def open_define(handle)
-		handle.write(" call CompileCallFollowing\n")
+		handle.write("\tcall\tCompileCallFollowing\n")
 	end
 end
 
 class CopyingWord < BaseWord
-	def type 
-		1 end
 	def open_define(handle)
-		handle.write(" call CopyFollowing\n")
-		handle.write(" .db endcopy_#{@unique} - * - 1\n")
+		handle.write("\tcall\tCopyFollowing\n")
+		handle.write("\t.db\tendcopy_#{@unique} - $ - 1\n")
 	end 
 
 	def close_define(handle) 		
@@ -74,8 +83,6 @@ class CopyingWord < BaseWord
 end 
 
 class ExecutingWord < BaseWord
-	def type 
-		2 end
 end
 
 # ***************************************************************************************
@@ -119,23 +126,29 @@ class Vocabulary
 		raise "Can't process header #{header}"
 	end
 	#
-	# 			Render
+	# 			Render code
 	#
 	def render(handle)
-		handle.write(@support.join("\n"))
+		@words.each { |w| w.render(handle) }
 		handle.write("\n\n\n")
-		last_link = "0"
-		link_count = 0
-		@words.each do |w|
-			this_link = "link#{link_count}"
-			last_link = w.render(handle,this_link,last_link,link_count)
-			last_link = this_link
-			link_count += 1
+		handle.write(@support.join("\n"))
+	end
+	#
+	# 			Render dictionary
+	#
+	def render_dictionary(handle)
+		size = 1
+		@words.each do |w| 
+			size += w.render_dictionary(handle) 
 		end
+		handle.write("\t.db\t$FF\n")
+		size
 	end
 end
 
 voc = Vocabulary.new
 Dir.glob('./**/*.def').each { |f| voc.add f }
 voc.render(open("vocabulary.asm","w"))
-puts("Vocabulary rendered")
+size = voc.render_dictionary(open("dictionary.asm","w"))
+open("dictionary.inc","w").write("DictionarySize = #{size}\n")
+puts("Dictionary built.")
