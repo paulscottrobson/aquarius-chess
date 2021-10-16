@@ -1,6 +1,6 @@
               	; --------------------------------------
               	; zasm: assemble "m7.asm"
-              	; date: 2021-10-16 10:47:16
+              	; date: 2021-10-16 12:43:53
               	; --------------------------------------
 
 
@@ -69,7 +69,7 @@ C01C: FF3F    		.dw 	$3FFF
               	; 		Next free code byte
               	;
 C01E:         	CodeNextFree:
-C01E: 13C4    		.dw 	FreeSpace
+C01E: 82C4    		.dw 	FreeSpace
               	;
               	; 		Execute address for startup
               	;
@@ -79,7 +79,7 @@ C020: 2AC0    		.dw 	Main
               	; 		Dictionary start (works down)
               	;
 C022:         	DictionaryBase:
-C022: B3FE    		.dw 	DictionaryInstalledBase
+C022: AFFE    		.dw 	DictionaryInstalledBase
               	;
               	; 		Current state of the 3 registers
               	;
@@ -263,17 +263,17 @@ C0A6: 7E      			ld 		a,(hl)
 C0A7: E63F    			and 	$3F 						; colour dropped. (should be red)
 C0A9: B1      			or 		c  							; OR C in, first time $80
 C0AA: 0E00    			ld 		c,0 						; and next times it's only $00		
-C0AC: CD9BC1  			call	CompileWriteDictionary 
+C0AC: CD9AC1  			call	CompileWriteDictionary 
 C0AF: 10F4    			djnz 	_CDCopyDictionary 			; write out the whole word.
               			;
               			; 		Now create the rest of the record, the code address then type byte.
               			;
 C0B1: 3A1FC0  			ld 		a,(CodeNextFree+1) 			; write out code MSB then LSB
-C0B4: CD9BC1  			call	CompileWriteDictionary 
+C0B4: CD9AC1  			call	CompileWriteDictionary 
 C0B7: 3A1EC0  			ld 		a,(CodeNextFree)
-C0BA: CD9BC1  			call	CompileWriteDictionary 
+C0BA: CD9AC1  			call	CompileWriteDictionary 
 C0BD: 3E80    			ld 		a,$80 						; then the default type byte
-C0BF: CD9BC1  			call	CompileWriteDictionary 
+C0BF: CD9AC1  			call	CompileWriteDictionary 
               	
 C0C2: 3ECD    			ld 		a,$CD 						; compile CALL CompileCallFollowing into code, the default action.
 C0C4: CD63C0  			call 	CompileByte 				; e.g. the word compiles a call to whatever follows it.
@@ -288,7 +288,7 @@ C0CE: C9      			ret
               	;
 C0CF:         	_COExecuteCompile:
 C0CF: E5      			push 	hl 							; save word text address
-C0D0: CDAFC1  			call 	SearchDictionary 			; try to find it in the dictionary
+C0D0: CDAEC1  			call 	SearchDictionary 			; try to find it in the dictionary
 C0D3: 7C      			ld 		a,h 						; was it found ?
 C0D4: B5      			or 		l
 C0D5: 284B    			jr 		z,_CECUnknown
@@ -365,7 +365,7 @@ C128: 282E    			jr 		z,_CSTRProcess
 C12A: 7E      			ld 		a,(hl) 						; push the colour on the stack
 C12B: E6C0    			and 	$C0
 C12D: F5      			push 	af
-C12E: CDE8C1  			call 	StringToInteger 			; convert a word to a valid integer.
+C12E: CDE7C1  			call 	StringToInteger 			; convert a word to a valid integer.
 C131: 7A      			ld 		a,d 						; DE = 0 if fail.
 C132: B3      			or 		e
 C133: CA3AC0  			jp 		z,UnknownWord 
@@ -384,7 +384,7 @@ C142: CD63C0  			call 	CompileByte
 C145: CD54C0  			call 	CompileWord 				; compile the number to load
 C148: 1883    			jr 		_COPopHLExit 				; and exit
               			;
-              			; 		Do the equivalent of executing a constant.
+              			; 		Do the equivalent of executing a constant e.g. swap A & B n=>A
               			;
 C14A:         	_CECExecuteConstant:
 C14A: ED5B24C0			ld 		de,(RegA) 					; A -> B
@@ -404,7 +404,7 @@ C160: D5      			push 	de
 C161: E5      			push 	hl 							; save string address
 C162: 3ECD    			ld 		a,$CD 						; compile CALL StringConstantHandler
 C164: CD63C0  			call 	CompileByte 				
-C167: 21A6C1  			ld 		hl,StringConstantHandler
+C167: 21A5C1  			ld 		hl,StringConstantHandler
 C16A: CD54C0  			call 	CompileWord
 C16D: E1      			pop 	hl
 C16E: 23      			inc 	hl 							; skip over the initial single quote
@@ -433,24 +433,22 @@ C191: 18DC    			jr 		_CSTRLoop
 C193:         	_CSTRDone:
 C193: AF      			xor 	a 							; write $00 end of string
 C194: CD63C0  			call 	CompileByte
-C197: 76      			halt
-C198: C3F0C0  			jp 		_CEExecuteOrCompile 		; and go do it, perhaps.		
-              			
+C197: C3F0C0  			jp 		_CEExecuteOrCompile 		; and go do it, perhaps.		
               	
               	; ***************************************************************************************
               	;
-              	; 						Write dictionary word out backwards
+              	; 						Write dictionary word out working downwards
               	;
               	; ***************************************************************************************
               	
-C19B:         	CompileWriteDictionary:
-C19B: E5      			push 	hl
-C19C: 2A22C0  			ld 		hl,(DictionaryBase)
-C19F: 2B      			dec 	hl
-C1A0: 77      			ld 		(hl),a
-C1A1: 2222C0  			ld 		(DictionaryBase),hl
-C1A4: E1      			pop 	hl
-C1A5: C9      			ret
+C19A:         	CompileWriteDictionary:
+C19A: E5      			push 	hl
+C19B: 2A22C0  			ld 		hl,(DictionaryBase) 		; hence pre-decrement address.
+C19E: 2B      			dec 	hl
+C19F: 77      			ld 		(hl),a
+C1A0: 2222C0  			ld 		(DictionaryBase),hl
+C1A3: E1      			pop 	hl
+C1A4: C9      			ret
               	
               	; ***************************************************************************************
               	;
@@ -458,16 +456,16 @@ C1A5: C9      			ret
               	;
               	; ***************************************************************************************
               	
-C1A6:         	StringConstantHandler:
-C1A6: E1      			pop 	hl 							; get the return address into HL, leave on stack		
-C1A7: E5      			push 	hl
-C1A8:         	_SCHEnd: 									; advance HL past the string
-C1A8: 7E      			ld 		a,(hl)
-C1A9: 23      			inc 	hl
-C1AA: B7      			or 		a
-C1AB: 20FB    			jr 		nz,_SCHEnd		
-C1AD: E3      			ex 		(sp),hl 					; swap them round, so HL = start and (SP) is the byte after
-C1AE: C9      			ret
+C1A5:         	StringConstantHandler:
+C1A5: E1      			pop 	hl 							; get the return address into HL, leave on stack		
+C1A6: E5      			push 	hl
+C1A7:         	_SCHEnd: 									; advance HL past the string
+C1A7: 7E      			ld 		a,(hl)
+C1A8: 23      			inc 	hl
+C1A9: B7      			or 		a
+C1AA: 20FB    			jr 		nz,_SCHEnd		
+C1AC: E3      			ex 		(sp),hl 					; swap them round, so HL = start and (SP) is the byte after
+C1AD: C9      			ret
               		.include 	"search.asm"
               	; ***************************************************************************************
               	; ***************************************************************************************
@@ -487,70 +485,70 @@ C1AE: C9      			ret
               	;
               	; ***************************************************************************************
               	
-C1AF:         	SearchDictionary:
-C1AF: C5      			push 	bc
-C1B0: D5      			push 	de
-C1B1: EB      			ex 		de,hl 						; put search string address in DE.
-C1B2: 2A22C0  			ld 		hl,(DictionaryBase) 		; HL points to dictionary base.
+C1AE:         	SearchDictionary:
+C1AE: C5      			push 	bc
+C1AF: D5      			push 	de
+C1B0: EB      			ex 		de,hl 						; put search string address in DE.
+C1B1: 2A22C0  			ld 		hl,(DictionaryBase) 		; HL points to dictionary base.
               			;
               			; 		Compare entry at HL vs word at DE
               			;
-C1B5:         	_SearchLoop:
-C1B5: 44      			ld 		b,h 						; copy current being searched to BC
-C1B6: 4D      			ld 		c,l 								
-C1B7: 7E      			ld 		a,(hl) 						; get the type byte.
-C1B8: B7      			or 	 	a 							; if zero, then fail as we've reached dictionary end.
-C1B9: 2827    			jr 		z,_SDFail
+C1B4:         	_SearchLoop:
+C1B4: 44      			ld 		b,h 						; copy current being searched to BC
+C1B5: 4D      			ld 		c,l 								
+C1B6: 7E      			ld 		a,(hl) 						; get the type byte.
+C1B7: B7      			or 	 	a 							; if zero, then fail as we've reached dictionary end.
+C1B8: 2827    			jr 		z,_SDFail
               			;
-C1BB: 23      			inc  	hl 							; point to the first character
-C1BC: 23      			inc 	hl 							; e.g. skip type byte and call address.
-C1BD: 23      			inc 	hl
-C1BE: D5      			push 	de 							; save search string address on stack.
+C1BA: 23      			inc  	hl 							; point to the first character
+C1BB: 23      			inc 	hl 							; e.g. skip type byte and call address.
+C1BC: 23      			inc 	hl
+C1BD: D5      			push 	de 							; save search string address on stack.
               			;
               			; 		Compare string at HL vs String at DE
               			;
-C1BF:         	_SearchCompare:
-C1BF: 1A      			ld 		a,(de) 						; calculate xor of two characters
-C1C0: AE      			xor 	(hl) 						; as we're only interested in lower 6 bits for compare
-C1C1: E63F    			and 	$3F 						; check lower 6 bits only.
-C1C3: 2015    			jr 		nz,_SearchNext 				; different, go to next word.
-C1C5: 7E      			ld 		a,(hl) 						; get dictionary byte successfully matched.
-C1C6: 13      			inc 	de 							; advance to next.
-C1C7: 23      			inc 	hl 		
-C1C8: 87      			add 	a,a 						; is bit 7 in the last match, indicating the last character of the word in the dictionary ?
-C1C9: 30F4    			jr 		nc,_SearchCompare 			; no, keep comparing
+C1BE:         	_SearchCompare:
+C1BE: 1A      			ld 		a,(de) 						; calculate xor of two characters
+C1BF: AE      			xor 	(hl) 						; as we're only interested in lower 6 bits for compare
+C1C0: E63F    			and 	$3F 						; check lower 6 bits only.
+C1C2: 2015    			jr 		nz,_SearchNext 				; different, go to next word.
+C1C4: 7E      			ld 		a,(hl) 						; get dictionary byte successfully matched.
+C1C5: 13      			inc 	de 							; advance to next.
+C1C6: 23      			inc 	hl 		
+C1C7: 87      			add 	a,a 						; is bit 7 in the last match, indicating the last character of the word in the dictionary ?
+C1C8: 30F4    			jr 		nc,_SearchCompare 			; no, keep comparing
               			;
               			; 		Found the end of the word in the dictionary, HL points to the byte following, DE the character following.
               			;	 	We need to check it's the end of the word in the search text.
               			;
-C1CB: 1A      			ld 		a,(de) 						; get the next character in the search word.
-C1CC: D1      			pop 	de 							; having got the character, restore DE to original value.
-C1CD: B7      			or 		a 							; is it $00 or xx10000 (any colour space)
-C1CE: 2806    			jr 		z,_SDSucceed 				; if zero, we've found the word, end of buffer
-C1D0: E63F    			and 	$3F 
-C1D2: FE20    			cp 		$20
-C1D4: 20DF    			jr 		nz,_SearchLoop 				; no it wasn't any Space so go round again. HL points to the next type byte already.
-C1D6:         	_SDSucceed: 
-C1D6: 60      			ld 		h,b 						; restore value saved in BC to HL, the type byte address of the found word.
-C1D7: 69      			ld 		l,c  						; at the start, e.g. the address of the type byte.
-C1D8: 180B    			jr 		_SDExit
+C1CA: 1A      			ld 		a,(de) 						; get the next character in the search word.
+C1CB: D1      			pop 	de 							; having got the character, restore DE to original value.
+C1CC: B7      			or 		a 							; is it $00 or xx10000 (any colour space)
+C1CD: 2806    			jr 		z,_SDSucceed 				; if zero, we've found the word, end of buffer
+C1CF: E63F    			and 	$3F 
+C1D1: FE20    			cp 		$20
+C1D3: 20DF    			jr 		nz,_SearchLoop 				; no it wasn't any Space so go round again. HL points to the next type byte already.
+C1D5:         	_SDSucceed: 
+C1D5: 60      			ld 		h,b 						; restore value saved in BC to HL, the type byte address of the found word.
+C1D6: 69      			ld 		l,c  						; at the start, e.g. the address of the type byte.
+C1D7: 180B    			jr 		_SDExit
               			;
               			; 		Names did not match. HL still points into the word.
               			;
-C1DA:         	_SearchNext:
-C1DA: 7E      			ld 		a,(hl) 						; get and bump in dictionary
-C1DB: 23      			inc 	hl
-C1DC: 87      			add 	a,a 						; looking for the bit 7 set indicating the end of the word
-C1DD: 30FB    			jr 		nc,_SearchNext  			
-C1DF: D1      			pop 	de 							; restore DE, the address of the input word
-C1E0: 18D3    			jr 		_SearchLoop 				; and try the next dictionary word.
+C1D9:         	_SearchNext:
+C1D9: 7E      			ld 		a,(hl) 						; get and bump in dictionary
+C1DA: 23      			inc 	hl
+C1DB: 87      			add 	a,a 						; looking for the bit 7 set indicating the end of the word
+C1DC: 30FB    			jr 		nc,_SearchNext  			
+C1DE: D1      			pop 	de 							; restore DE, the address of the input word
+C1DF: 18D3    			jr 		_SearchLoop 				; and try the next dictionary word.
               	;
-C1E2:         	_SDFail:									; not found, return zero
-C1E2: 210000  			ld 		hl,$0000 					
-C1E5:         	_SDExit:
-C1E5: D1      			pop 	de
-C1E6: C1      			pop 	bc		
-C1E7: C9      			ret		
+C1E1:         	_SDFail:									; not found, return zero
+C1E1: 210000  			ld 		hl,$0000 					
+C1E4:         	_SDExit:
+C1E4: D1      			pop 	de
+C1E5: C1      			pop 	bc		
+C1E6: C9      			ret		
               	
               	
               		.include 	"toint.asm"
@@ -565,10 +563,102 @@ C1E7: C9      			ret
               	; ***************************************************************************************
               	; ***************************************************************************************
               	
-C1E8:         	StringToInteger:
-C1E8: 212A00  			ld 		hl,42
-C1EB: 110100  			ld 		de,1
-C1EE: C9      			ret
+              	; ***************************************************************************************
+              	;
+              	;		Convert word to integer. Can be decimal $hexadecimal and prefixed with '-'
+              	;		Result in HL, DE is non-zero if successful.
+              	;
+              	; ***************************************************************************************
+              	
+C1E7:         	StringToInteger:
+C1E7: 7E      			ld 		a,(hl) 						; check for - x
+C1E8: E63F    			and 	$3F
+C1EA: FE2D    			cp 		'-'
+C1EC: 200C    			jr 		nz,_STOInt
+C1EE: 23      			inc 	hl 							; skip the - sign. 
+C1EF: CDFAC1  			call 	_STOInt 					; try to convert to integer
+              	
+C1F2: 7C      			ld 		a,h 						; negate the result.
+C1F3: 2F      			cpl 
+C1F4: 67      			ld 		h,a
+C1F5: 7D      			ld 		a,l
+C1F6: 2F      			cpl
+C1F7: 6F      			ld 		l,a
+C1F8: 23      			inc 	hl
+C1F9: C9      			ret
+              	
+C1FA: DDE5    	_STOInt:push 	ix 							; save IX
+              			
+              	
+C1FC: E5      			push 	hl 							; copy word address to IX
+C1FD: DDE1    			pop 	ix		
+C1FF: 01000A  			ld 		bc,10*256 					; base in B, count in C
+C202: 210000  			ld 		hl,0 						; result in HL.
+              			;
+C205: DD7E00  			ld 		a,(ix+0) 					; is first character a '$'
+C208: E63F    			and 	$3F
+C20A: FE24    			cp 		'$'
+C20C: 2004    			jr 		nz,_STONotHex 
+              			;
+C20E: 0610    			ld 		b,16 						; now Base 16.
+C210: DD23    			inc 	ix 							; skip over the '$'
+C212:         	_STONotHex:
+              			;
+              			; 		Main processing loop.
+              			;		
+C212:         	_STOLoop:
+C212: DD7E00  			ld 		a,(ix+0) 					; get character
+C215: DD23    			inc 	ix
+C217: B7      			or 		a  							; check for $00 or Coloured space
+C218: 282F    			jr 		z,_STOEndWord 					
+C21A: E63F    			and 	$3F
+C21C: FE20    			cp 		$20
+C21E: 2829    			jr 		z,_STOEndWord
+              			;
+C220: FE3A    			cp 		'9'+1 						; if > 9 then fail
+C222: 3029    			jr 		nc,_STOFail
+C224: FE30    			cp 		'0'
+C226: 3009    			jr 		nc,_STOOkay
+C228: FE07    			cp 		6+1 						; if > F then fail
+C22A: 3021    			jr 		nc,_STOFail
+C22C: B7      			or 		a
+C22D: 281E    			jr 		z,_STOFail 					; $00 is a fail too.
+C22F: C609    			add 	9 							; maps A ($01) to ($0A) etc.
+C231:         	_STOOkay:
+C231: 0C      			inc 	c 							; increment successful char count		
+C232: E60F    			and 	$0F 						; make digit in range 0..15
+C234: B8      			cp 		b 							; fail if >= the base
+C235: 3016    			jr 		nc,_STOFail
+              			;
+C237: 29      			add 	hl,hl 						; HL = 2 * HL
+C238: 5D      			ld 		e,l 						; DE = 2 * HL
+C239: 54      			ld 		d,h		
+C23A: 29      			add 	hl,hl 						; HL = 4 * HL
+C23B: 29      			add 	hl,hl 						; HL = 8 * HL
+C23C: CB60    			bit 	4,b 						; is base 16 ?
+C23E: 2802    			jr 		z,_STONotHexMult
+C240: 5D      			ld 		e,l 						; if base 16 HL = DE = 8 * HL
+C241: 54      			ld 		d,h
+C242:         	_STONotHexMult:
+C242: 19      			add 	hl,de 						; so HL = HL * 10 or * 16 depending on B
+C243: 5F      			ld 		e,a 						; put digit in DE and add
+C244: 1600    			ld 		d,0
+C246: 19      			add 	hl,de
+C247: 18C9    			jr 		_STOLoop
+              	;
+C249:         	_STOEndWord:
+C249: 59      			ld 		e,c 						; E is 0 if no chars, e.g. fail or #0 if chars consumed
+C24A: 51      			ld 		d,c 						; D the same
+C24B: 1806    			jr 		_STOExit 					; and exit
+              	
+C24D:         	_STOFail:	 								; can't do it, return DE = HL = 0	
+C24D: 110000  			ld 		de,0
+C250: 210000  			ld 		hl,0
+C253:         	_STOExit:		
+C253: DDE1    			pop 	ix 							; restore IX and exit
+C255: C9      			ret
+              	
+              			
               		
               	
               	; ***************************************************************************************
@@ -581,670 +671,678 @@ C1EE: C9      			ret
               	; --------------------------------------
               	;             <
               	; --------------------------------------
-C1EF:         	word_1000:
-C1EF: CD4AC0  		call	CompileCallFollowing
-C1F2: 7C      	 ld   a,h           ; check if signs different.
-C1F3: AA      	 xor  d
-C1F4: 87      	 add  a,a          ; CS if different
-C1F5: 3004    	 jr   nc,__less_samesign
-C1F7: 7A      	 ld   a,d          ; different. set CS to sign of B
-C1F8: 87      	 add  a,a          ; if set (negative) B must be < A as A is +ve
-C1F9: 1805    	 jr   __less_returnc
-C1FB:         	__less_samesign:
-C1FB: D5      	 push  de           ; save DE
-C1FC: EB      	 ex   de,hl          ; -1 if B < A
-C1FD: ED52    	 sbc  hl,de          ; calculate B - A , hencs CS if < (Carry clear by add a,a)
-C1FF: D1      	 pop  de           ; restore DE
-C200:         	__less_returnc:
-C200: 3E00    	 ld   a,0          ; A 0
-C202: DE00    	 sbc  a,0          ; A $FF if CS.
-C204: 6F      	 ld   l,a          ; put in HL
-C205: 67      	 ld   h,a
-C206: C9      	 ret
+C256:         	word_1000:
+C256: CD4AC0  		call	CompileCallFollowing
+C259: 7C      	 ld   a,h           ; check if signs different.
+C25A: AA      	 xor  d
+C25B: 87      	 add  a,a          ; CS if different
+C25C: 3004    	 jr   nc,__less_samesign
+C25E: 7A      	 ld   a,d          ; different. set CS to sign of B
+C25F: 87      	 add  a,a          ; if set (negative) B must be < A as A is +ve
+C260: 1805    	 jr   __less_returnc
+C262:         	__less_samesign:
+C262: D5      	 push  de           ; save DE
+C263: EB      	 ex   de,hl          ; -1 if B < A
+C264: ED52    	 sbc  hl,de          ; calculate B - A , hencs CS if < (Carry clear by add a,a)
+C266: D1      	 pop  de           ; restore DE
+C267:         	__less_returnc:
+C267: 3E00    	 ld   a,0          ; A 0
+C269: DE00    	 sbc  a,0          ; A $FF if CS.
+C26B: 6F      	 ld   l,a          ; put in HL
+C26C: 67      	 ld   h,a
+C26D: C9      	 ret
               	; --------------------------------------
               	;             =
               	; --------------------------------------
-C207:         	word_1001:
-C207: CD4AC0  		call	CompileCallFollowing
-C20A: 7C      	 ld   a,h          ; H = H ^ D
-C20B: AA      	 xor  d
-C20C: 67      	 ld   h,a
-C20D: 7D      	 ld   a,l          ; A = (L ^ E) | (H ^ D)
-C20E: AB      	 xor  e
-C20F: B4      	 or   h           ; if A == 0 they are the same.
-C210: 210000  	 ld   hl,$0000         ; return 0 if different
-C213: C0      	 ret  nz
-C214: 2B      	 dec  hl           ; return -1
-C215: C9      	 ret
+C26E:         	word_1001:
+C26E: CD4AC0  		call	CompileCallFollowing
+C271: 7C      	 ld   a,h          ; H = H ^ D
+C272: AA      	 xor  d
+C273: 67      	 ld   h,a
+C274: 7D      	 ld   a,l          ; A = (L ^ E) | (H ^ D)
+C275: AB      	 xor  e
+C276: B4      	 or   h           ; if A == 0 they are the same.
+C277: 210000  	 ld   hl,$0000         ; return 0 if different
+C27A: C0      	 ret  nz
+C27B: 2B      	 dec  hl           ; return -1
+C27C: C9      	 ret
               	; --------------------------------------
               	;             -
               	; --------------------------------------
-C216:         	word_1002:
-C216: CD4AC0  		call	CompileCallFollowing
-C219: D5      	 push  de           ; save DE
-C21A: EB      	 ex   de,hl          ; HL = B, DE = A
-C21B: AF      	 xor  a            ; clear carry
-C21C: ED52    	 sbc  hl,de          ; calculate B-A
-C21E: D1      	 pop  de           ; restore DE
-C21F: C9      	 ret
+C27D:         	word_1002:
+C27D: CD4AC0  		call	CompileCallFollowing
+C280: D5      	 push  de           ; save DE
+C281: EB      	 ex   de,hl          ; HL = B, DE = A
+C282: AF      	 xor  a            ; clear carry
+C283: ED52    	 sbc  hl,de          ; calculate B-A
+C285: D1      	 pop  de           ; restore DE
+C286: C9      	 ret
               	; --------------------------------------
               	;             +
               	; --------------------------------------
-C220:         	word_1003:
-C220: CD3DC0  		call	CopyFollowing
-C223: 01      		.db	endcopy_1003 - $ - 1
-C224: 19      	 add  hl,de
-C225:         	endcopy_1003:
+C287:         	word_1003:
+C287: CD3DC0  		call	CopyFollowing
+C28A: 01      		.db	endcopy_1003 - $ - 1
+C28B: 19      	 add  hl,de
+C28C:         	endcopy_1003:
               	; --------------------------------------
               	;             AND
               	; --------------------------------------
-C225:         	word_1004:
-C225: CD4AC0  		call	CompileCallFollowing
-C228: 7C      	 ld   a,h
-C229: A2      	 and  d
-C22A: 67      	 ld   h,a
-C22B: 7D      	 ld   a,l
-C22C: A3      	 and  e
-C22D: 6F      	 ld   l,a
-C22E: C9      	 ret
+C28C:         	word_1004:
+C28C: CD4AC0  		call	CompileCallFollowing
+C28F: 7C      	 ld   a,h
+C290: A2      	 and  d
+C291: 67      	 ld   h,a
+C292: 7D      	 ld   a,l
+C293: A3      	 and  e
+C294: 6F      	 ld   l,a
+C295: C9      	 ret
               	; --------------------------------------
               	;             OR
               	; --------------------------------------
-C22F:         	word_1005:
-C22F: CD4AC0  		call	CompileCallFollowing
-C232: 7C      	 ld   a,h
-C233: B2      	 or   d
-C234: 67      	 ld   h,a
-C235: 7D      	 ld   a,l
-C236: B3      	 or   e
-C237: 6F      	 ld   l,a
-C238: C9      	 ret
+C296:         	word_1005:
+C296: CD4AC0  		call	CompileCallFollowing
+C299: 7C      	 ld   a,h
+C29A: B2      	 or   d
+C29B: 67      	 ld   h,a
+C29C: 7D      	 ld   a,l
+C29D: B3      	 or   e
+C29E: 6F      	 ld   l,a
+C29F: C9      	 ret
               	; --------------------------------------
               	;             XOR
               	; --------------------------------------
-C239:         	word_1006:
-C239: CD4AC0  		call	CompileCallFollowing
-C23C: 7C      	 ld   a,h
-C23D: AA      	 xor  d
-C23E: 67      	 ld   h,a
-C23F: 7D      	 ld   a,l
-C240: AB      	 xor  e
-C241: 6F      	 ld   l,a
-C242: C9      	 ret
+C2A0:         	word_1006:
+C2A0: CD4AC0  		call	CompileCallFollowing
+C2A3: 7C      	 ld   a,h
+C2A4: AA      	 xor  d
+C2A5: 67      	 ld   h,a
+C2A6: 7D      	 ld   a,l
+C2A7: AB      	 xor  e
+C2A8: 6F      	 ld   l,a
+C2A9: C9      	 ret
               	; --------------------------------------
               	;             /
               	; --------------------------------------
-C243:         	word_1007:
-C243: CD4AC0  		call	CompileCallFollowing
-C246: D5      	 push  de
-C247: CDCEC3  	 call  DIVDivideMod16
-C24A: EB      	 ex   de,hl
-C24B: D1      	 pop  de
-C24C: C9      	 ret
+C2AA:         	word_1007:
+C2AA: CD4AC0  		call	CompileCallFollowing
+C2AD: D5      	 push  de
+C2AE: CD3DC4  	 call  DIVDivideMod16
+C2B1: EB      	 ex   de,hl
+C2B2: D1      	 pop  de
+C2B3: C9      	 ret
               	; --------------------------------------
               	;             MOD
               	; --------------------------------------
-C24D:         	word_1008:
-C24D: CD4AC0  		call	CompileCallFollowing
-C250: D5      	 push  de
-C251: CDCEC3  	 call  DIVDivideMod16
-C254: D1      	 pop  de
-C255: C9      	 ret
+C2B4:         	word_1008:
+C2B4: CD4AC0  		call	CompileCallFollowing
+C2B7: D5      	 push  de
+C2B8: CD3DC4  	 call  DIVDivideMod16
+C2BB: D1      	 pop  de
+C2BC: C9      	 ret
               	; --------------------------------------
               	;             !
               	; --------------------------------------
-C256:         	word_1009:
-C256: CD3DC0  		call	CopyFollowing
-C259: 04      		.db	endcopy_1009 - $ - 1
-C25A: 73      	  ld   (hl),e
-C25B: 23      	  inc  hl
-C25C: 72      	  ld   (hl),d
-C25D: 2B      	  dec  hl
-C25E:         	endcopy_1009:
+C2BD:         	word_1009:
+C2BD: CD3DC0  		call	CopyFollowing
+C2C0: 04      		.db	endcopy_1009 - $ - 1
+C2C1: 73      	  ld   (hl),e
+C2C2: 23      	  inc  hl
+C2C3: 72      	  ld   (hl),d
+C2C4: 2B      	  dec  hl
+C2C5:         	endcopy_1009:
               	; --------------------------------------
               	;             @
               	; --------------------------------------
-C25E:         	word_1010:
-C25E: CD3DC0  		call	CopyFollowing
-C261: 04      		.db	endcopy_1010 - $ - 1
-C262: 7E      	  ld   a,(hl)
-C263: 23      	  inc  hl
-C264: 66      	  ld  h,(hl)
-C265: 6F      	  ld  l,a
-C266:         	endcopy_1010:
+C2C5:         	word_1010:
+C2C5: CD3DC0  		call	CopyFollowing
+C2C8: 04      		.db	endcopy_1010 - $ - 1
+C2C9: 7E      	  ld   a,(hl)
+C2CA: 23      	  inc  hl
+C2CB: 66      	  ld  h,(hl)
+C2CC: 6F      	  ld  l,a
+C2CD:         	endcopy_1010:
               	; --------------------------------------
               	;             +!
               	; --------------------------------------
-C266:         	word_1011:
-C266: CD4AC0  		call	CompileCallFollowing
-C269: 7E      	  ld   a,(hl)
-C26A: 83      	  add  a,e
-C26B: 77      	  ld   (hl),a
-C26C: 23      	  inc  hl
-C26D: 7E      	  ld   a,(hl)
-C26E: 8A      	  adc  a,d
-C26F: 77      	  ld   (hl),a
-C270: 2B      	  dec  hl
-C271: C9      	  ret
+C2CD:         	word_1011:
+C2CD: CD4AC0  		call	CompileCallFollowing
+C2D0: 7E      	  ld   a,(hl)
+C2D1: 83      	  add  a,e
+C2D2: 77      	  ld   (hl),a
+C2D3: 23      	  inc  hl
+C2D4: 7E      	  ld   a,(hl)
+C2D5: 8A      	  adc  a,d
+C2D6: 77      	  ld   (hl),a
+C2D7: 2B      	  dec  hl
+C2D8: C9      	  ret
               	; --------------------------------------
               	;             C!
               	; --------------------------------------
-C272:         	word_1012:
-C272: CD3DC0  		call	CopyFollowing
-C275: 01      		.db	endcopy_1012 - $ - 1
-C276: 73      	  ld   (hl),e
-C277:         	endcopy_1012:
+C2D9:         	word_1012:
+C2D9: CD3DC0  		call	CopyFollowing
+C2DC: 01      		.db	endcopy_1012 - $ - 1
+C2DD: 73      	  ld   (hl),e
+C2DE:         	endcopy_1012:
               	; --------------------------------------
               	;             C@
               	; --------------------------------------
-C277:         	word_1013:
-C277: CD3DC0  		call	CopyFollowing
-C27A: 03      		.db	endcopy_1013 - $ - 1
-C27B: 6E      	  ld   l,(hl)
-C27C: 2600    	  ld   h,0
-C27E:         	endcopy_1013:
+C2DE:         	word_1013:
+C2DE: CD3DC0  		call	CopyFollowing
+C2E1: 03      		.db	endcopy_1013 - $ - 1
+C2E2: 6E      	  ld   l,(hl)
+C2E3: 2600    	  ld   h,0
+C2E5:         	endcopy_1013:
               	; --------------------------------------
               	;             P@
               	; --------------------------------------
-C27E:         	word_1014:
-C27E: CD3DC0  		call	CopyFollowing
-C281: 04      		.db	endcopy_1014 - $ - 1
-C282: ED68    	  in   l,(c)
-C284: 2600    	  ld   h,0
-C286:         	endcopy_1014:
+C2E5:         	word_1014:
+C2E5: CD3DC0  		call	CopyFollowing
+C2E8: 04      		.db	endcopy_1014 - $ - 1
+C2E9: ED68    	  in   l,(c)
+C2EB: 2600    	  ld   h,0
+C2ED:         	endcopy_1014:
               	; --------------------------------------
               	;             P!
               	; --------------------------------------
-C286:         	word_1015:
-C286: CD3DC0  		call	CopyFollowing
-C289: 02      		.db	endcopy_1015 - $ - 1
-C28A: ED69    	  out  (c),l
-C28C:         	endcopy_1015:
+C2ED:         	word_1015:
+C2ED: CD3DC0  		call	CopyFollowing
+C2F0: 02      		.db	endcopy_1015 - $ - 1
+C2F1: ED69    	  out  (c),l
+C2F3:         	endcopy_1015:
               	; --------------------------------------
               	;             ,
               	; --------------------------------------
-C28C:         	word_1016:
-C28C: CD4AC0  		call	CompileCallFollowing
-C28F: C354C0  	  jp   CompileWord
+C2F3:         	word_1016:
+C2F3: CD4AC0  		call	CompileCallFollowing
+C2F6: C354C0  	  jp   CompileWord
               	; --------------------------------------
               	;             ;
               	; --------------------------------------
-C292:         	word_1017:
-C292: CD3DC0  		call	CopyFollowing
-C295: 01      		.db	endcopy_1017 - $ - 1
-C296: C9      	  ret
-C297:         	endcopy_1017:
+C2F9:         	word_1017:
+C2F9: 3EC9    	  ld   a,$C9         ; compile a RET
+C2FB: CD63C0  	  call  CompileByte
+              	  ; TODO: Check close to $E000,  so we can skip the ROM header.
+C2FE: C9      	  ret
               	; --------------------------------------
               	;             C,
               	; --------------------------------------
-C297:         	word_1018:
-C297: CD4AC0  		call	CompileCallFollowing
-C29A: 7D      	  ld   a,l
-C29B: C363C0  	  jp   CompileByte
+C2FF:         	word_1018:
+C2FF: CD4AC0  		call	CompileCallFollowing
+C302: 7D      	  ld   a,l
+C303: C363C0  	  jp   CompileByte
               	; --------------------------------------
               	;             COPY
               	; --------------------------------------
-C29E:         	word_1019:
-C29E: CD4AC0  		call	CompileCallFollowing
-C2A1: 78      	  ld   a,b         ; exit if C = 0
-C2A2: B1      	  or   c
-C2A3: C8      	  ret  z
+C306:         	word_1019:
+C306: CD4AC0  		call	CompileCallFollowing
+C309: 78      	  ld   a,b         ; exit if C = 0
+C30A: B1      	  or   c
+C30B: C8      	  ret  z
               	
-C2A4: C5      	  push  bc          ; BC count
-C2A5: D5      	  push  de          ; DE target
-C2A6: E5      	  push  hl          ; HL source
+C30C: C5      	  push  bc          ; BC count
+C30D: D5      	  push  de          ; DE target
+C30E: E5      	  push  hl          ; HL source
               	
-C2A7: AF      	  xor  a          ; Clear C
-C2A8: ED52    	  sbc  hl,de         ; check overlap ?
-C2AA: 300B    	  jr   nc,__copy_gt_count      ; if source after target
-C2AC: 19      	  add  hl,de         ; undo subtract
+C30F: AF      	  xor  a          ; Clear C
+C310: ED52    	  sbc  hl,de         ; check overlap ?
+C312: 300B    	  jr   nc,__copy_gt_count      ; if source after target
+C314: 19      	  add  hl,de         ; undo subtract
               	
-C2AD: 09      	  add  hl,bc         ; add count to HL + DE
-C2AE: EB      	  ex   de,hl
-C2AF: 09      	  add  hl,bc
-C2B0: EB      	  ex   de,hl
-C2B1: 1B      	  dec  de          ; dec them, so now at the last byte to copy
-C2B2: 2B      	  dec  hl
-C2B3: EDB8    	  lddr           ; do it backwards
-C2B5: 1803    	  jr   __copy_exit
+C315: 09      	  add  hl,bc         ; add count to HL + DE
+C316: EB      	  ex   de,hl
+C317: 09      	  add  hl,bc
+C318: EB      	  ex   de,hl
+C319: 1B      	  dec  de          ; dec them, so now at the last byte to copy
+C31A: 2B      	  dec  hl
+C31B: EDB8    	  lddr           ; do it backwards
+C31D: 1803    	  jr   __copy_exit
               	
-C2B7:         	__copy_gt_count:
-C2B7: 19      	  add  hl,de         ; undo subtract
-C2B8: EDB0    	  ldir          ; do the copy
-C2BA:         	__copy_exit:
-C2BA: E1      	  pop  hl          ; restore registers
-C2BB: D1      	  pop  de
-C2BC: C1      	  pop  bc
-C2BD: C9      	  ret
+C31F:         	__copy_gt_count:
+C31F: 19      	  add  hl,de         ; undo subtract
+C320: EDB0    	  ldir          ; do the copy
+C322:         	__copy_exit:
+C322: E1      	  pop  hl          ; restore registers
+C323: D1      	  pop  de
+C324: C1      	  pop  bc
+C325: C9      	  ret
               	; --------------------------------------
               	;             FILL
               	; --------------------------------------
-C2BE:         	word_1020:
-C2BE: CD4AC0  		call	CompileCallFollowing
-C2C1: 78      	  ld   a,b         ; exit if C = 0
-C2C2: B1      	  or   c
-C2C3: C8      	  ret  z
+C326:         	word_1020:
+C326: CD4AC0  		call	CompileCallFollowing
+C329: 78      	  ld   a,b         ; exit if C = 0
+C32A: B1      	  or   c
+C32B: C8      	  ret  z
               	
-C2C4: C5      	  push  bc          ; BC count
-C2C5: D5      	  push  de          ; DE target, L byte
-C2C6:         	__fill_loop:
-C2C6: 7D      	  ld   a,l         ; copy a byte
-C2C7: 12      	  ld   (de),a
-C2C8: 13      	  inc  de          ; bump pointer
-C2C9: 0B      	  dec  bc          ; dec counter and loop
-C2CA: 78      	  ld   a,b
-C2CB: B1      	  or   c
-C2CC: 20F8    	  jr   nz,__fill_loop
-C2CE: D1      	  pop  de          ; restore
-C2CF: C1      	  pop  bc
-C2D0: C9      	  ret
+C32C: C5      	  push  bc          ; BC count
+C32D: D5      	  push  de          ; DE target, L byte
+C32E:         	__fill_loop:
+C32E: 7D      	  ld   a,l         ; copy a byte
+C32F: 12      	  ld   (de),a
+C330: 13      	  inc  de          ; bump pointer
+C331: 0B      	  dec  bc          ; dec counter and loop
+C332: 78      	  ld   a,b
+C333: B1      	  or   c
+C334: 20F8    	  jr   nz,__fill_loop
+C336: D1      	  pop  de          ; restore
+C337: C1      	  pop  bc
+C338: C9      	  ret
               	; --------------------------------------
               	;             HALT
               	; --------------------------------------
-C2D1:         	word_1021:
-C2D1: CD4AC0  		call	CompileCallFollowing
-C2D4:         	__halt_loop:
-C2D4: F3      	  di
-C2D5: 76      	  halt
-C2D6: 18FC    	  jr   __halt_loop
+C339:         	word_1021:
+C339: CD4AC0  		call	CompileCallFollowing
+C33C:         	__halt_loop:
+C33C: F3      	  di
+C33D: 76      	  halt
+C33E: 18FC    	  jr   __halt_loop
               	; --------------------------------------
               	;             BREAK
               	; --------------------------------------
-C2D8:         	word_1022:
-C2D8: CD3DC0  		call	CopyFollowing
-C2DB: 01      		.db	endcopy_1022 - $ - 1
-C2DC: 76      	  db   $76
-C2DD:         	endcopy_1022:
+C340:         	word_1022:
+C340: CD3DC0  		call	CopyFollowing
+C343: 01      		.db	endcopy_1022 - $ - 1
+C344: 76      	  db   $76
+C345:         	endcopy_1022:
               	; --------------------------------------
               	;             *
               	; --------------------------------------
-C2DD:         	word_1023:
-C2DD: CD4AC0  		call	CompileCallFollowing
-C2E0: C3F9C3  	 jp   MULTMultiply16
+C345:         	word_1023:
+C345: CD4AC0  		call	CompileCallFollowing
+C348: C368C4  	 jp   MULTMultiply16
               	; --------------------------------------
               	;             SWAP
               	; --------------------------------------
-C2E3:         	word_1024:
-C2E3: CD3DC0  		call	CopyFollowing
-C2E6: 01      		.db	endcopy_1024 - $ - 1
-C2E7: EB      	  ex   de,hl
-C2E8:         	endcopy_1024:
+C34B:         	word_1024:
+C34B: CD3DC0  		call	CopyFollowing
+C34E: 01      		.db	endcopy_1024 - $ - 1
+C34F: EB      	  ex   de,hl
+C350:         	endcopy_1024:
               	; --------------------------------------
               	;             A>B
               	; --------------------------------------
-C2E8:         	word_1025:
-C2E8: CD3DC0  		call	CopyFollowing
-C2EB: 02      		.db	endcopy_1025 - $ - 1
-C2EC: 54      	  ld   d,h
-C2ED: 5D      	  ld   e,l
-C2EE:         	endcopy_1025:
+C350:         	word_1025:
+C350: CD3DC0  		call	CopyFollowing
+C353: 02      		.db	endcopy_1025 - $ - 1
+C354: 54      	  ld   d,h
+C355: 5D      	  ld   e,l
+C356:         	endcopy_1025:
               	; --------------------------------------
               	;             A>C
               	; --------------------------------------
-C2EE:         	word_1026:
-C2EE: CD3DC0  		call	CopyFollowing
-C2F1: 02      		.db	endcopy_1026 - $ - 1
-C2F2: 44      	  ld   b,h
-C2F3: 4D      	  ld   c,l
-C2F4:         	endcopy_1026:
+C356:         	word_1026:
+C356: CD3DC0  		call	CopyFollowing
+C359: 02      		.db	endcopy_1026 - $ - 1
+C35A: 44      	  ld   b,h
+C35B: 4D      	  ld   c,l
+C35C:         	endcopy_1026:
               	; --------------------------------------
               	;             B>A
               	; --------------------------------------
-C2F4:         	word_1027:
-C2F4: CD3DC0  		call	CopyFollowing
-C2F7: 02      		.db	endcopy_1027 - $ - 1
-C2F8: 62      	  ld   h,d
-C2F9: 6B      	  ld   l,e
-C2FA:         	endcopy_1027:
+C35C:         	word_1027:
+C35C: CD3DC0  		call	CopyFollowing
+C35F: 02      		.db	endcopy_1027 - $ - 1
+C360: 62      	  ld   h,d
+C361: 6B      	  ld   l,e
+C362:         	endcopy_1027:
               	; --------------------------------------
               	;             B>C
               	; --------------------------------------
-C2FA:         	word_1028:
-C2FA: CD3DC0  		call	CopyFollowing
-C2FD: 02      		.db	endcopy_1028 - $ - 1
-C2FE: 42      	  ld   b,d
-C2FF: 4B      	  ld   c,e
-C300:         	endcopy_1028:
+C362:         	word_1028:
+C362: CD3DC0  		call	CopyFollowing
+C365: 02      		.db	endcopy_1028 - $ - 1
+C366: 42      	  ld   b,d
+C367: 4B      	  ld   c,e
+C368:         	endcopy_1028:
               	; --------------------------------------
               	;             C>A
               	; --------------------------------------
-C300:         	word_1029:
-C300: CD3DC0  		call	CopyFollowing
-C303: 02      		.db	endcopy_1029 - $ - 1
-C304: 60      	  ld   h,b
-C305: 69      	  ld   l,c
-C306:         	endcopy_1029:
+C368:         	word_1029:
+C368: CD3DC0  		call	CopyFollowing
+C36B: 02      		.db	endcopy_1029 - $ - 1
+C36C: 60      	  ld   h,b
+C36D: 69      	  ld   l,c
+C36E:         	endcopy_1029:
               	; --------------------------------------
               	;             C>B
               	; --------------------------------------
-C306:         	word_1030:
-C306: CD3DC0  		call	CopyFollowing
-C309: 02      		.db	endcopy_1030 - $ - 1
-C30A: 50      	  ld   d,b
-C30B: 59      	  ld   e,c
-C30C:         	endcopy_1030:
+C36E:         	word_1030:
+C36E: CD3DC0  		call	CopyFollowing
+C371: 02      		.db	endcopy_1030 - $ - 1
+C372: 50      	  ld   d,b
+C373: 59      	  ld   e,c
+C374:         	endcopy_1030:
               	; --------------------------------------
               	;             PUSH
               	; --------------------------------------
-C30C:         	word_1031:
-C30C: CD3DC0  		call	CopyFollowing
-C30F: 01      		.db	endcopy_1031 - $ - 1
-C310: E5      	 push  hl
-C311:         	endcopy_1031:
+C374:         	word_1031:
+C374: CD3DC0  		call	CopyFollowing
+C377: 01      		.db	endcopy_1031 - $ - 1
+C378: E5      	 push  hl
+C379:         	endcopy_1031:
               	; --------------------------------------
               	;             POP
               	; --------------------------------------
-C311:         	word_1032:
-C311: CD3DC0  		call	CopyFollowing
-C314: 02      		.db	endcopy_1032 - $ - 1
-C315: EB      	 ex   de,hl
-C316: E1      	 pop  hl
-C317:         	endcopy_1032:
+C379:         	word_1032:
+C379: CD3DC0  		call	CopyFollowing
+C37C: 02      		.db	endcopy_1032 - $ - 1
+C37D: EB      	 ex   de,hl
+C37E: E1      	 pop  hl
+C37F:         	endcopy_1032:
               	; --------------------------------------
               	;             A>R
               	; --------------------------------------
-C317:         	word_1033:
-C317: CD3DC0  		call	CopyFollowing
-C31A: 01      		.db	endcopy_1033 - $ - 1
-C31B: E5      	 push  hl
-C31C:         	endcopy_1033:
+C37F:         	word_1033:
+C37F: CD3DC0  		call	CopyFollowing
+C382: 01      		.db	endcopy_1033 - $ - 1
+C383: E5      	 push  hl
+C384:         	endcopy_1033:
               	; --------------------------------------
               	;             R>A
               	; --------------------------------------
-C31C:         	word_1034:
-C31C: CD3DC0  		call	CopyFollowing
-C31F: 01      		.db	endcopy_1034 - $ - 1
-C320: E1      	 pop  hl
-C321:         	endcopy_1034:
+C384:         	word_1034:
+C384: CD3DC0  		call	CopyFollowing
+C387: 01      		.db	endcopy_1034 - $ - 1
+C388: E1      	 pop  hl
+C389:         	endcopy_1034:
               	; --------------------------------------
               	;             B>R
               	; --------------------------------------
-C321:         	word_1035:
-C321: CD3DC0  		call	CopyFollowing
-C324: 01      		.db	endcopy_1035 - $ - 1
-C325: D5      	 push  de
-C326:         	endcopy_1035:
+C389:         	word_1035:
+C389: CD3DC0  		call	CopyFollowing
+C38C: 01      		.db	endcopy_1035 - $ - 1
+C38D: D5      	 push  de
+C38E:         	endcopy_1035:
               	; --------------------------------------
               	;             R>B
               	; --------------------------------------
-C326:         	word_1036:
-C326: CD3DC0  		call	CopyFollowing
-C329: 01      		.db	endcopy_1036 - $ - 1
-C32A: D1      	 pop  de
-C32B:         	endcopy_1036:
+C38E:         	word_1036:
+C38E: CD3DC0  		call	CopyFollowing
+C391: 01      		.db	endcopy_1036 - $ - 1
+C392: D1      	 pop  de
+C393:         	endcopy_1036:
               	; --------------------------------------
               	;             C>R
               	; --------------------------------------
-C32B:         	word_1037:
-C32B: CD3DC0  		call	CopyFollowing
-C32E: 01      		.db	endcopy_1037 - $ - 1
-C32F: C5      	 push  bc
-C330:         	endcopy_1037:
+C393:         	word_1037:
+C393: CD3DC0  		call	CopyFollowing
+C396: 01      		.db	endcopy_1037 - $ - 1
+C397: C5      	 push  bc
+C398:         	endcopy_1037:
               	; --------------------------------------
               	;             R>C
               	; --------------------------------------
-C330:         	word_1038:
-C330: CD3DC0  		call	CopyFollowing
-C333: 01      		.db	endcopy_1038 - $ - 1
-C334: C1      	 pop  bc
-C335:         	endcopy_1038:
+C398:         	word_1038:
+C398: CD3DC0  		call	CopyFollowing
+C39B: 01      		.db	endcopy_1038 - $ - 1
+C39C: C1      	 pop  bc
+C39D:         	endcopy_1038:
               	; --------------------------------------
               	;             AB>R
               	; --------------------------------------
-C335:         	word_1039:
-C335: CD3DC0  		call	CopyFollowing
-C338: 02      		.db	endcopy_1039 - $ - 1
-C339: D5      	 push  de
-C33A: E5      	 push  hl
-C33B:         	endcopy_1039:
+C39D:         	word_1039:
+C39D: CD3DC0  		call	CopyFollowing
+C3A0: 02      		.db	endcopy_1039 - $ - 1
+C3A1: D5      	 push  de
+C3A2: E5      	 push  hl
+C3A3:         	endcopy_1039:
               	; --------------------------------------
               	;             R>AB
               	; --------------------------------------
-C33B:         	word_1040:
-C33B: CD3DC0  		call	CopyFollowing
-C33E: 02      		.db	endcopy_1040 - $ - 1
-C33F: E1      	 pop  hl
-C340: D1      	 pop  de
-C341:         	endcopy_1040:
+C3A3:         	word_1040:
+C3A3: CD3DC0  		call	CopyFollowing
+C3A6: 02      		.db	endcopy_1040 - $ - 1
+C3A7: E1      	 pop  hl
+C3A8: D1      	 pop  de
+C3A9:         	endcopy_1040:
               	; --------------------------------------
               	;             ABC>R
               	; --------------------------------------
-C341:         	word_1041:
-C341: CD3DC0  		call	CopyFollowing
-C344: 03      		.db	endcopy_1041 - $ - 1
-C345: C5      	 push  bc
-C346: D5      	 push  de
-C347: E5      	 push  hl
-C348:         	endcopy_1041:
+C3A9:         	word_1041:
+C3A9: CD3DC0  		call	CopyFollowing
+C3AC: 03      		.db	endcopy_1041 - $ - 1
+C3AD: C5      	 push  bc
+C3AE: D5      	 push  de
+C3AF: E5      	 push  hl
+C3B0:         	endcopy_1041:
               	; --------------------------------------
               	;             R>ABC
               	; --------------------------------------
-C348:         	word_1042:
-C348: CD3DC0  		call	CopyFollowing
-C34B: 03      		.db	endcopy_1042 - $ - 1
-C34C: E1      	 pop  hl
-C34D: D1      	 pop  de
-C34E: C1      	 pop  bc
-C34F:         	endcopy_1042:
+C3B0:         	word_1042:
+C3B0: CD3DC0  		call	CopyFollowing
+C3B3: 03      		.db	endcopy_1042 - $ - 1
+C3B4: E1      	 pop  hl
+C3B5: D1      	 pop  de
+C3B6: C1      	 pop  bc
+C3B7:         	endcopy_1042:
+              	; --------------------------------------
+              	;             H
+              	; --------------------------------------
+C3B7:         	word_1043:
+C3B7: CD3DC0  		call	CopyFollowing
+C3BA: 03      		.db	endcopy_1043 - $ - 1
+C3BB: 211EC0  	  ld  hl,CodeNextFree
+C3BE:         	endcopy_1043:
               	; --------------------------------------
               	;             ---
               	; --------------------------------------
-C34F:         	word_1043:
-C34F: CD3DC0  		call	CopyFollowing
-C352: 02      		.db	endcopy_1043 - $ - 1
-C353: 2B      	  dec  hl
-C354: 2B      	  dec  hl
-C355:         	endcopy_1043:
+C3BE:         	word_1044:
+C3BE: CD3DC0  		call	CopyFollowing
+C3C1: 02      		.db	endcopy_1044 - $ - 1
+C3C2: 2B      	  dec  hl
+C3C3: 2B      	  dec  hl
+C3C4:         	endcopy_1044:
               	; --------------------------------------
               	;             --
               	; --------------------------------------
-C355:         	word_1044:
-C355: CD3DC0  		call	CopyFollowing
-C358: 01      		.db	endcopy_1044 - $ - 1
-C359: 2B      	  dec  hl
-C35A:         	endcopy_1044:
+C3C4:         	word_1045:
+C3C4: CD3DC0  		call	CopyFollowing
+C3C7: 01      		.db	endcopy_1045 - $ - 1
+C3C8: 2B      	  dec  hl
+C3C9:         	endcopy_1045:
               	; --------------------------------------
               	;             ++
               	; --------------------------------------
-C35A:         	word_1045:
-C35A: CD3DC0  		call	CopyFollowing
-C35D: 01      		.db	endcopy_1045 - $ - 1
-C35E: 23      	  inc  hl
-C35F:         	endcopy_1045:
+C3C9:         	word_1046:
+C3C9: CD3DC0  		call	CopyFollowing
+C3CC: 01      		.db	endcopy_1046 - $ - 1
+C3CD: 23      	  inc  hl
+C3CE:         	endcopy_1046:
               	; --------------------------------------
               	;             +++
               	; --------------------------------------
-C35F:         	word_1046:
-C35F: CD3DC0  		call	CopyFollowing
-C362: 02      		.db	endcopy_1046 - $ - 1
-C363: 23      	  inc  hl
-C364: 23      	  inc  hl
-C365:         	endcopy_1046:
+C3CE:         	word_1047:
+C3CE: CD3DC0  		call	CopyFollowing
+C3D1: 02      		.db	endcopy_1047 - $ - 1
+C3D2: 23      	  inc  hl
+C3D3: 23      	  inc  hl
+C3D4:         	endcopy_1047:
               	; --------------------------------------
               	;             0-
               	; --------------------------------------
-C365:         	word_1047:
-C365: CD4AC0  		call	CompileCallFollowing
-C368:         	__negate:
-C368: 7C      	  ld   a,h
-C369: 2F      	  cpl
-C36A: 67      	  ld   h,a
-C36B: 7D      	  ld   a,l
-C36C: 2F      	  cpl
-C36D: 6F      	  ld   l,a
-C36E: 23      	  inc  hl
-C36F: C9      	  ret
+C3D4:         	word_1048:
+C3D4: CD4AC0  		call	CompileCallFollowing
+C3D7:         	__negate:
+C3D7: 7C      	  ld   a,h
+C3D8: 2F      	  cpl
+C3D9: 67      	  ld   h,a
+C3DA: 7D      	  ld   a,l
+C3DB: 2F      	  cpl
+C3DC: 6F      	  ld   l,a
+C3DD: 23      	  inc  hl
+C3DE: C9      	  ret
               	; --------------------------------------
               	;             0<
               	; --------------------------------------
-C370:         	word_1048:
-C370: CD4AC0  		call	CompileCallFollowing
-C373: CB7C    	  bit  7,h
-C375: 210000  	  ld   hl,$0000
-C378: C8      	  ret  z
-C379: 2B      	  dec  hl
-C37A: C9      	  ret
+C3DF:         	word_1049:
+C3DF: CD4AC0  		call	CompileCallFollowing
+C3E2: CB7C    	  bit  7,h
+C3E4: 210000  	  ld   hl,$0000
+C3E7: C8      	  ret  z
+C3E8: 2B      	  dec  hl
+C3E9: C9      	  ret
               	; --------------------------------------
               	;             0=
               	; --------------------------------------
-C37B:         	word_1049:
-C37B: CD4AC0  		call	CompileCallFollowing
-C37E: 7C      	  ld   a,h
-C37F: B5      	  or   l
-C380: 210000  	  ld   hl,$0000
-C383: C0      	  ret  nz
-C384: 2B      	  dec  hl
-C385: C9      	  ret
+C3EA:         	word_1050:
+C3EA: CD4AC0  		call	CompileCallFollowing
+C3ED: 7C      	  ld   a,h
+C3EE: B5      	  or   l
+C3EF: 210000  	  ld   hl,$0000
+C3F2: C0      	  ret  nz
+C3F3: 2B      	  dec  hl
+C3F4: C9      	  ret
               	; --------------------------------------
               	;             2*
               	; --------------------------------------
-C386:         	word_1050:
-C386: CD3DC0  		call	CopyFollowing
-C389: 01      		.db	endcopy_1050 - $ - 1
-C38A: 29      	  add  hl,hl
-C38B:         	endcopy_1050:
+C3F5:         	word_1051:
+C3F5: CD3DC0  		call	CopyFollowing
+C3F8: 01      		.db	endcopy_1051 - $ - 1
+C3F9: 29      	  add  hl,hl
+C3FA:         	endcopy_1051:
               	; --------------------------------------
               	;             4*
               	; --------------------------------------
-C38B:         	word_1051:
-C38B: CD3DC0  		call	CopyFollowing
-C38E: 02      		.db	endcopy_1051 - $ - 1
-C38F: 29      	  add  hl,hl
-C390: 29      	  add  hl,hl
-C391:         	endcopy_1051:
+C3FA:         	word_1052:
+C3FA: CD3DC0  		call	CopyFollowing
+C3FD: 02      		.db	endcopy_1052 - $ - 1
+C3FE: 29      	  add  hl,hl
+C3FF: 29      	  add  hl,hl
+C400:         	endcopy_1052:
               	; --------------------------------------
               	;             8*
               	; --------------------------------------
-C391:         	word_1052:
-C391: CD3DC0  		call	CopyFollowing
-C394: 03      		.db	endcopy_1052 - $ - 1
-C395: 29      	  add  hl,hl
-C396: 29      	  add  hl,hl
-C397: 29      	  add  hl,hl
-C398:         	endcopy_1052:
+C400:         	word_1053:
+C400: CD3DC0  		call	CopyFollowing
+C403: 03      		.db	endcopy_1053 - $ - 1
+C404: 29      	  add  hl,hl
+C405: 29      	  add  hl,hl
+C406: 29      	  add  hl,hl
+C407:         	endcopy_1053:
               	; --------------------------------------
               	;             16*
               	; --------------------------------------
-C398:         	word_1053:
-C398: CD3DC0  		call	CopyFollowing
-C39B: 04      		.db	endcopy_1053 - $ - 1
-C39C: 29      	  add  hl,hl
-C39D: 29      	  add  hl,hl
-C39E: 29      	  add  hl,hl
-C39F: 29      	  add  hl,hl
-C3A0:         	endcopy_1053:
+C407:         	word_1054:
+C407: CD3DC0  		call	CopyFollowing
+C40A: 04      		.db	endcopy_1054 - $ - 1
+C40B: 29      	  add  hl,hl
+C40C: 29      	  add  hl,hl
+C40D: 29      	  add  hl,hl
+C40E: 29      	  add  hl,hl
+C40F:         	endcopy_1054:
               	; --------------------------------------
               	;             2/
               	; --------------------------------------
-C3A0:         	word_1054:
-C3A0: CD3DC0  		call	CopyFollowing
-C3A3: 04      		.db	endcopy_1054 - $ - 1
-C3A4: CB2C    	  sra  h
-C3A6: CB1D    	  rr   l
-C3A8:         	endcopy_1054:
+C40F:         	word_1055:
+C40F: CD3DC0  		call	CopyFollowing
+C412: 04      		.db	endcopy_1055 - $ - 1
+C413: CB2C    	  sra  h
+C415: CB1D    	  rr   l
+C417:         	endcopy_1055:
               	; --------------------------------------
               	;             4/
               	; --------------------------------------
-C3A8:         	word_1055:
-C3A8: CD3DC0  		call	CopyFollowing
-C3AB: 08      		.db	endcopy_1055 - $ - 1
-C3AC: CB2C    	  sra  h
-C3AE: CB1D    	  rr   l
-C3B0: CB2C    	  sra  h
-C3B2: CB1D    	  rr   l
-C3B4:         	endcopy_1055:
+C417:         	word_1056:
+C417: CD3DC0  		call	CopyFollowing
+C41A: 08      		.db	endcopy_1056 - $ - 1
+C41B: CB2C    	  sra  h
+C41D: CB1D    	  rr   l
+C41F: CB2C    	  sra  h
+C421: CB1D    	  rr   l
+C423:         	endcopy_1056:
               	; --------------------------------------
               	;             ABS
               	; --------------------------------------
-C3B4:         	word_1056:
-C3B4: CD4AC0  		call	CompileCallFollowing
-C3B7: CB7C    	  bit  7,h
-C3B9: C8      	  ret  z
-C3BA: C368C3  	  jp   __negate
+C423:         	word_1057:
+C423: CD4AC0  		call	CompileCallFollowing
+C426: CB7C    	  bit  7,h
+C428: C8      	  ret  z
+C429: C3D7C3  	  jp   __negate
               	; --------------------------------------
               	;             BSWAP
               	; --------------------------------------
-C3BD:         	word_1057:
-C3BD: CD3DC0  		call	CopyFollowing
-C3C0: 03      		.db	endcopy_1057 - $ - 1
-C3C1: 7D      	  ld   a,l
-C3C2: 6C      	  ld   l,h
-C3C3: 67      	  ld   h,a
-C3C4:         	endcopy_1057:
+C42C:         	word_1058:
+C42C: CD3DC0  		call	CopyFollowing
+C42F: 03      		.db	endcopy_1058 - $ - 1
+C430: 7D      	  ld   a,l
+C431: 6C      	  ld   l,h
+C432: 67      	  ld   h,a
+C433:         	endcopy_1058:
               	; --------------------------------------
               	;             NOT
               	; --------------------------------------
-C3C4:         	word_1058:
-C3C4: CD4AC0  		call	CompileCallFollowing
-C3C7: 7C      	  ld   a,h
-C3C8: 2F      	  cpl
-C3C9: 67      	  ld   h,a
-C3CA: 7D      	  ld   a,l
-C3CB: 2F      	  cpl
-C3CC: 6F      	  ld   l,a
-C3CD: C9      	  ret
+C433:         	word_1059:
+C433: CD4AC0  		call	CompileCallFollowing
+C436: 7C      	  ld   a,h
+C437: 2F      	  cpl
+C438: 67      	  ld   h,a
+C439: 7D      	  ld   a,l
+C43A: 2F      	  cpl
+C43B: 6F      	  ld   l,a
+C43C: C9      	  ret
               	
               	
               	
-C3CE:         	DIVDivideMod16:
-C3CE: C5      	 push  bc
-C3CF: 42      	 ld   b,d     ; DE
-C3D0: 4B      	 ld   c,e
-C3D1: EB      	 ex   de,hl
-C3D2: 210000  	 ld   hl,0
-C3D5: 78      	 ld   a,b
-C3D6: 0608    	 ld   b,8
-C3D8:         	Div16_Loop1:
-C3D8: 17      	 rla
-C3D9: ED6A    	 adc  hl,hl
-C3DB: ED52    	 sbc  hl,de
-C3DD: 3001    	 jr   nc,Div16_NoAdd1
-C3DF: 19      	 add  hl,de
-C3E0:         	Div16_NoAdd1:
-C3E0: 10F6    	 djnz  Div16_Loop1
-C3E2: 17      	 rla
-C3E3: 2F      	 cpl
-C3E4: 47      	 ld   b,a
-C3E5: 79      	 ld   a,c
-C3E6: 48      	 ld   c,b
-C3E7: 0608    	 ld   b,8
-C3E9:         	Div16_Loop2:
-C3E9: 17      	 rla
-C3EA: ED6A    	 adc  hl,hl
-C3EC: ED52    	 sbc  hl,de
-C3EE: 3001    	 jr   nc,Div16_NoAdd2
-C3F0: 19      	 add  hl,de
-C3F1:         	Div16_NoAdd2:
-C3F1: 10F6    	 djnz  Div16_Loop2
-C3F3: 17      	 rla
-C3F4: 2F      	 cpl
-C3F5: 51      	 ld   d,c
-C3F6: 5F      	 ld   e,a
-C3F7: C1      	 pop  bc
-C3F8: C9      	 ret
-C3F9:         	MULTMultiply16:
-C3F9: C5      	  push  bc
-C3FA: D5      	  push  de
-C3FB: 44      	  ld   b,h        ; get multipliers in DE/BC
-C3FC: 4D      	  ld   c,l
-C3FD: 210000  	  ld   hl,0        ; zero total
-C400:         	__Core__Mult_Loop:
-C400: CB41    	  bit  0,c        ; lsb of shifter is non-zero
-C402: 2801    	  jr   z,__Core__Mult_Shift
-C404: 19      	  add  hl,de        ; add adder to total
-C405:         	__Core__Mult_Shift:
-C405: CB38    	  srl  b         ; shift BC right.
-C407: CB19    	  rr   c
-C409: EB      	  ex   de,hl        ; shift DE left
-C40A: 29      	  add  hl,hl
-C40B: EB      	  ex   de,hl
-C40C: 78      	  ld   a,b        ; loop back if BC is nonzero
-C40D: B1      	  or   c
-C40E: 20F0    	  jr   nz,__Core__Mult_Loop
-C410: D1      	  pop  de
-C411: C1      	  pop  bc
-C412: C9      	  ret
-C413:         	FreeSpace:
+C43D:         	DIVDivideMod16:
+C43D: C5      	 push  bc
+C43E: 42      	 ld   b,d     ; DE
+C43F: 4B      	 ld   c,e
+C440: EB      	 ex   de,hl
+C441: 210000  	 ld   hl,0
+C444: 78      	 ld   a,b
+C445: 0608    	 ld   b,8
+C447:         	Div16_Loop1:
+C447: 17      	 rla
+C448: ED6A    	 adc  hl,hl
+C44A: ED52    	 sbc  hl,de
+C44C: 3001    	 jr   nc,Div16_NoAdd1
+C44E: 19      	 add  hl,de
+C44F:         	Div16_NoAdd1:
+C44F: 10F6    	 djnz  Div16_Loop1
+C451: 17      	 rla
+C452: 2F      	 cpl
+C453: 47      	 ld   b,a
+C454: 79      	 ld   a,c
+C455: 48      	 ld   c,b
+C456: 0608    	 ld   b,8
+C458:         	Div16_Loop2:
+C458: 17      	 rla
+C459: ED6A    	 adc  hl,hl
+C45B: ED52    	 sbc  hl,de
+C45D: 3001    	 jr   nc,Div16_NoAdd2
+C45F: 19      	 add  hl,de
+C460:         	Div16_NoAdd2:
+C460: 10F6    	 djnz  Div16_Loop2
+C462: 17      	 rla
+C463: 2F      	 cpl
+C464: 51      	 ld   d,c
+C465: 5F      	 ld   e,a
+C466: C1      	 pop  bc
+C467: C9      	 ret
+C468:         	MULTMultiply16:
+C468: C5      	  push  bc
+C469: D5      	  push  de
+C46A: 44      	  ld   b,h        ; get multipliers in DE/BC
+C46B: 4D      	  ld   c,l
+C46C: 210000  	  ld   hl,0        ; zero total
+C46F:         	__Core__Mult_Loop:
+C46F: CB41    	  bit  0,c        ; lsb of shifter is non-zero
+C471: 2801    	  jr   z,__Core__Mult_Shift
+C473: 19      	  add  hl,de        ; add adder to total
+C474:         	__Core__Mult_Shift:
+C474: CB38    	  srl  b         ; shift BC right.
+C476: CB19    	  rr   c
+C478: EB      	  ex   de,hl        ; shift DE left
+C479: 29      	  add  hl,hl
+C47A: EB      	  ex   de,hl
+C47B: 78      	  ld   a,b        ; loop back if BC is nonzero
+C47C: B1      	  or   c
+C47D: 20F0    	  jr   nz,__Core__Mult_Loop
+C47F: D1      	  pop  de
+C480: C1      	  pop  bc
+C481: C9      	  ret
+C482:         	FreeSpace:
               	
               	; ***************************************************************************************
               	;
@@ -1252,8 +1350,8 @@ C413:         	FreeSpace:
               	;
               	; ***************************************************************************************
               	
-C413: FFFFFFFF		.org	$E000
-C417: FF...   	
+C482: FFFFFFFF		.org	$E000
+C486: FF...   	
 E000: 50535200		.db  	"PSR",0 						; 4 bytes filler.
 E004: 009C00B0		.db  	0,$9C,0,$B0,0,$6C 				; 12 bytes ROM Identify
 E008: 006C    	
@@ -1265,13 +1363,15 @@ E010: C300C0  		jp 		start 							; BIOS enters here.
               	
 E013:         	testCode:
               		.include "test/test.inc"
-E013: A288899F		.db	$a2,$88,$89,$9f,$a1,$e0,$c4,$cf,$d5,$c2,$cc,$c5,$60,$72,$6a,$60,$7b,$a0,$b1,$b2,$a0,$ad,$b4,$60,$64,$72,$41,$0
-E017: A1E0C4CF	
-E01B: D5C2CCC5	
-E01F: 60726A60	
-E023: 7BA0B1B2	
-E027: A0ADB460	
-E02B: 64724100	
+E013: C1C4C4F5		.db	$c1,$c4,$c4,$f5,$60,$75,$60,$6b,$60,$7b,$a0,$b1,$b0,$a0,$81,$84,$84,$b5,$a0,$81,$84,$84,$b5,$a0,$81,$be,$83,$a0,$88,$a0,$81,$be,$82,$a0,$80,$0
+E017: 6075606B	
+E01B: 607BA0B1	
+E01F: B0A08184	
+E023: 84B5A081	
+E027: 8484B5A0	
+E02B: 81BE83A0	
+E02F: 88A081BE	
+E033: 82A08000	
               	
               	
               	; ***************************************************************************************
@@ -1281,253 +1381,257 @@ E02B: 64724100
               	; ***************************************************************************************
               	
               		.include "vocabulary/dictionary.inc" 	; get length
-014D:         	DictionarySize = 333
-E02F: FFFFFFFF		.org 	CodeEnd-DictionarySize+1 		; set start pointer
-E033: FF...   	
-FEB3:         	DictionaryInstalledBase:
+0151:         	DictionarySize = 337
+E037: FFFFFFFF		.org 	CodeEnd-DictionarySize+1 		; set start pointer
+E03B: FF...   	
+FEAF:         	DictionaryInstalledBase:
               		.include "vocabulary/dictionary.asm" 	; pregenerated dictionary.
               	; <
-FEB3: 80      		.db	$80
-FEB4: EFC1    		.dw	word_1000
-FEB6: BC      		.db	$bc
+FEAF: 80      		.db	$80
+FEB0: 56C2    		.dw	word_1000
+FEB2: BC      		.db	$bc
               	; =
-FEB7: 80      		.db	$80
-FEB8: 07C2    		.dw	word_1001
-FEBA: BD      		.db	$bd
+FEB3: 80      		.db	$80
+FEB4: 6EC2    		.dw	word_1001
+FEB6: BD      		.db	$bd
               	; -
-FEBB: 80      		.db	$80
-FEBC: 16C2    		.dw	word_1002
-FEBE: AD      		.db	$ad
+FEB7: 80      		.db	$80
+FEB8: 7DC2    		.dw	word_1002
+FEBA: AD      		.db	$ad
               	; +
-FEBF: 80      		.db	$80
-FEC0: 20C2    		.dw	word_1003
-FEC2: AB      		.db	$ab
+FEBB: 80      		.db	$80
+FEBC: 87C2    		.dw	word_1003
+FEBE: AB      		.db	$ab
               	; AND
-FEC3: 80      		.db	$80
-FEC4: 25C2    		.dw	word_1004
-FEC6: 010E84  		.db	$1,$e,$84
+FEBF: 80      		.db	$80
+FEC0: 8CC2    		.dw	word_1004
+FEC2: 010E84  		.db	$1,$e,$84
               	; OR
-FEC9: 80      		.db	$80
-FECA: 2FC2    		.dw	word_1005
-FECC: 0F92    		.db	$f,$92
+FEC5: 80      		.db	$80
+FEC6: 96C2    		.dw	word_1005
+FEC8: 0F92    		.db	$f,$92
               	; XOR
-FECE: 80      		.db	$80
-FECF: 39C2    		.dw	word_1006
-FED1: 180F92  		.db	$18,$f,$92
+FECA: 80      		.db	$80
+FECB: A0C2    		.dw	word_1006
+FECD: 180F92  		.db	$18,$f,$92
               	; /
-FED4: 80      		.db	$80
-FED5: 43C2    		.dw	word_1007
-FED7: AF      		.db	$af
+FED0: 80      		.db	$80
+FED1: AAC2    		.dw	word_1007
+FED3: AF      		.db	$af
               	; MOD
-FED8: 80      		.db	$80
-FED9: 4DC2    		.dw	word_1008
-FEDB: 0D0F84  		.db	$d,$f,$84
+FED4: 80      		.db	$80
+FED5: B4C2    		.dw	word_1008
+FED7: 0D0F84  		.db	$d,$f,$84
               	; !
-FEDE: 80      		.db	$80
-FEDF: 56C2    		.dw	word_1009
-FEE1: A1      		.db	$a1
+FEDA: 80      		.db	$80
+FEDB: BDC2    		.dw	word_1009
+FEDD: A1      		.db	$a1
               	; @
-FEE2: 80      		.db	$80
-FEE3: 5EC2    		.dw	word_1010
-FEE5: 80      		.db	$80
+FEDE: 80      		.db	$80
+FEDF: C5C2    		.dw	word_1010
+FEE1: 80      		.db	$80
               	; +!
-FEE6: 80      		.db	$80
-FEE7: 66C2    		.dw	word_1011
-FEE9: 2BA1    		.db	$2b,$a1
+FEE2: 80      		.db	$80
+FEE3: CDC2    		.dw	word_1011
+FEE5: 2BA1    		.db	$2b,$a1
               	; C!
-FEEB: 80      		.db	$80
-FEEC: 72C2    		.dw	word_1012
-FEEE: 03A1    		.db	$3,$a1
+FEE7: 80      		.db	$80
+FEE8: D9C2    		.dw	word_1012
+FEEA: 03A1    		.db	$3,$a1
               	; C@
-FEF0: 80      		.db	$80
-FEF1: 77C2    		.dw	word_1013
-FEF3: 0380    		.db	$3,$80
+FEEC: 80      		.db	$80
+FEED: DEC2    		.dw	word_1013
+FEEF: 0380    		.db	$3,$80
               	; P@
-FEF5: 80      		.db	$80
-FEF6: 7EC2    		.dw	word_1014
-FEF8: 1080    		.db	$10,$80
+FEF1: 80      		.db	$80
+FEF2: E5C2    		.dw	word_1014
+FEF4: 1080    		.db	$10,$80
               	; P!
-FEFA: 80      		.db	$80
-FEFB: 86C2    		.dw	word_1015
-FEFD: 10A1    		.db	$10,$a1
+FEF6: 80      		.db	$80
+FEF7: EDC2    		.dw	word_1015
+FEF9: 10A1    		.db	$10,$a1
               	; ,
-FEFF: 80      		.db	$80
-FF00: 8CC2    		.dw	word_1016
-FF02: AC      		.db	$ac
+FEFB: 80      		.db	$80
+FEFC: F3C2    		.dw	word_1016
+FEFE: AC      		.db	$ac
               	; ;
-FF03: 81      		.db	$81
-FF04: 92C2    		.dw	word_1017
-FF06: BB      		.db	$bb
+FEFF: 81      		.db	$81
+FF00: F9C2    		.dw	word_1017
+FF02: BB      		.db	$bb
               	; C,
-FF07: 80      		.db	$80
-FF08: 97C2    		.dw	word_1018
-FF0A: 03AC    		.db	$3,$ac
+FF03: 80      		.db	$80
+FF04: FFC2    		.dw	word_1018
+FF06: 03AC    		.db	$3,$ac
               	; COPY
-FF0C: 80      		.db	$80
-FF0D: 9EC2    		.dw	word_1019
-FF0F: 030F1099		.db	$3,$f,$10,$99
+FF08: 80      		.db	$80
+FF09: 06C3    		.dw	word_1019
+FF0B: 030F1099		.db	$3,$f,$10,$99
               	; FILL
-FF13: 80      		.db	$80
-FF14: BEC2    		.dw	word_1020
-FF16: 06090C8C		.db	$6,$9,$c,$8c
+FF0F: 80      		.db	$80
+FF10: 26C3    		.dw	word_1020
+FF12: 06090C8C		.db	$6,$9,$c,$8c
               	; HALT
-FF1A: 80      		.db	$80
-FF1B: D1C2    		.dw	word_1021
-FF1D: 08010C94		.db	$8,$1,$c,$94
+FF16: 80      		.db	$80
+FF17: 39C3    		.dw	word_1021
+FF19: 08010C94		.db	$8,$1,$c,$94
               	; BREAK
-FF21: 80      		.db	$80
-FF22: D8C2    		.dw	word_1022
-FF24: 02120501		.db	$2,$12,$5,$1,$8b
-FF28: 8B      	
+FF1D: 80      		.db	$80
+FF1E: 40C3    		.dw	word_1022
+FF20: 02120501		.db	$2,$12,$5,$1,$8b
+FF24: 8B      	
               	; *
-FF29: 80      		.db	$80
-FF2A: DDC2    		.dw	word_1023
-FF2C: AA      		.db	$aa
+FF25: 80      		.db	$80
+FF26: 45C3    		.dw	word_1023
+FF28: AA      		.db	$aa
               	; SWAP
-FF2D: 80      		.db	$80
-FF2E: E3C2    		.dw	word_1024
-FF30: 13170190		.db	$13,$17,$1,$90
+FF29: 80      		.db	$80
+FF2A: 4BC3    		.dw	word_1024
+FF2C: 13170190		.db	$13,$17,$1,$90
               	; A>B
-FF34: 80      		.db	$80
-FF35: E8C2    		.dw	word_1025
-FF37: 013E82  		.db	$1,$3e,$82
+FF30: 80      		.db	$80
+FF31: 50C3    		.dw	word_1025
+FF33: 013E82  		.db	$1,$3e,$82
               	; A>C
-FF3A: 80      		.db	$80
-FF3B: EEC2    		.dw	word_1026
-FF3D: 013E83  		.db	$1,$3e,$83
+FF36: 80      		.db	$80
+FF37: 56C3    		.dw	word_1026
+FF39: 013E83  		.db	$1,$3e,$83
               	; B>A
-FF40: 80      		.db	$80
-FF41: F4C2    		.dw	word_1027
-FF43: 023E81  		.db	$2,$3e,$81
+FF3C: 80      		.db	$80
+FF3D: 5CC3    		.dw	word_1027
+FF3F: 023E81  		.db	$2,$3e,$81
               	; B>C
-FF46: 80      		.db	$80
-FF47: FAC2    		.dw	word_1028
-FF49: 023E83  		.db	$2,$3e,$83
+FF42: 80      		.db	$80
+FF43: 62C3    		.dw	word_1028
+FF45: 023E83  		.db	$2,$3e,$83
               	; C>A
-FF4C: 80      		.db	$80
-FF4D: 00C3    		.dw	word_1029
-FF4F: 033E81  		.db	$3,$3e,$81
+FF48: 80      		.db	$80
+FF49: 68C3    		.dw	word_1029
+FF4B: 033E81  		.db	$3,$3e,$81
               	; C>B
-FF52: 80      		.db	$80
-FF53: 06C3    		.dw	word_1030
-FF55: 033E82  		.db	$3,$3e,$82
+FF4E: 80      		.db	$80
+FF4F: 6EC3    		.dw	word_1030
+FF51: 033E82  		.db	$3,$3e,$82
               	; PUSH
-FF58: 81      		.db	$81
-FF59: 0CC3    		.dw	word_1031
-FF5B: 10151388		.db	$10,$15,$13,$88
+FF54: 81      		.db	$81
+FF55: 74C3    		.dw	word_1031
+FF57: 10151388		.db	$10,$15,$13,$88
               	; POP
-FF5F: 81      		.db	$81
-FF60: 11C3    		.dw	word_1032
-FF62: 100F90  		.db	$10,$f,$90
+FF5B: 81      		.db	$81
+FF5C: 79C3    		.dw	word_1032
+FF5E: 100F90  		.db	$10,$f,$90
               	; A>R
-FF65: 81      		.db	$81
-FF66: 17C3    		.dw	word_1033
-FF68: 013E92  		.db	$1,$3e,$92
+FF61: 81      		.db	$81
+FF62: 7FC3    		.dw	word_1033
+FF64: 013E92  		.db	$1,$3e,$92
               	; R>A
-FF6B: 81      		.db	$81
-FF6C: 1CC3    		.dw	word_1034
-FF6E: 123E81  		.db	$12,$3e,$81
+FF67: 81      		.db	$81
+FF68: 84C3    		.dw	word_1034
+FF6A: 123E81  		.db	$12,$3e,$81
               	; B>R
-FF71: 81      		.db	$81
-FF72: 21C3    		.dw	word_1035
-FF74: 023E92  		.db	$2,$3e,$92
+FF6D: 81      		.db	$81
+FF6E: 89C3    		.dw	word_1035
+FF70: 023E92  		.db	$2,$3e,$92
               	; R>B
-FF77: 81      		.db	$81
-FF78: 26C3    		.dw	word_1036
-FF7A: 123E82  		.db	$12,$3e,$82
+FF73: 81      		.db	$81
+FF74: 8EC3    		.dw	word_1036
+FF76: 123E82  		.db	$12,$3e,$82
               	; C>R
-FF7D: 81      		.db	$81
-FF7E: 2BC3    		.dw	word_1037
-FF80: 033E92  		.db	$3,$3e,$92
+FF79: 81      		.db	$81
+FF7A: 93C3    		.dw	word_1037
+FF7C: 033E92  		.db	$3,$3e,$92
               	; R>C
-FF83: 81      		.db	$81
-FF84: 30C3    		.dw	word_1038
-FF86: 123E83  		.db	$12,$3e,$83
+FF7F: 81      		.db	$81
+FF80: 98C3    		.dw	word_1038
+FF82: 123E83  		.db	$12,$3e,$83
               	; AB>R
-FF89: 81      		.db	$81
-FF8A: 35C3    		.dw	word_1039
-FF8C: 01023E92		.db	$1,$2,$3e,$92
+FF85: 81      		.db	$81
+FF86: 9DC3    		.dw	word_1039
+FF88: 01023E92		.db	$1,$2,$3e,$92
               	; R>AB
-FF90: 81      		.db	$81
-FF91: 3BC3    		.dw	word_1040
-FF93: 123E0182		.db	$12,$3e,$1,$82
+FF8C: 81      		.db	$81
+FF8D: A3C3    		.dw	word_1040
+FF8F: 123E0182		.db	$12,$3e,$1,$82
               	; ABC>R
-FF97: 81      		.db	$81
-FF98: 41C3    		.dw	word_1041
-FF9A: 0102033E		.db	$1,$2,$3,$3e,$92
-FF9E: 92      	
+FF93: 81      		.db	$81
+FF94: A9C3    		.dw	word_1041
+FF96: 0102033E		.db	$1,$2,$3,$3e,$92
+FF9A: 92      	
               	; R>ABC
-FF9F: 81      		.db	$81
-FFA0: 48C3    		.dw	word_1042
-FFA2: 123E0102		.db	$12,$3e,$1,$2,$83
-FFA6: 83      	
+FF9B: 81      		.db	$81
+FF9C: B0C3    		.dw	word_1042
+FF9E: 123E0102		.db	$12,$3e,$1,$2,$83
+FFA2: 83      	
+              	; H
+FFA3: 80      		.db	$80
+FFA4: B7C3    		.dw	word_1043
+FFA6: 88      		.db	$88
               	; ---
 FFA7: 80      		.db	$80
-FFA8: 4FC3    		.dw	word_1043
+FFA8: BEC3    		.dw	word_1044
 FFAA: 2D2DAD  		.db	$2d,$2d,$ad
               	; --
 FFAD: 80      		.db	$80
-FFAE: 55C3    		.dw	word_1044
+FFAE: C4C3    		.dw	word_1045
 FFB0: 2DAD    		.db	$2d,$ad
               	; ++
 FFB2: 80      		.db	$80
-FFB3: 5AC3    		.dw	word_1045
+FFB3: C9C3    		.dw	word_1046
 FFB5: 2BAB    		.db	$2b,$ab
               	; +++
 FFB7: 80      		.db	$80
-FFB8: 5FC3    		.dw	word_1046
+FFB8: CEC3    		.dw	word_1047
 FFBA: 2B2BAB  		.db	$2b,$2b,$ab
               	; 0-
 FFBD: 80      		.db	$80
-FFBE: 65C3    		.dw	word_1047
+FFBE: D4C3    		.dw	word_1048
 FFC0: 30AD    		.db	$30,$ad
               	; 0<
 FFC2: 80      		.db	$80
-FFC3: 70C3    		.dw	word_1048
+FFC3: DFC3    		.dw	word_1049
 FFC5: 30BC    		.db	$30,$bc
               	; 0=
 FFC7: 80      		.db	$80
-FFC8: 7BC3    		.dw	word_1049
+FFC8: EAC3    		.dw	word_1050
 FFCA: 30BD    		.db	$30,$bd
               	; 2*
 FFCC: 80      		.db	$80
-FFCD: 86C3    		.dw	word_1050
+FFCD: F5C3    		.dw	word_1051
 FFCF: 32AA    		.db	$32,$aa
               	; 4*
 FFD1: 80      		.db	$80
-FFD2: 8BC3    		.dw	word_1051
+FFD2: FAC3    		.dw	word_1052
 FFD4: 34AA    		.db	$34,$aa
               	; 8*
 FFD6: 80      		.db	$80
-FFD7: 91C3    		.dw	word_1052
+FFD7: 00C4    		.dw	word_1053
 FFD9: 38AA    		.db	$38,$aa
               	; 16*
 FFDB: 80      		.db	$80
-FFDC: 98C3    		.dw	word_1053
+FFDC: 07C4    		.dw	word_1054
 FFDE: 3136AA  		.db	$31,$36,$aa
               	; 2/
 FFE1: 80      		.db	$80
-FFE2: A0C3    		.dw	word_1054
+FFE2: 0FC4    		.dw	word_1055
 FFE4: 32AF    		.db	$32,$af
               	; 4/
 FFE6: 80      		.db	$80
-FFE7: A8C3    		.dw	word_1055
+FFE7: 17C4    		.dw	word_1056
 FFE9: 34AF    		.db	$34,$af
               	; ABS
 FFEB: 80      		.db	$80
-FFEC: B4C3    		.dw	word_1056
+FFEC: 23C4    		.dw	word_1057
 FFEE: 010293  		.db	$1,$2,$93
               	; BSWAP
 FFF1: 80      		.db	$80
-FFF2: BDC3    		.dw	word_1057
+FFF2: 2CC4    		.dw	word_1058
 FFF4: 02131701		.db	$2,$13,$17,$1,$90
 FFF8: 90      	
               	; NOT
 FFF9: 80      		.db	$80
-FFFA: C4C3    		.dw	word_1058
+FFFA: 33C4    		.dw	word_1059
 FFFC: 0E0F94  		.db	$e,$f,$94
 FFFF: 00      		.db	$00
 
 
-total time: 0.0095 sec.
+total time: 0.0102 sec.
 no errors

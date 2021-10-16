@@ -15,7 +15,10 @@
 
 ; ***************************************************************************************
 
-@copies 	; 	compile
+@executes 	; 	compile
+		ld 		a,$C9 								; compile a RET
+		call 	CompileByte  		
+		; TODO: Check close to $E000,  so we can skip the ROM header.
 		ret
 @end
 

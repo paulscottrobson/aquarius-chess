@@ -198,7 +198,7 @@ _CECCompileConstant:
 		call 	CompileWord 				; compile the number to load
 		jr 		_COPopHLExit 				; and exit
 		;
-		; 		Do the equivalent of executing a constant.
+		; 		Do the equivalent of executing a constant e.g. swap A & B n=>A
 		;
 _CECExecuteConstant:
 		ld 		de,(RegA) 					; A -> B
@@ -247,7 +247,6 @@ _CSTRNotBar:
 _CSTRDone:
 		xor 	a 							; write $00 end of string
 		call 	CompileByte
-		halt
 		jp 		_CEExecuteOrCompile 		; and go do it, perhaps.		
 
 ; ***************************************************************************************
