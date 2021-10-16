@@ -61,7 +61,7 @@ s = """
 //
 // 		M7 Source code
 //
-	\"hi_! :double 2* ; [ 12 -4 ] $2A
+	[ \"hi_! ] :double 2* ; [ 12 -4 ] $2A
 """.split("\n")
 puts("\t.db\t#{CodeObject.new.process_block(s).to_hex}\n\n")
 

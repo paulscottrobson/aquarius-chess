@@ -125,6 +125,8 @@ _CECNotCompileOnly:
 		push 	de 
 
 		call 	_COCallRoutine 				; call the routine to compile what it does.
+
+_CEExecuteOrCompile:		
 		pop 	hl 							; restore code position at start to HL.
 		pop 	af 							; restore word colour.
 
@@ -194,7 +196,6 @@ _CECCompileConstant:
 		ld 		a,$21 						; LD HL,xxxxx
 		call 	CompileByte
 		call 	CompileWord 				; compile the number to load
-		halt
 		jr 		_COPopHLExit 				; and exit
 		;
 		; 		Do the equivalent of executing a constant.
@@ -208,21 +209,75 @@ _CECExecuteConstant:
 		; 		HL points to a string, prefixed by a ". Note, this is transient in execute mode.
 		;
 _CSTRProcess:
-		halt
-		
+		ld 		a,(hl) 						; push colour on stack
+		and 	$C0
+		push 	af
+		ld 		de,(CodeNextFree) 			; save the current code position on the stack.
+		push 	de 
 
+		push 	hl 							; save string address
+		ld 		a,$CD 						; compile CALL StringConstantHandler
+		call 	CompileByte 				
+		ld 		hl,StringConstantHandler
+		call 	CompileWord
+		pop 	hl
+		inc 	hl 							; skip over the initial single quote
+_CSTRLoop:
+		ld 		a,(hl) 						; reached the end ? either 00 orr coloured space.
+		or 		a
+		jr 		z,_CSTRDone
+		and 	$3F
+		cp 		$20
+		jr 		z,_CSTRDone		
+		xor 	$20 						; convert back to ASCII 7 bit.
+		add 	$20
+		cp 		'A' 						; make lower case as default.
+		jr 		c,_CSTRNotAlpha
+		cp 		'Z'+1
+		jr 		nc,_CSTRNotAlpha
+		add 	$20
+_CSTRNotAlpha:		
+		cp 		'_' 						; map _ to space
+		jr 		nz,_CSTRNotBar
+		ld 		a,' '
+_CSTRNotBar:		
+		call 	CompileByte  				; write out
+		inc 	hl 							; next byte
+		jr 		_CSTRLoop
+_CSTRDone:
+		xor 	a 							; write $00 end of string
+		call 	CompileByte
+		halt
+		jp 		_CEExecuteOrCompile 		; and go do it, perhaps.		
 
 ; ***************************************************************************************
 ;
-; 						Write dictionary word out backwards
+; 						Write dictionary word out working downwards
 ;
 ; ***************************************************************************************
 
 CompileWriteDictionary:
 		push 	hl
-		ld 		hl,(DictionaryBase)
+		ld 		hl,(DictionaryBase) 		; hence pre-decrement address.
 		dec 	hl
 		ld 		(hl),a
 		ld 		(DictionaryBase),hl
 		pop 	hl
+		ret
+
+; ***************************************************************************************
+;
+;					 Put in HL the ASCIIZ constant following
+;
+; ***************************************************************************************
+
+StringConstantHandler:
+		pop 	hl 							; get the return address into HL, leave on stack		
+		push 	hl
+_SCHEnd: 									; advance HL past the string
+		ld 		a,(hl)
+		inc 	hl
+		or 		a
+		jr 		nz,_SCHEnd		
+		ex 		(sp),hl 					; swap them round, so HL = start and (SP) is the byte after
 		ret
