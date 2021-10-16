@@ -1,0 +1,13 @@
+require stdlib,console 
+
+:test 
+	con.clear 42 con.emit 0 con.paper 
+	43 con.emit 13 con.emit 44 con.emit con.cr 1 con.ink 
+	"Hello_World con.print
+	13 con.emit 42 con.emit
+	1564 times a>r 15 mod ++ con.ink r>a 255 and con.emit tend
+	repeat con.get con.emit forever
+; 
+
+[0 4096 c!]
+[test]

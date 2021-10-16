@@ -1,0 +1,103 @@
+// ***************************************************************************************
+// ***************************************************************************************
+//
+//		Name : 		stdlib.m7
+//		Author :	Paul Robson (paul@robsons.org.uk)
+//		Date : 		16th October 2021
+//		Purpose :	M7 Standard library
+//
+// ***************************************************************************************
+// ***************************************************************************************
+
+//
+// 		Switch to fast mode.
+//
+[1 4096 c!]
+
+//
+// 		Word which unpicks the call to generate call code, thus making word immediate
+//
+:make.immediate -3 h +! ;
+
+//
+//		Word which makes a word immediate which is itself immediate
+//
+:immediate [make.immediate] make.immediate ;
+
+//
+// 		Temps for structures
+//
+:_times_loop variable 
+:_repeat_loop variable 
+:_if_patch variable 
+
+//
+// 		Top of times loop n times counts n-1 .. 0
+//
+:times immediate
+		h @@ _times_loop !! 	// Save loop back address
+		$2B c, 					// DEC  HL
+		$E5 c, 					// PUSH HL
+;
+
+//
+// 		Bottom of times loop
+//
+:tend immediate
+		$E1 c,					// POP HL
+		$7C c, 					// LD A,H
+		$B5 c,					// OR L
+		$C2 c, _times_loop @@ , // JP NZ,<loop>
+;
+
+//
+// 		Repeat loop
+//
+:repeat immediate 
+		h @@ _repeat_loop !!
+;
+
+//
+// 		Repeat terminators
+//
+:until immediate
+		$7C c, 					// LD A,H
+		$B5 c,					// OR L
+		$CA c, _repeat_loop @@ ,// JP Z,<loop>
+;
+
+:forever immediate
+		$C3 c, _repeat_loop @@ ,// JP <loop>
+;
+
+//
+// 		If non zero
+//
+:if immediate
+		$7C c, 					// LD A,H
+		$B5 c,					// OR L
+		$CA c, 					// JP Z,
+		h @@ _if_patch !!  		// Save jump patch
+		0 , 		
+;
+
+//
+// 		If negative
+//
+:-if immediate
+		$CB c, $7C c, 			// BIT 7,H
+		$CA c, 					// JP Z,
+		h @@ _if_patch !!  		// Save jump patch
+		0 , 		
+;
+
+:else immediate
+		H @@ 3 + _if_patch @@ ! // Set the jump address of IF to three on.
+		$C3 c, 					// JP 
+		h @@ _if_patch !!  		// Save jump patch
+		0 , 		
+;
+
+:then immediate 
+		h @@ _if_patch @@ !
+;

@@ -1,0 +1,126 @@
+// ***************************************************************************************
+// ***************************************************************************************
+//
+//		Name : 		console.m7
+//		Author :	Paul Robson (paul@robsons.org.uk)
+//		Date : 		16th October 2021
+//		Purpose :	M7 Console library
+//
+// ***************************************************************************************
+// ***************************************************************************************
+
+:con.pos 	variable 									// Position in char memory
+:con.x   	variable 									// Coordinates
+:con.y  	variable 
+:con.colour variable 									// Colour byte (fgr and bgr)
+
+[ $20 con.colour ! ] 									// Initialise colour
+
+//
+// 		Home cursor
+//
+:con.home 	
+	ab>r 
+		0 con.x !! 0 con.y !! $3028 con.pos !!
+	r>ab ;
+
+//
+// 		Set ink and paper
+//
+:con.ink 
+	ab>r 
+		15 and a>r con.colour @@ $0F and con.colour !! r>a 16* con.colour +! 
+	r>ab ;
+
+:con.paper 
+	ab>r
+		15 and a>r con.colour @@ $F0 and con.colour !! r>a con.colour +! 
+	r>ab ;
+
+//
+// 		Clear screen home cursor
+//
+:con.clear abc>r 
+	con.home 
+	1024 a>c 
+	$3000 $20 fill
+	$3400 con.colour @@ fill 
+r>abc ;
+
+//
+// 		Scroll 20 screen lines
+//
+:_con.scroll 
+	19 40 * a>c  										// 19 * 40 
+	$3028 $3050 copy 									// Scroll up chars
+	$3428 $3450 copy 									// Scroll up colour
+	40 a>c 												// blank line
+	$3320 $20 fill
+	$3720 con.colour @@ fill
+	-1 con.y +! 										// Fix position
+	-40 con.pos +!
+;
+
+//
+//		Down one line at EOL.
+//
+:_con.down 
+	1 con.y +! 0 con.x !! 								// Down one, back to left
+	con.y @@ 20 = if _con.scroll then ; 				// Scroll required.
+;
+
+//
+// 		Emit char, no controls.
+//
+:_con.emit 	
+	con.pos @ c!  										// Write char
+	con.pos @@ 1024 + con.colour @@ swap c!  			// Write colour
+	1 con.pos +! 1 con.x +! 							// Right one
+	con.x @@ 40 = if _con.down then  					// Next line ?
+;
+
+//
+// 		CR to start of next line
+//
+:con.cr 
+		abc>r
+		repeat 
+			32 _con.emit 
+		con.x @@ 0= until 
+		r>abc
+;
+
+//
+// 		Char print with check for CR
+//
+:con.emit 
+		abc>r 
+		a>r 13 = if 
+			r>a con.cr 
+		else 
+			r>a _con.emit 
+		then 
+		r>abc 
+;
+
+//
+//		Print ASCIIZ string
+//
+:con.print 
+		ab>r 
+		repeat 
+			a>b c@ if con.emit else r>ab ; then
+			b>a ++
+		forever
+;
+
+//
+// 		Keyboard routine in Aquarius ROM at $1EA2
+//
+:con.inkey 
+		[ $cd c, $1ea2 , $6f c, $26 c, $00 c, ]
+;
+
+:con.get 
+		repeat con.inkey until 
+;

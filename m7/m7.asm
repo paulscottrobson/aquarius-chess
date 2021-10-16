@@ -33,7 +33,7 @@ start:
 	.word	CompileWord
 	.word	CompileByte
 
-	.include "data.asm" 					; data area.
+	.include "kernel/data.asm" 				; data area.
 	.include "kernel/kernel.asm"			; kernel code.	
 
 ; ***************************************************************************************
@@ -59,8 +59,9 @@ FreeSpace:
 	jp 		start 							; BIOS enters here.
 
 
+	.org 	$E100
 testCode:
-	.include "test/test.inc"
+	.incbin "m7source.bin"
 
 ; ***************************************************************************************
 ;
