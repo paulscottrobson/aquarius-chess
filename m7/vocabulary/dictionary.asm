@@ -174,68 +174,84 @@
 	.db	$80
 	.dw	word_1043
 	.db	$88
-; ---
+; CONSTANT
 	.db	$80
 	.dw	word_1044
+	.db	$3,$f,$e,$13,$14,$1,$e,$94
+; VARIABLE
+	.db	$80
+	.dw	word_1045
+	.db	$16,$1,$12,$9,$1,$2,$c,$85
+; !!
+	.db	$81
+	.dw	word_1046
+	.db	$21,$a1
+; @@
+	.db	$81
+	.dw	word_1047
+	.db	$0,$80
+; ---
+	.db	$80
+	.dw	word_1048
 	.db	$2d,$2d,$ad
 ; --
 	.db	$80
-	.dw	word_1045
+	.dw	word_1049
 	.db	$2d,$ad
 ; ++
 	.db	$80
-	.dw	word_1046
+	.dw	word_1050
 	.db	$2b,$ab
 ; +++
 	.db	$80
-	.dw	word_1047
+	.dw	word_1051
 	.db	$2b,$2b,$ab
 ; 0-
 	.db	$80
-	.dw	word_1048
+	.dw	word_1052
 	.db	$30,$ad
 ; 0<
 	.db	$80
-	.dw	word_1049
+	.dw	word_1053
 	.db	$30,$bc
 ; 0=
 	.db	$80
-	.dw	word_1050
+	.dw	word_1054
 	.db	$30,$bd
 ; 2*
 	.db	$80
-	.dw	word_1051
+	.dw	word_1055
 	.db	$32,$aa
 ; 4*
 	.db	$80
-	.dw	word_1052
+	.dw	word_1056
 	.db	$34,$aa
 ; 8*
 	.db	$80
-	.dw	word_1053
+	.dw	word_1057
 	.db	$38,$aa
 ; 16*
 	.db	$80
-	.dw	word_1054
+	.dw	word_1058
 	.db	$31,$36,$aa
 ; 2/
 	.db	$80
-	.dw	word_1055
+	.dw	word_1059
 	.db	$32,$af
 ; 4/
 	.db	$80
-	.dw	word_1056
+	.dw	word_1060
 	.db	$34,$af
 ; ABS
 	.db	$80
-	.dw	word_1057
+	.dw	word_1061
 	.db	$1,$2,$93
 ; BSWAP
 	.db	$80
-	.dw	word_1058
+	.dw	word_1062
 	.db	$2,$13,$17,$1,$90
 ; NOT
 	.db	$80
-	.dw	word_1059
+	.dw	word_1063
 	.db	$e,$f,$94
 	.db	$00

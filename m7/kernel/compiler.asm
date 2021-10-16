@@ -45,6 +45,7 @@ _CSNext:
 ; ***************************************************************************************
 
 CompileOne:
+		ld 		(CurrentWord),hl 			; useful for debugging.
 		ld 		a,(hl) 						; get the word's colour.
 		and 	$C0
 		ret  	z 							; exit immediately if it's a comment word.

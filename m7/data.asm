@@ -46,3 +46,8 @@ RegB:
 	.dw 	$0000
 RegC:
 	.dw 	$0000
+;
+; 		Current work trying to do
+;
+CurrentWord:
+	.dw 	0

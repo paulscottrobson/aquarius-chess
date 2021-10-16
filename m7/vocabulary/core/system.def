@@ -16,6 +16,137 @@
 ; ***************************************************************************************
 
 @copies h 
+		ex  de,hl
 		ld 	hl,CodeNextFree
 @end
+
+; ***************************************************************************************
+;
+;							Word that defines a constant
+;
+; ***************************************************************************************
+
+@executes constant
+		ld 		hl,(CodeNextFree) 			; fix up definition to remove call address.
+		dec 	hl
+		dec 	hl
+		ld 		(CodeNextFree),hl 			; keeping the CALL opcode.
+		;
+		ld 		hl,ConstantHandler 			; make it CALL ConstantHandler
+		call 	CompileWord
+		ld 		hl,(RegA)					; and put the word in after.
+		call 	CompileWord
+		ret
+@end		
+
+; ***************************************************************************************
+;
+;							Word that defines a variable
+;
+; ***************************************************************************************
+
+@executes variable
+		ld 		hl,(CodeNextFree) 			; fix up definition to remove call address.
+		dec 	hl
+		dec 	hl
+		ld 		(CodeNextFree),hl 			; keeping the CALL opcode.
+		;
+		ld 		hl,VariableHandler 			; make it CALL ConstantHandler
+		call 	CompileWord
+		ld 		hl,$0000					; initialise to zero.
+		call 	CompileWord
+		ret
+@end		
+
+; ***************************************************************************************
+;
+; 									!! @@ overrides
+;
+; ***************************************************************************************
+
+@executes !! compile
+		ld 		hl,(CodeNextFree)	 		; we save one byte.
+		dec 	hl
+		ld 		(CodeNextFree),hl	
+		;
+		ld 		b,(hl)
+		dec 	hl
+		ld 		c,(hl)
+		ld 		(hl),b
+		dec 	hl
+		ld 		(hl),c
+		dec 	hl
+		ld 		(hl),$22
+		ret
+@end
+
+@executes @@ compile
+		ld 		hl,(CodeNextFree)	 		; we save one byte.
+		;
+		dec 	hl
+		dec 	hl
+		dec 	hl
+		ld 		(hl),$2A
+		ret
+@end
+
+; ***************************************************************************************
+;
+; 						Called when the constant word is called.
+;
+; ***************************************************************************************
+
+ConstantHandler:		
+		ld 		a,0xEB 						; compile ex de,hl
+		call 	CompileByte
+		ld 		a,0x21 						; compile ld hl,
+		call 	CompileByte
+		pop 	hl 							; address of word to compile
+		ld 		a,(hl)
+		inc 	hl
+		ld 		h,(hl)
+		ld	 	l,a
+		call 	CompileWord 				; compile that word.
+		ret
+
+; ***************************************************************************************
+;
+; 						Called when the variable word is called.
+;
+; ***************************************************************************************
+
+VariableHandler:		
+		ld 		a,0xEB 						; compile ex de,hl
+		call 	CompileByte
+		ld 		a,0x21 						; compile ld hl,
+		call 	CompileByte
+		pop 	hl 							; address of word to compile
+		call 	CompileWord 				; compile that word.
+		ret
+
+; ***************************************************************************************
+;
+;		Fix Access code. Expecting  EX DE,HL LD HL,xxxxx replaces with LD/ST
+;
+; ***************************************************************************************
+
+FixAccessCodeWrite:
+		ld 		a,0x2A 						; LD HL,(xxxx)
+		jr 		nc,_FACIsRead 				; use Carry to decide what to update
+		ld 		a,0x22
+_FACIsRead:
+		;
+		ld 		hl,(CodeNextFree)	 		; we save one byte.
+		dec 	hl
+		ld 		(CodeNextFree),hl	
+		;
+		ld 		b,(hl)
+		dec 	hl
+		ld 		c,(hl)
+		ld 		(hl),b
+		dec 	hl
+		ld 		(hl),c
+		dec 	hl
+		ld 		(hl),a
+		ret
 
