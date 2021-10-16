@@ -35,4 +35,14 @@ StartAddress:
 ;
 ; 		Dictionary start (works down)
 ;
+DictionaryBase:
 	.dw 	DictionaryInstalledBase
+;
+; 		Current state of the 3 registers
+;
+RegA:
+	.dw 	$0000
+RegB:
+	.dw 	$0000
+RegC:
+	.dw 	$0000

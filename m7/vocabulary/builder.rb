@@ -43,7 +43,7 @@ class BaseWord
 
 	def to_6bit(n)
 		n = n.each_char.collect { |a| (a.ord & 0x3F) }		
-		n[-1] |= 0x40
+		n[-1] |= 0x80
 		n.collect { |a| "$"+a.to_s(16) }.join(",")
 	end
 
@@ -55,10 +55,10 @@ class BaseWord
 
 	def render_dictionary(handle)
 		type_byte = @compile_only ? 0x80:0x81
+		handle.write("; #{@name}\n")
 		handle.write("\t.db\t$#{type_byte.to_s(16)}\n")
 		handle.write("\t.dw\t#{exec_label}\n")
 		handle.write("\t.db\t#{to_6bit(@name)}\n")		
-		handle.write("\n")
 		@name.length+3
 	end
 
@@ -141,7 +141,7 @@ class Vocabulary
 		@words.each do |w| 
 			size += w.render_dictionary(handle) 
 		end
-		handle.write("\t.db\t$FF\n")
+		handle.write("\t.db\t$00\n")
 		size
 	end
 end
