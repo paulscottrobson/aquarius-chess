@@ -3,11 +3,19 @@ Main:
 	call 	CompileStream
 
 WarmStart:
-	.byte $76
 	ld 		sp,(StackPointer)
 	jp 		WarmStart	
+
+WordIsCompileOnly:
+	halt
+	jr 		WordIsCompileOnly
+
+UnknownWord:
+	halt
+	jr 		UnknownWord
 
 	.include 	"code.asm"
 	.include 	"compiler.asm"
 	.include 	"search.asm"
+	.include 	"toint.asm"
 	

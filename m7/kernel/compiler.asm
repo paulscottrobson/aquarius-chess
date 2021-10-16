@@ -88,13 +88,128 @@ _CDCopyDictionary:
 		call	CompileWriteDictionary 
 		ld 		a,$80 						; then the default type byte
 		call	CompileWriteDictionary 
+
+		ld 		a,$CD 						; compile CALL CompileCallFollowing into code, the default action.
+		call 	CompileByte 				; e.g. the word compiles a call to whatever follows it.
+		ld 		hl,CompileCallFollowing
+		call 	CompileWord
+
+_COPopHLExit:
 		pop 	hl 							; restore HL and exit.
 		ret
 ;
 ; 		Compile or execute the word at HL.
 ;
 _COExecuteCompile:
+		push 	hl 							; save word text address
+		call 	SearchDictionary 			; try to find it in the dictionary
+		ld 		a,h 						; was it found ?
+		or 		l
+		jr 		z,_CECUnknown
+		;
+		; 		Word in the dictionary.
+		;
+		pop 	de 							; get word text back in DE
+		bit 	0,(hl) 						; is this execute only ?
+		jr 		z,_CECNotCompileOnly
+		ld 		a,(de)  					; what are we doing with it ?
+		and 	$C0  						; get colour
+		cp 		$80  						; if execute ?
+		jp 		z,WordIsCompileOnly 		; then we have an error.
+_CECNotCompileOnly:		
+		ld 		a,(de) 						; get the word colour and save on the stack
+		and 	$C0
+		push	af
+
+		ld 		de,(CodeNextFree) 			; save the current code position on the stack.
+		push 	de 
+
+		call 	_COCallRoutine 				; call the routine to compile what it does.
+		pop 	hl 							; restore code position at start to HL.
+		pop 	af 							; restore word colour.
+
+		cp 	 	$80 						; if not execute
+		jr 	 	nz,_COPopHLExit 			; then return, as we've done the compile
+
+		ld 		a,$C9 						; this is the Z80 RET which we need to compile after the code
+		call 	CompileByte
+		ld 		(CodeNextFree),hl 			; reset the code pointer, as we don't want to keep this executed word.
+
+		ld 		de,_CEXContinue 			; go here on return
+		push 	de
+		push 	hl 							; go here, the newly compiled code, first, this is for the RET below
+
+		ld 		hl,(RegA) 					; load registers
+		ld 		de,(RegB) 					
+		ld 		bc,(RegC) 					
+
+		ret 								; execute the code, as we pushed HL - not actually returning :)
+
+_CEXContinue:
+		ld 		(RegA),hl 					; save the registers
+		ld 		(RegB),de
+		ld 		(RegC),bc
+
+		jr 		_COPopHLExit 				; pop HL and exit
+		;
+		; 		Call the routine to compile the code.
+		;
+_COCallRoutine:
+		inc 	hl 							; call address into DE
+		ld 		e,(hl)
+		inc 	hl
+		ld 		d,(hl)
+		ex 		de,hl 						; and go there
+_COCallHL:		
+		jp 		(hl)
+		;
+		; 		Word not in the dictionary. Could be a constant or a string 
+		;
+_CECUnknown:		
+		pop 	hl 							; restore word address.
+		ld 		a,(hl) 						; look at the first character
+		and 	$3F
+		cp 		$22 						; is it a quote, indicating a string.
+		jr 		z,_CSTRProcess 
+		;
+		; 		Now it must be a constant
+		;
+		ld 		a,(hl) 						; push the colour on the stack
+		and 	$C0
+		push 	af
+		call 	StringToInteger 			; convert a word to a valid integer.
+		ld 		a,d 						; DE = 0 if fail.
+		or 		e
+		jp 		z,UnknownWord 
+		;
+		pop 	af  
+		cp 		$80 						; if execute, do execute constant.
+		jr 		z,_CECExecuteConstant
+		;
+		; 		Compile a constant inline.
+		;
+_CECCompileConstant:		
+		ld 		a,$EB 						; compile EX DE,HL
+		call 	CompileByte
+		ld 		a,$21 						; LD HL,xxxxx
+		call 	CompileByte
+		call 	CompileWord 				; compile the number to load
 		halt
+		jr 		_COPopHLExit 				; and exit
+		;
+		; 		Do the equivalent of executing a constant.
+		;
+_CECExecuteConstant:
+		ld 		de,(RegA) 					; A -> B
+		ld 		(RegB),de
+		ld 		(RegA),hl 					; constant -> HL
+		jp 		_COPopHLExit 				; and exit
+		;
+		; 		HL points to a string, prefixed by a ". Note, this is transient in execute mode.
+		;
+_CSTRProcess:
+		halt
+		
 
 
 ; ***************************************************************************************

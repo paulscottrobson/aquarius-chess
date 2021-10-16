@@ -54,7 +54,7 @@ class BaseWord
 	end
 
 	def render_dictionary(handle)
-		type_byte = @compile_only ? 0x80:0x81
+		type_byte = @compile_only ? 0x81:0x80
 		handle.write("; #{@name}\n")
 		handle.write("\t.db\t$#{type_byte.to_s(16)}\n")
 		handle.write("\t.dw\t#{exec_label}\n")

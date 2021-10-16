@@ -43,8 +43,7 @@ class CodeObject
 				w = w[1..]
 			end
 			@code.append(type|0x20) if @code.length > 0 
-			w = w.each_char.collect {|c| c.ord & 0x3F | type }	# followed by 6 bit ASCII ored with type byte
-			w[-1] |= 0x40
+			w = w.each_char.collect {|c| (c.ord & 0x3F) | type }	# followed by 6 bit ASCII ored with type byte
 			w.each do |c|
 				c = c.ord 
 				@code.append(c)
@@ -62,7 +61,7 @@ s = """
 //
 // 		M7 Source code
 //
-  -
+	\"hi_! :double 2* ; [ 12 -4 ] $2A
 """.split("\n")
 puts("\t.db\t#{CodeObject.new.process_block(s).to_hex}\n\n")
 
