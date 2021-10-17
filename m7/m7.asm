@@ -21,17 +21,12 @@ CodeEnd = 0xFFFF
 ; ***************************************************************************************
 
 start: 								
-	ld 		sp,(StackPointer) 				; have a workable stack
 	ld 		hl,(StartAddress) 				; running from here
 	jp 		(hl) 							
 
-	.org 	start+16 						; information area
-	.word 	start 							; +$10 base address of kernel
-	.word 	DataArea  						; +$12 address of data area.
-	.word	CopyFollowing  					; +$14 utility function addresses
-	.word	CompileCallFollowing
-	.word	CompileWord
-	.word	CompileByte
+InformationBlock:
+	.word 	start 							; +$00 base address of kernel
+	.word 	InterfaceHandler 				; +$02 Interface routine
 
 	.include "kernel/data.asm" 				; data area.
 	.include "kernel/kernel.asm"			; kernel code.	

@@ -174,84 +174,104 @@
 	.db	$80
 	.dw	word_1043
 	.db	$88
-; CONSTANT
+; $SYSTEM
 	.db	$80
 	.dw	word_1044
+	.db	$24,$13,$19,$13,$14,$5,$8d
+; WARM.START
+	.db	$80
+	.dw	word_1045
+	.db	$17,$1,$12,$d,$2e,$13,$14,$1,$12,$94
+; REPORT.ERROR
+	.db	$80
+	.dw	word_1046
+	.db	$12,$5,$10,$f,$12,$14,$2e,$5,$12,$12,$f,$92
+; CONSTANT
+	.db	$80
+	.dw	word_1047
 	.db	$3,$f,$e,$13,$14,$1,$e,$94
 ; VARIABLE
 	.db	$80
-	.dw	word_1045
+	.dw	word_1048
 	.db	$16,$1,$12,$9,$1,$2,$c,$85
+; ARRAY
+	.db	$80
+	.dw	word_1049
+	.db	$1,$12,$12,$1,$99
+; ADDRESS.OF
+	.db	$80
+	.dw	word_1050
+	.db	$1,$4,$4,$12,$5,$13,$13,$2e,$f,$86
 ; !!
 	.db	$81
-	.dw	word_1046
+	.dw	word_1051
 	.db	$21,$a1
 ; @@
 	.db	$81
-	.dw	word_1047
+	.dw	word_1052
 	.db	$0,$80
 ; ---
 	.db	$80
-	.dw	word_1048
+	.dw	word_1053
 	.db	$2d,$2d,$ad
 ; --
 	.db	$80
-	.dw	word_1049
+	.dw	word_1054
 	.db	$2d,$ad
 ; ++
 	.db	$80
-	.dw	word_1050
+	.dw	word_1055
 	.db	$2b,$ab
 ; +++
 	.db	$80
-	.dw	word_1051
+	.dw	word_1056
 	.db	$2b,$2b,$ab
 ; 0-
 	.db	$80
-	.dw	word_1052
+	.dw	word_1057
 	.db	$30,$ad
 ; 0<
 	.db	$80
-	.dw	word_1053
+	.dw	word_1058
 	.db	$30,$bc
 ; 0=
 	.db	$80
-	.dw	word_1054
+	.dw	word_1059
 	.db	$30,$bd
 ; 2*
 	.db	$80
-	.dw	word_1055
+	.dw	word_1060
 	.db	$32,$aa
 ; 4*
 	.db	$80
-	.dw	word_1056
+	.dw	word_1061
 	.db	$34,$aa
 ; 8*
 	.db	$80
-	.dw	word_1057
+	.dw	word_1062
 	.db	$38,$aa
 ; 16*
 	.db	$80
-	.dw	word_1058
+	.dw	word_1063
 	.db	$31,$36,$aa
 ; 2/
 	.db	$80
-	.dw	word_1059
+	.dw	word_1064
 	.db	$32,$af
 ; 4/
 	.db	$80
-	.dw	word_1060
+	.dw	word_1065
 	.db	$34,$af
 ; ABS
 	.db	$80
-	.dw	word_1061
+	.dw	word_1066
 	.db	$1,$2,$93
 ; BSWAP
 	.db	$80
-	.dw	word_1062
+	.dw	word_1067
 	.db	$2,$13,$17,$1,$90
 ; NOT
 	.db	$80
-	.dw	word_1063
+	.dw	word_1068
 	.db	$e,$f,$94
 	.db	$00

@@ -115,12 +115,25 @@ r>abc ;
 ;
 
 //
+// 		Move cursor to B , A
+//
+:con.move
+	ab>r
+		b>r con.y !! r>a con.x !!
+		con.y @@ 40 * con.x @@ + $3028 + con.pos !!
+	r>ab
+;
+
+//
+//		Check / Get keyboard
 // 		Keyboard routine in Aquarius ROM at $1EA2
 //
-:con.inkey 
+:con.inkey
+
 		[ $cd c, $1ea2 , $6f c, $26 c, $00 c, ]
 ;
 
 :con.get 
 		repeat con.inkey until 
 ;
+

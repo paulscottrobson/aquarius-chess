@@ -22,6 +22,31 @@
 
 ; ***************************************************************************************
 ;
+; 					$SYSTEM points to the information block 
+;
+; ***************************************************************************************
+
+@copies $system
+		ex  de,hl
+		ld 	hl,InformationBlock
+@end
+
+; ***************************************************************************************
+;
+;								Interface entry points
+;
+; ***************************************************************************************
+
+@calls warm.start
+		jp 		WarmStart
+@end
+
+@calls report.error
+		jp 		Interface
+@end 
+
+; ***************************************************************************************
+;
 ;							Word that defines a constant
 ;
 ; ***************************************************************************************
@@ -51,12 +76,62 @@
 		dec 	hl
 		ld 		(CodeNextFree),hl 			; keeping the CALL opcode.
 		;
-		ld 		hl,VariableHandler 			; make it CALL ConstantHandler
+		ld 		hl,VariableHandler 			; make it CALL VariableHandler
 		call 	CompileWord
 		ld 		hl,$0000					; initialise to zero.
 		call 	CompileWord
 		ret
 @end		
+
+; ***************************************************************************************
+;
+;							Word that defines an array of memory.
+;
+; ***************************************************************************************
+
+@executes array
+		ld 		hl,(CodeNextFree) 			; fix up definition to remove call address.
+		dec 	hl
+		dec 	hl
+		ld 		(CodeNextFree),hl 			; keeping the CALL opcode.
+		;
+		ld 		hl,VariableHandler 			; make it CALL VariableHandler
+		call 	CompileWord
+
+		ld 		hl,(RegA)					; initialise to zero.
+_MakeArray:
+		ld 		a,h
+		or 		l
+		ret 	z
+		dec 	hl
+		xor 	a		
+		call 	CompileByte
+		jr 		_MakeArray
+		ret
+@end		
+
+; ***************************************************************************************
+;
+;	  Gets word address - compile <word> address.of and it loads it as a constant
+;
+; ***************************************************************************************
+
+@executes address.of
+		push 	de
+		push 	hl
+		ld 		hl,(CodeNextFree) 			; get previous code address
+		dec 	hl
+		ld 		d,(hl)
+		dec 	hl
+		ld 		e,(hl)
+		dec 	hl 
+		ld 		(CodeNextFree),hl 			; we've removed the word, address is in DE
+		ex 		de,hl
+		call 	CompileLoadConstant
+		pop 	hl
+		pop 	de
+		ret
+@end
 
 ; ***************************************************************************************
 ;

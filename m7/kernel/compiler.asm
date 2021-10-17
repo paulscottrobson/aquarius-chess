@@ -192,11 +192,7 @@ _CECUnknown:
 		; 		Compile a constant inline.
 		;
 _CECCompileConstant:		
-		ld 		a,$EB 						; compile EX DE,HL
-		call 	CompileByte
-		ld 		a,$21 						; LD HL,xxxxx
-		call 	CompileByte
-		call 	CompileWord 				; compile the number to load
+		call 	CompileLoadConstant
 		jr 		_COPopHLExit 				; and exit
 		;
 		; 		Do the equivalent of executing a constant e.g. swap A & B n=>A
@@ -280,4 +276,18 @@ _SCHEnd: 									; advance HL past the string
 		or 		a
 		jr 		nz,_SCHEnd		
 		ex 		(sp),hl 					; swap them round, so HL = start and (SP) is the byte after
+		ret
+
+; ***************************************************************************************
+;
+;						Compile code to load HL as a constant
+;
+; ***************************************************************************************
+
+CompileLoadConstant:
+		ld 		a,$EB 						; compile EX DE,HL
+		call 	CompileByte
+		ld 		a,$21 						; LD HL,xxxxx
+		call 	CompileByte
+		call 	CompileWord 				; compile the number to load
 		ret

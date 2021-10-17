@@ -51,3 +51,8 @@ RegC:
 ;
 CurrentWord:
 	.dw 	0
+;
+;		Buffer for error messages
+;	
+ErrorBuffer:
+	.ds 	17
