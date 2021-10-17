@@ -14,6 +14,11 @@
 :con.y  	variable 
 :con.colour variable 									// Colour byte (fgr and bgr)
 
+:con.scroll [22] constant 								// This is the scrolling are size, it is split like the Speccy
+:con.base [$3028] constant  							// Start location (con.clear is different)
+:con.width [40] constant 								// Screen size.
+:con.height [24] constant
+
 [ $20 con.colour ! ] 									// Initialise colour
 
 //
@@ -21,7 +26,7 @@
 //
 :con.home 	
 	ab>r 
-		0 con.x !! 0 con.y !! $3028 con.pos !!
+		0 con.x !! 0 con.y !! con.base con.pos !!
 	r>ab ;
 
 //
@@ -48,17 +53,28 @@
 r>abc ;
 
 //
+// 		Clear non scrolled area
+//
+:con.clear.edit 
+	abc>r
+	con.height con.scroll - con.width * a>c
+	con.scroll con.width * con.base + a>r $20 fill
+	r>a $400 + con.colour @@ fill
+	r>abc
+;
+
+//
 // 		Scroll 20 screen lines
 //
 :_con.scroll 
-	19 40 * a>c  										// 19 * 40 
-	$3028 $3050 copy 									// Scroll up chars
+	con.scroll -- con.width * a>c  						// (n-1) * 40 
+	con.base $3050 copy 									// Scroll up chars
 	$3428 $3450 copy 									// Scroll up colour
-	40 a>c 												// blank line
-	$3320 $20 fill
-	$3720 con.colour @@ fill
+	40 a>c 												// blank line size
+	con.scroll -- con.width * con.base + a>r	$20 fill 	// blank text
+	r>a 1024 + con.colour @@ fill 						// set to current colour.
 	-1 con.y +! 										// Fix position
-	-40 con.pos +!
+	con.width 0- con.pos +!
 ;
 
 //
@@ -66,7 +82,7 @@ r>abc ;
 //
 :_con.down 
 	1 con.y +! 0 con.x !! 								// Down one, back to left
-	con.y @@ 20 = if _con.scroll then ; 				// Scroll required.
+	con.y @@ con.scroll = if _con.scroll then ; 			// Scroll required.
 ;
 
 //
@@ -76,7 +92,7 @@ r>abc ;
 	con.pos @ c!  										// Write char
 	con.pos @@ 1024 + con.colour @@ swap c!  			// Write colour
 	1 con.pos +! 1 con.x +! 							// Right one
-	con.x @@ 40 = if _con.down then  					// Next line ?
+	con.x @@ con.width = if _con.down then  			// Next line ?
 ;
 
 //
@@ -120,7 +136,7 @@ r>abc ;
 :con.move
 	ab>r
 		b>r con.y !! r>a con.x !!
-		con.y @@ 40 * con.x @@ + $3028 + con.pos !!
+		con.y @@ 40 * con.x @@ + con.base + con.pos !!
 	r>ab
 ;
 
@@ -129,11 +145,9 @@ r>abc ;
 // 		Keyboard routine in Aquarius ROM at $1EA2
 //
 :con.inkey
-
-		[ $cd c, $1ea2 , $6f c, $26 c, $00 c, ]
+		[ $cd c, $1ea2 , $6f c, $26 c, $00 c, ] 		// CALL $1EA2 ; LD L,A ; LD H,$00
 ;
 
 :con.get 
 		repeat con.inkey until 
 ;
-

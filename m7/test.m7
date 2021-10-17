@@ -1,4 +1,4 @@
-require stdlib,console 
+require stdlib,console,interface
 
 :test 
 	test address.of
@@ -7,11 +7,10 @@ require stdlib,console
 	"Hello_World con.print
 	13 con.emit 42 con.emit
 	11564 times a>r 15 mod ++ con.ink r>a 255 and con.emit tend
-	22 6 con.move 64 con.emit
+	22 6 con.move 64 con.emit 
 ; 
 
 [con.clear]
-
-[0 4096 c!]
+[slow]
 
 [test]

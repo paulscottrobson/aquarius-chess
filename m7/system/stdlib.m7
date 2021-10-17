@@ -10,9 +10,15 @@
 // ***************************************************************************************
 
 //
-// 		Switch to fast mode.
+// 		Switch to slow/fast mode.
 //
-[1 4096 c!]
+:slow 0 $1000 c! ;
+:fast 1 $1000 c! ;
+
+//
+// 		Switch to fast so it compiles quickly.
+//
+[fast]
 
 //
 // 		Word which unpicks the call to generate call code, thus making word immediate
