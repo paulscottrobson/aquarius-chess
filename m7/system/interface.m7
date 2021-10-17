@@ -9,31 +9,44 @@
 // ***************************************************************************************
 // ***************************************************************************************
 
-require console
+require console,stdlib
 
+//
+// 		Buffer and pointer into input line
+//
 :if.buffer [32] array 
 :if.bptr variable
 
+//
+// 		Run interface
+//
 :if.main 
-	a>r 
-	con.clear.edit 
-	5 con.ink 0 con.paper 
-	con.width 2/ con.height --- con.move
-	r>a con.print
-	0 con.height --- con.move 3 con.ink
-	if.buffer if.bptr !!
+	if.bptr !! 													// Save msg in pointer as temp
+	con.push.state 												// Save console state
+	con.clear.edit 5 con.ink 0 con.paper  						// Set up console
+	con.width 2/ con.height --- con.move 						// Print Message
+	if.bptr @@ con.print
+	if.buffer if.bptr !! 										// Set pointer
+	3 times 
+		a>c 9 * 13 + con.height -- con.move
+		7 con.ink c>a 65 + con.emit 32 con.emit 6 con.ink 
+		$system 4 + @ a>b c>a 2* + @
+		is.sconvert con.print
+	tend
+	0 con.height --- con.move 3 con.ink 						// Move to edit point
 	repeat
-		con.get 
-		33 - -if if.buffer $compiler then 33 +
-		con.emit 
-		96 - -if 96 + else 64 + then
-		$3F and $80 or 
-		if.bptr @@ ! 1 if.bptr +!
+		con.get  												// Get key
+		33 - -if con.pop.state if.buffer $compiler then 33 + 	// if <= ' ' restore console & process
+		con.emit  												// echo back out
+		96 - -if 96 + else 64 + then 							// capitalise as we're using 6 bit ASCII
+		$3F and $80 or  										// make 6 bit and make it executable colour yellow
+		if.bptr @@ ! 1 if.bptr +! 								// Write to buffer, using ! adds the EOS automatically
 	forever
-
-	break
 ;
 
+//
+// 		Update the warm start/error vector so it runs if.main and then patch it.
+//
 :if.install
 	$system +++ if.main address.of swap ! 
 ;

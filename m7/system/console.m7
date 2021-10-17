@@ -9,6 +9,8 @@
 // ***************************************************************************************
 // ***************************************************************************************
 
+require stdlib,intstr
+
 :con.pos 	variable 									// Position in char memory
 :con.x   	variable 									// Coordinates
 :con.y  	variable 
@@ -150,4 +152,19 @@ r>abc ;
 
 :con.get 
 		repeat con.inkey until 
+;
+
+//
+// 		Push/Pull state
+//
+:con.push.state
+	r>c
+	con.x @@ a>r con.y @@ a>r con.pos @@ a>r con.colour @@ a>r
+	c>r 
+;
+
+:con.pop.state
+	r>c
+	r>a con.colour !! r>a con.pos !! r>a con.y !! r>a con.x !! 
+	c>r 
 ;

@@ -27,7 +27,8 @@ start:
 InformationBlock:
 	.word 	start 							; +$00 base address of kernel
 	.word 	InterfaceHandler 				; +$02 Interface routine
-
+	.word 	DataArea 						; +$04 Data Area
+	
 	.include "kernel/data.asm" 				; data area.
 	.include "kernel/kernel.asm"			; kernel code.	
 

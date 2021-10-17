@@ -31,6 +31,14 @@
 :immediate [make.immediate] make.immediate ;
 
 //
+// 		This makes a word compile only, executing it causes an error.
+//
+//		This is immediate as well.
+//
+:compile.only [make.immediate] 
+	$dictionary c@ $01 or $dictionary c! 
+;
+//
 // 		Temps for structures
 //
 :_times_loop variable 
@@ -40,7 +48,7 @@
 //
 // 		Top of times loop n times counts n-1 .. 0
 //
-:times immediate
+:times immediate compile.only
 		h @@ _times_loop !! 	// Save loop back address
 		$2B c, 					// DEC  HL
 		$E5 c, 					// PUSH HL
@@ -49,7 +57,7 @@
 //
 // 		Bottom of times loop
 //
-:tend immediate
+:tend immediate compile.only
 		$E1 c,					// POP HL
 		$7C c, 					// LD A,H
 		$B5 c,					// OR L
@@ -59,27 +67,27 @@
 //
 // 		Repeat loop
 //
-:repeat immediate 
+:repeat immediate compile.only
 		h @@ _repeat_loop !!
 ;
 
 //
 // 		Repeat terminators
 //
-:until immediate
+:until immediate compile.only
 		$7C c, 					// LD A,H
 		$B5 c,					// OR L
 		$CA c, _repeat_loop @@ ,// JP Z,<loop>
 ;
 
-:forever immediate
+:forever immediate  compile.only
 		$C3 c, _repeat_loop @@ ,// JP <loop>
 ;
 
 //
 // 		If non zero
 //
-:if immediate
+:if immediate  compile.only
 		$7C c, 					// LD A,H
 		$B5 c,					// OR L
 		$CA c, 					// JP Z,
@@ -90,20 +98,20 @@
 //
 // 		If negative
 //
-:-if immediate
+:-if immediate  compile.only
 		$CB c, $7C c, 			// BIT 7,H
 		$CA c, 					// JP Z,
 		h @@ _if_patch !!  		// Save jump patch
 		0 , 		
 ;
 
-:else immediate
+:else immediate  compile.only
 		H @@ 3 + _if_patch @@ ! // Set the jump address of IF to three on.
 		$C3 c, 					// JP 
 		h @@ _if_patch !!  		// Save jump patch
 		0 , 		
 ;
 
-:then immediate 
+:then immediate  compile.only
 		h @@ _if_patch @@ !
 ;

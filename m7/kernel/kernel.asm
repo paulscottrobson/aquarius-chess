@@ -23,12 +23,8 @@ Main:
 ; 		Warm Start
 ;
 WarmStart:
-		ld 		hl,ErrorBuffer
-		ld 		(hl),'M'
-		inc 	hl
-		ld 		(hl),'7'
-		inc 	hl
-		ld 		(hl),0
+		xor 	a
+		ld 		(ErrorBuffer),a
 ;
 ; 		Access the user interface
 ;

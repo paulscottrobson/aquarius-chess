@@ -1,0 +1,67 @@
+// ***************************************************************************************
+// ***************************************************************************************
+//
+//		Name : 		intstr.m7
+//		Author :	Paul Robson (paul@robsons.org.uk)
+//		Date : 		16th October 2021
+//		Purpose :	Integer to string conversions
+//
+// ***************************************************************************************
+// ***************************************************************************************
+
+//
+// 		Current base
+//
+:is.base variable 
+
+//
+// 		Base set routines
+//
+:is.hex ab>r 16 is.base !! r>ab ;
+:is.dec ab>r 10 is.base !! r>ab ;
+
+[is.dec]
+
+//
+// 		Buffer and pointer to buffer
+//
+:is.buffer	[10] array
+:is.bufptr  variable 
+
+:is._wbuffer 
+	is.bufptr @@ ! 1 is.bufptr +!
+;
+
+//
+// 		Convert integer to string (recursive routine)
+//
+:_is.convert
+	a>c 
+	is.base @@ mod a>r
+	c>a is.base @@ / if _is.convert then
+	r>a 
+	10 - -if 58 else 65 then + is._wbuffer
+;
+
+//
+// 		Convert (wrapper) unsigned
+//
+:is.uconvert 
+		a>r is.buffer is.bufptr !! 
+		r>a _is.convert
+		is.buffer
+;
+
+//
+// 		Convert (wrapper) signed
+//
+:is.sconvert 
+		a>r is.buffer is.bufptr !! 
+		r>a -if 
+			0- a>r 
+			45 is._wbuffer
+			r>a 
+		then _is.convert
+		is.buffer
+;
+
