@@ -8,3 +8,34 @@
 //
 // ***************************************************************************************
 // ***************************************************************************************
+
+require console
+
+:if.buffer [32] array 
+:if.bptr variable
+
+:if.main 
+	a>r 
+	con.clear.edit 
+	5 con.ink 0 con.paper 
+	con.width 2/ con.height --- con.move
+	r>a con.print
+	0 con.height --- con.move 3 con.ink
+	if.buffer if.bptr !!
+	repeat
+		con.get 
+		33 - -if if.buffer $compiler then 33 +
+		con.emit 
+		96 - -if 96 + else 64 + then
+		$3F and $80 or 
+		if.bptr @@ ! 1 if.bptr +!
+	forever
+
+	break
+;
+
+:if.install
+	$system +++ if.main address.of swap ! 
+;
+
+[if.install]

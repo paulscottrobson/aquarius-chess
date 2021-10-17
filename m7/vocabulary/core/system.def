@@ -45,6 +45,10 @@
 		jp 		Interface
 @end 
 
+@calls $compiler
+		jp 		CompileStream
+@end 
+
 ; ***************************************************************************************
 ;
 ;							Word that defines a constant

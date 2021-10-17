@@ -23,8 +23,12 @@ Main:
 ; 		Warm Start
 ;
 WarmStart:
-		xor 	a
-		ld 		(ErrorBuffer),a
+		ld 		hl,ErrorBuffer
+		ld 		(hl),'M'
+		inc 	hl
+		ld 		(hl),'7'
+		inc 	hl
+		ld 		(hl),0
 ;
 ; 		Access the user interface
 ;
@@ -77,7 +81,7 @@ _SEBCopy:
 		jr 		c,_SEBNotAlpha
 		cp 		'Z'+1
 		jr 		nc,_SEBNotAlpha
-		add 	$40
+		add 	$20
 _SEBNotAlpha:
 		ld 		(hl),a
 		inc 	hl

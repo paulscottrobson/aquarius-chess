@@ -477,9 +477,15 @@ word_1046:
 	call	CompileCallFollowing
   jp   Interface
 ; --------------------------------------
-;             CONSTANT
+;             $COMPILER
 ; --------------------------------------
 word_1047:
+	call	CompileCallFollowing
+  jp   CompileStream
+; --------------------------------------
+;             CONSTANT
+; --------------------------------------
+word_1048:
   ld   hl,(CodeNextFree)    ; fix up definition to remove call address.
   dec  hl
   dec  hl
@@ -493,7 +499,7 @@ word_1047:
 ; --------------------------------------
 ;             VARIABLE
 ; --------------------------------------
-word_1048:
+word_1049:
   ld   hl,(CodeNextFree)    ; fix up definition to remove call address.
   dec  hl
   dec  hl
@@ -507,7 +513,7 @@ word_1048:
 ; --------------------------------------
 ;             ARRAY
 ; --------------------------------------
-word_1049:
+word_1050:
   ld   hl,(CodeNextFree)    ; fix up definition to remove call address.
   dec  hl
   dec  hl
@@ -529,7 +535,7 @@ _MakeArray:
 ; --------------------------------------
 ;             ADDRESS.OF
 ; --------------------------------------
-word_1050:
+word_1051:
   push  de
   push  hl
   ld   hl,(CodeNextFree)    ; get previous code address
@@ -547,7 +553,7 @@ word_1050:
 ; --------------------------------------
 ;             !!
 ; --------------------------------------
-word_1051:
+word_1052:
   ld   hl,(CodeNextFree)    ; we save one byte.
   dec  hl
   ld   (CodeNextFree),hl
@@ -564,7 +570,7 @@ word_1051:
 ; --------------------------------------
 ;             @@
 ; --------------------------------------
-word_1052:
+word_1053:
   ld   hl,(CodeNextFree)    ; we save one byte.
   ;
   dec  hl
@@ -575,41 +581,41 @@ word_1052:
 ; --------------------------------------
 ;             ---
 ; --------------------------------------
-word_1053:
-	call	CopyFollowing
-	.db	endcopy_1053 - $ - 1
-  dec  hl
-  dec  hl
-endcopy_1053:
-; --------------------------------------
-;             --
-; --------------------------------------
 word_1054:
 	call	CopyFollowing
 	.db	endcopy_1054 - $ - 1
   dec  hl
+  dec  hl
 endcopy_1054:
 ; --------------------------------------
-;             ++
+;             --
 ; --------------------------------------
 word_1055:
 	call	CopyFollowing
 	.db	endcopy_1055 - $ - 1
-  inc  hl
+  dec  hl
 endcopy_1055:
 ; --------------------------------------
-;             +++
+;             ++
 ; --------------------------------------
 word_1056:
 	call	CopyFollowing
 	.db	endcopy_1056 - $ - 1
   inc  hl
-  inc  hl
 endcopy_1056:
+; --------------------------------------
+;             +++
+; --------------------------------------
+word_1057:
+	call	CopyFollowing
+	.db	endcopy_1057 - $ - 1
+  inc  hl
+  inc  hl
+endcopy_1057:
 ; --------------------------------------
 ;             0-
 ; --------------------------------------
-word_1057:
+word_1058:
 	call	CompileCallFollowing
 __negate:
   ld   a,h
@@ -623,7 +629,7 @@ __negate:
 ; --------------------------------------
 ;             0<
 ; --------------------------------------
-word_1058:
+word_1059:
 	call	CompileCallFollowing
   bit  7,h
   ld   hl,$0000
@@ -633,7 +639,7 @@ word_1058:
 ; --------------------------------------
 ;             0=
 ; --------------------------------------
-word_1059:
+word_1060:
 	call	CompileCallFollowing
   ld   a,h
   or   l
@@ -644,32 +650,22 @@ word_1059:
 ; --------------------------------------
 ;             2*
 ; --------------------------------------
-word_1060:
-	call	CopyFollowing
-	.db	endcopy_1060 - $ - 1
-  add  hl,hl
-endcopy_1060:
-; --------------------------------------
-;             4*
-; --------------------------------------
 word_1061:
 	call	CopyFollowing
 	.db	endcopy_1061 - $ - 1
   add  hl,hl
-  add  hl,hl
 endcopy_1061:
 ; --------------------------------------
-;             8*
+;             4*
 ; --------------------------------------
 word_1062:
 	call	CopyFollowing
 	.db	endcopy_1062 - $ - 1
   add  hl,hl
   add  hl,hl
-  add  hl,hl
 endcopy_1062:
 ; --------------------------------------
-;             16*
+;             8*
 ; --------------------------------------
 word_1063:
 	call	CopyFollowing
@@ -677,32 +673,42 @@ word_1063:
   add  hl,hl
   add  hl,hl
   add  hl,hl
-  add  hl,hl
 endcopy_1063:
 ; --------------------------------------
-;             2/
+;             16*
 ; --------------------------------------
 word_1064:
 	call	CopyFollowing
 	.db	endcopy_1064 - $ - 1
-  sra  h
-  rr   l
+  add  hl,hl
+  add  hl,hl
+  add  hl,hl
+  add  hl,hl
 endcopy_1064:
 ; --------------------------------------
-;             4/
+;             2/
 ; --------------------------------------
 word_1065:
 	call	CopyFollowing
 	.db	endcopy_1065 - $ - 1
   sra  h
   rr   l
+endcopy_1065:
+; --------------------------------------
+;             4/
+; --------------------------------------
+word_1066:
+	call	CopyFollowing
+	.db	endcopy_1066 - $ - 1
   sra  h
   rr   l
-endcopy_1065:
+  sra  h
+  rr   l
+endcopy_1066:
 ; --------------------------------------
 ;             ABS
 ; --------------------------------------
-word_1066:
+word_1067:
 	call	CompileCallFollowing
   bit  7,h
   ret  z
@@ -710,17 +716,17 @@ word_1066:
 ; --------------------------------------
 ;             BSWAP
 ; --------------------------------------
-word_1067:
+word_1068:
 	call	CopyFollowing
-	.db	endcopy_1067 - $ - 1
+	.db	endcopy_1068 - $ - 1
   ld   a,l
   ld   l,h
   ld   h,a
-endcopy_1067:
+endcopy_1068:
 ; --------------------------------------
 ;             NOT
 ; --------------------------------------
-word_1068:
+word_1069:
 	call	CompileCallFollowing
   ld   a,h
   cpl
