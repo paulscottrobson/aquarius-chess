@@ -1,0 +1,39 @@
+// ***************************************************************************************
+// ***************************************************************************************
+//
+//		Name : 		control.m7
+//		Author :	Paul Robson (paul@robsons.org.uk)
+//		Date : 		18th October 2021
+//		Purpose :	Controller functions
+//
+// ***************************************************************************************
+// ***************************************************************************************
+
+:ctl._read p@ and 0= ;
+
+//
+// 		Check keys : Z Left X Right K Up M Down Space A Shift B
+//
+// 		Ref : Aquarius technical information
+//
+
+:ctl.left 	b>r $08 $BFFF ctl._read r>b ;
+:ctl.right 	b>r $20 $DFFF ctl._read r>b ;
+:ctl.up 	b>r $04 $FBFF ctl._read r>b ;
+:ctl.down 	b>r $08 $FBFF ctl._read r>b ;
+
+:ctl.a 		b>r $10 $BFFF ctl._read r>b ;
+:ctl.b 		b>r $10 $7FFF ctl._read r>b ;
+
+//
+// 		Return a directional adjustment to x or y
+//
+:ctl._x 	ctl.left if -1 ; then ctl.right if 1 ; then 0 ;
+:ctl._y 	ctl.up if -1 ; then ctl.down if 1 ; then 0 ;
+:ctl.x 		b>r ctl._x r>b ;
+:ctl.y 		b>r ctl._y r>b ;
+//
+//		True if A or B pressed
+//
+:ctl.ab 	b>r ctl.a swap ctl.b or r>b ;
+

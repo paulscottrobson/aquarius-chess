@@ -54,15 +54,28 @@
 
 ; ***************************************************************************************
 
-@copies	p@
+@calls	p@
+		push 	bc
+		ld		b,h
+		ld 		c,l
 		in 		l,(c)
 		ld 		h,0
+		pop 	bc
+		ret
 @end
 
 ; ***************************************************************************************
 
-@copies 	p!
-		out 	(c),l
+@calls 	p!
+		push 	bc
+		push 	hl
+		ld 		a,e
+		ld		b,h
+		ld 		c,l
+		out 	(c),a
+		pop 	hl
+		pop 	bc
+		ret
 @end
 	
 	

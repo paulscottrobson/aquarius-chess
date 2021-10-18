@@ -109,6 +109,13 @@ r>abc ;
 ;
 
 //
+// 		Space
+//
+:con.space 
+		ab>r 
+				32 _con.emit 
+		r>ab ;
+//
 // 		Char print with check for CR
 //
 :con.emit 
@@ -176,3 +183,12 @@ r>abc ;
 //
 :con.sprint is.sconvert con.print ;
 :con.uprint is.uconvert con.print ;
+//
+// 		Print String centred
+//
+:con.printc 
+	ab>r
+		a>r b>r a>b strlen 2/ con.width 2/ swap - swap r>a con.move
+		r>a con.print
+	r>ab
+;

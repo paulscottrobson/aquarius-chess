@@ -167,19 +167,28 @@ endcopy_1013:
 ;             P@
 ; --------------------------------------
 word_1014:
-	call	CopyFollowing
-	.db	endcopy_1014 - $ - 1
+	call	CompileCallFollowing
+  push  bc
+  ld  b,h
+  ld   c,l
   in   l,(c)
   ld   h,0
-endcopy_1014:
+  pop  bc
+  ret
 ; --------------------------------------
 ;             P!
 ; --------------------------------------
 word_1015:
-	call	CopyFollowing
-	.db	endcopy_1015 - $ - 1
-  out  (c),l
-endcopy_1015:
+	call	CompileCallFollowing
+  push  bc
+  push  hl
+  ld   a,e
+  ld  b,h
+  ld   c,l
+  out  (c),a
+  pop  hl
+  pop  bc
+  ret
 ; --------------------------------------
 ;             ,
 ; --------------------------------------
@@ -757,9 +766,27 @@ word_1071:
   ld   l,a
   ret
 ; --------------------------------------
-;             RANDOM
+;             STRLEN
 ; --------------------------------------
 word_1072:
+	call	CompileCallFollowing
+  push  de
+  ex   de,hl
+  ld   hl,0
+_SLNLoop:
+  ld   a,(de)
+  or   a
+  jr   z,_SLNExit
+  inc  de
+  inc  hl
+  jr   _SLNLoop
+_SLNExit:
+  pop  de
+  ret
+; --------------------------------------
+;             RANDOM
+; --------------------------------------
+word_1073:
 	call	CompileCallFollowing
  ex   de,hl
  push  bc
@@ -784,7 +811,7 @@ word_1072:
 ; --------------------------------------
 ;             IM.DRAW
 ; --------------------------------------
-word_1073:
+word_1074:
 	call	CompileCallFollowing
   push  bc
   push  de
@@ -806,7 +833,7 @@ word_1073:
 ; --------------------------------------
 ;             SG.DRAW
 ; --------------------------------------
-word_1074:
+word_1075:
 	call	CompileCallFollowing
   push  bc
   push  de
@@ -835,7 +862,7 @@ _SGDLoop:
 ; --------------------------------------
 ;             SG.ERASE
 ; --------------------------------------
-word_1075:
+word_1076:
 	call	CompileCallFollowing
   push  bc
   push  de

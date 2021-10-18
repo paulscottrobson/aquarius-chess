@@ -26,6 +26,13 @@
 ;
 
 //
+// 		Read X Y and Image
+//
+:sp.x@ b>r 6 + @ r>b ;
+:sp.y@ b>r 8 + @ r>b ;
+:sp.image@ b>r 10 + @ r>b ;
+:sp.visible sp.image@ ++ 0= 0= ;
+//
 // 		Update X,Y and Image.
 //
 :sp.x! ! ;
@@ -36,3 +43,10 @@
 	r>a
 ;
 
+//
+// 		Hide a sprite
+//
+:sp.hide 
+	ab>r 
+		-1 swap sp.image!
+	r>ab ;

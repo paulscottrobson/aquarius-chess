@@ -1,4 +1,4 @@
-require stdlib,console,interface,sprites
+require stdlib,console,interface,sprites,control
 
 :graphic data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $50 c, 20 c, $50 c,]
 :graphic2 data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $60 c, 20 c, $60 c,]
@@ -23,14 +23,42 @@ require stdlib,console,interface,sprites
 	4 spr1 sp.x! 6 spr1 sp.y!
 	24 spr2 sp.x! 7 spr2 sp.y!
 	rfill
+	spr2 sp.hide
 	10000 times
 		a>c 21 mod spr1 sp.y!
 		c>a 39 mod spr2 sp.x!
 		c>a 7 mod 4 + spr1 sp.x!
 		group sg.draw
-		pause
+		0 0 con.move 3 con.ink
+		spr1 sp.x@ con.uprint con.space
+		spr1 sp.y@ con.uprint con.space
+		spr1 sp.image@ con.uprint con.space
+		spr1 sp.visible con.uprint con.space
+		spr2 sp.image@ con.uprint con.space
+		spr2 sp.visible con.uprint con.space
+		con.cr
 		group sg.erase
 	tend
 ;
 
-[test]
+:test2 
+	repeat
+		con.home 2 con.ink
+
+		ctl.left con.uprint con.cr
+		ctl.right con.uprint con.cr
+		ctl.up con.uprint con.cr
+		ctl.down con.uprint con.cr
+		ctl.a con.uprint con.cr
+		ctl.b con.uprint con.cr
+		ctl.ab con.uprint con.cr
+		ctl.x con.uprint con.cr
+		ctl.y con.uprint con.cr
+
+		3 con.ink
+		12 "Hello_world  con.printc
+
+	forever
+;
+
+[test2]

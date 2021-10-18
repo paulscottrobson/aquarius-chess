@@ -286,20 +286,24 @@
 	.db	$80
 	.dw	word_1071
 	.db	$e,$f,$94
-; RANDOM
+; STRLEN
 	.db	$80
 	.dw	word_1072
+	.db	$13,$14,$12,$c,$5,$8e
+; RANDOM
+	.db	$80
+	.dw	word_1073
 	.db	$12,$1,$e,$4,$f,$8d
 ; IM.DRAW
 	.db	$80
-	.dw	word_1073
+	.dw	word_1074
 	.db	$9,$d,$2e,$4,$12,$1,$97
 ; SG.DRAW
 	.db	$80
-	.dw	word_1074
+	.dw	word_1075
 	.db	$13,$7,$2e,$4,$12,$1,$97
 ; SG.ERASE
 	.db	$80
-	.dw	word_1075
+	.dw	word_1076
 	.db	$13,$7,$2e,$5,$12,$1,$13,$85
 	.db	$00

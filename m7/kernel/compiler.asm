@@ -268,6 +268,7 @@ CompileWriteDictionary:
 ; ***************************************************************************************
 
 StringConstantHandler:
+		ex 		de,hl
 		pop 	hl 							; get the return address into HL, leave on stack		
 		push 	hl
 _SCHEnd: 									; advance HL past the string

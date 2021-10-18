@@ -136,6 +136,24 @@ __negate:
 
 ; ***************************************************************************************
 
+@calls strlen
+		push 	de
+		ex 		de,hl
+		ld 		hl,0
+_SLNLoop:
+		ld 		a,(de)
+		or 		a
+		jr 		z,_SLNExit
+		inc 	de
+		inc 	hl
+		jr 		_SLNLoop
+_SLNExit:
+		pop 	de
+		ret
+@end 
+				
+; ***************************************************************************************
+
 @calls 	random
 	ex 		de,hl
 	push 	bc
