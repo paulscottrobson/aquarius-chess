@@ -744,6 +744,22 @@ word_1070:
   cpl
   ld   l,a
   ret
+; --------------------------------------
+;             IMAGE.DRAW
+; --------------------------------------
+word_1071:
+	call	CompileCallFollowing
+  ld  bc,DemoImage
+
+  ld  h,l
+  ld  l,e
+
+  ld  e,c
+  ld  d,b
+
+  ld  bc,$F000
+
+  jp  ImageDraw
 
 
 
@@ -848,3 +864,98 @@ _FACIsRead:
   dec  hl
   ld   (hl),a
   ret
+ImageDraw:
+  ld  a,l       ; check in range 0..39 0..23
+  cp   40
+  ret  nc
+  ld   a,h
+  cp   24
+  ret  nc
+
+  call  IDCalculatePos     ; calculate position on screen -> HL
+
+  ld   a,(de)       ; get X,Y size into A
+  inc  de        ; advance into graphic data
+
+  ld   (bc),a       ; write size out to save, so it's a graphic
+  inc  bc        ; in its own right.
+  ;
+  ;   Draw one line A is size, HL screen pos, DE gfx data, BC store.
+  ;
+_IDOuter:
+  push  af        ; save height counter.
+  push  hl        ; save screen position, start of line
+  and  $0F       ; make A a horizontal counter, e.g. 0..15
+  jr   z,_IDDoneBoth     ; width zero, nothing to do.
+_IDInner:
+  ;
+  ;   Save/Copy one byte, go through this twice, once for colour RAM $3000-$33FF and once
+  ;   for char RAM $3400-$37FF
+  ;
+  push  af        ; save A
+
+  ld   a,(hl)       ; get and save old value
+  ld   (bc),a
+  inc  bc
+
+  ld   a,(de)       ; copy out new value
+  ld   (hl),a
+  inc  de
+
+  pop  af        ; restore A
+
+  bit  2,h       ; are we in $34xx e.g. have just written to colour RAM
+  jr   nz,_IDDoneBoth     ; if so we've done both.
+  set  2,h       ; otherwise do the colour RAM copy
+  jr   _IDInner
+  ;
+  ;   Done one character, now advance one right.
+  ;
+_IDDoneBoth:
+  res  2,h       ; back to character RAM.
+  inc  hl        ; next character to the right
+  dec  a        ; done the lot
+  jr   nz,_IDInner      ; no, go back.
+
+  pop  hl        ; restore start of line
+  ld   a,l       ; go down one line
+  add  a,40
+  ld   l,a
+  jr   nc,_IDNoCarry
+  inc  h
+_IDNoCarry:
+  pop  af        ; restore line counter
+  sub  a,$10       ; decrement the upper nibble of the counter
+  cp   a,$10       ; until upper nibble is $00
+  jr   nc,_IDOuter
+
+  ret
+IDCalculatePos:
+  push  de
+  ld   a,l       ; save X in A
+  ld   l,h       ; HL = Y
+  ld   h,0
+
+  add  hl,hl       ; HL = Y x 8
+  add  hl,hl
+  add  hl,hl
+  ld   e,l       ; DE = Y x 8
+  ld  d,h
+  add  hl,hl       ; HL = Y x 32
+  add  hl,hl
+  add  hl,de       ; HL = Y x 40
+
+  ld   e,a       ; DE = X
+  ld   d,0
+  add  hl,de       ; HL = X + Y x 40
+
+  ld   de,$3028      ; now a screen position
+  add  hl,de
+
+  pop  de
+  ret
+
+DemoImage:
+  .db  $FF   ; 3 wide 2 high
+  .db  65,1,66,2,67,3
+  .db  48,$10,49,$21,50,$32

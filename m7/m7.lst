@@ -1,6 +1,6 @@
               	; --------------------------------------
               	; zasm: assemble "m7.asm"
-              	; date: 2021-10-17 20:35:42
+              	; date: 2021-10-18 07:13:16
               	; --------------------------------------
 
 
@@ -72,7 +72,7 @@ C010: FF3F    		.dw 	$3FFF
               	; 		Next free code byte
               	;
 C012:         	CodeNextFree:
-C012: 9BC5    		.dw 	FreeSpace
+C012: 0AC6    		.dw 	FreeSpace
               	;
               	; 		Execute address for startup
               	;
@@ -82,7 +82,7 @@ C014: 2BC0    		.dw 	Main
               	; 		Dictionary start (works down)
               	;
 C016:         	DictionaryBase:
-C016: 3AFE    		.dw 	DictionaryInstalledBase
+C016: 2DFE    		.dw 	DictionaryInstalledBase
               	;
               	; 		Current work trying to do
               	;
@@ -853,7 +853,7 @@ C2F3: C9      	 ret
 C2F4:         	word_1007:
 C2F4: CD8DC0  		call	CompileCallFollowing
 C2F7: D5      	 push  de
-C2F8: CD1EC5  	 call  DIVDivideMod16
+C2F8: CD2EC5  	 call  DIVDivideMod16
 C2FB: EB      	 ex   de,hl
 C2FC: D1      	 pop  de
 C2FD: C9      	 ret
@@ -863,7 +863,7 @@ C2FD: C9      	 ret
 C2FE:         	word_1008:
 C2FE: CD8DC0  		call	CompileCallFollowing
 C301: D5      	 push  de
-C302: CD1EC5  	 call  DIVDivideMod16
+C302: CD2EC5  	 call  DIVDivideMod16
 C305: D1      	 pop  de
 C306: C9      	 ret
               	; --------------------------------------
@@ -1036,7 +1036,7 @@ C38F:         	endcopy_1022:
               	; --------------------------------------
 C38F:         	word_1023:
 C38F: CD8DC0  		call	CompileCallFollowing
-C392: C349C5  	 jp   MULTMultiply16
+C392: C359C5  	 jp   MULTMultiply16
               	; --------------------------------------
               	;             SWAP
               	; --------------------------------------
@@ -1256,7 +1256,7 @@ C42E: 2B      	  dec  hl
 C42F: 2B      	  dec  hl
 C430: 2212C0  	  ld   (CodeNextFree),hl    ; keeping the CALL opcode.
               	  ;
-C433: 2163C5  	  ld   hl,ConstantHandler    ; make it CALL ConstantHandler
+C433: 2173C5  	  ld   hl,ConstantHandler    ; make it CALL ConstantHandler
 C436: CD97C0  	  call  CompileWord
 C439: 2A0AC0  	  ld   hl,(RegA)     ; and put the word in after.
 C43C: CD97C0  	  call  CompileWord
@@ -1270,7 +1270,7 @@ C443: 2B      	  dec  hl
 C444: 2B      	  dec  hl
 C445: 2212C0  	  ld   (CodeNextFree),hl    ; keeping the CALL opcode.
               	  ;
-C448: 2176C5  	  ld   hl,VariableHandler    ; make it CALL VariableHandler
+C448: 2186C5  	  ld   hl,VariableHandler    ; make it CALL VariableHandler
 C44B: CD97C0  	  call  CompileWord
 C44E: 210000  	  ld   hl,$0000     ; initialise to zero.
 C451: CD97C0  	  call  CompileWord
@@ -1284,7 +1284,7 @@ C458: 2B      	  dec  hl
 C459: 2B      	  dec  hl
 C45A: 2212C0  	  ld   (CodeNextFree),hl    ; keeping the CALL opcode.
               	  ;
-C45D: 2176C5  	  ld   hl,VariableHandler    ; make it CALL VariableHandler
+C45D: 2186C5  	  ld   hl,VariableHandler    ; make it CALL VariableHandler
 C460: CD97C0  	  call  CompileWord
               	
 C463: 2A0AC0  	  ld   hl,(RegA)     ; initialise to zero.
@@ -1500,111 +1500,224 @@ C51A: 7D      	  ld   a,l
 C51B: 2F      	  cpl
 C51C: 6F      	  ld   l,a
 C51D: C9      	  ret
+              	; --------------------------------------
+              	;             IMAGE.DRAW
+              	; --------------------------------------
+C51E:         	word_1071:
+C51E: CD8DC0  		call	CompileCallFollowing
+C521: 01FDC5  	  ld  bc,DemoImage
+              	
+C524: 65      	  ld  h,l
+C525: 6B      	  ld  l,e
+              	
+C526: 59      	  ld  e,c
+C527: 50      	  ld  d,b
+              	
+C528: 0100F0  	  ld  bc,$F000
+              	
+C52B: C3ABC5  	  jp  ImageDraw
               	
               	
               	
-C51E:         	DIVDivideMod16:
-C51E: C5      	 push  bc
-C51F: 42      	 ld   b,d     ; DE
-C520: 4B      	 ld   c,e
-C521: EB      	 ex   de,hl
-C522: 210000  	 ld   hl,0
-C525: 78      	 ld   a,b
-C526: 0608    	 ld   b,8
-C528:         	Div16_Loop1:
-C528: 17      	 rla
-C529: ED6A    	 adc  hl,hl
-C52B: ED52    	 sbc  hl,de
-C52D: 3001    	 jr   nc,Div16_NoAdd1
-C52F: 19      	 add  hl,de
-C530:         	Div16_NoAdd1:
-C530: 10F6    	 djnz  Div16_Loop1
-C532: 17      	 rla
-C533: 2F      	 cpl
-C534: 47      	 ld   b,a
-C535: 79      	 ld   a,c
-C536: 48      	 ld   c,b
-C537: 0608    	 ld   b,8
-C539:         	Div16_Loop2:
-C539: 17      	 rla
-C53A: ED6A    	 adc  hl,hl
-C53C: ED52    	 sbc  hl,de
-C53E: 3001    	 jr   nc,Div16_NoAdd2
-C540: 19      	 add  hl,de
-C541:         	Div16_NoAdd2:
-C541: 10F6    	 djnz  Div16_Loop2
-C543: 17      	 rla
-C544: 2F      	 cpl
-C545: 51      	 ld   d,c
-C546: 5F      	 ld   e,a
-C547: C1      	 pop  bc
-C548: C9      	 ret
-C549:         	MULTMultiply16:
-C549: C5      	  push  bc
-C54A: D5      	  push  de
-C54B: 44      	  ld   b,h        ; get multipliers in DE/BC
-C54C: 4D      	  ld   c,l
-C54D: 210000  	  ld   hl,0        ; zero total
-C550:         	__Core__Mult_Loop:
-C550: CB41    	  bit  0,c        ; lsb of shifter is non-zero
-C552: 2801    	  jr   z,__Core__Mult_Shift
-C554: 19      	  add  hl,de        ; add adder to total
-C555:         	__Core__Mult_Shift:
-C555: CB38    	  srl  b         ; shift BC right.
-C557: CB19    	  rr   c
-C559: EB      	  ex   de,hl        ; shift DE left
-C55A: 29      	  add  hl,hl
-C55B: EB      	  ex   de,hl
-C55C: 78      	  ld   a,b        ; loop back if BC is nonzero
-C55D: B1      	  or   c
-C55E: 20F0    	  jr   nz,__Core__Mult_Loop
-C560: D1      	  pop  de
-C561: C1      	  pop  bc
-C562: C9      	  ret
-C563:         	ConstantHandler:
-C563: 3EEB    	  ld   a,0xEB       ; compile ex de,hl
-C565: CDA6C0  	  call  CompileByte
-C568: 3E21    	  ld   a,0x21       ; compile ld hl,
-C56A: CDA6C0  	  call  CompileByte
-C56D: E1      	  pop  hl        ; address of word to compile
-C56E: 7E      	  ld   a,(hl)
-C56F: 23      	  inc  hl
-C570: 66      	  ld   h,(hl)
-C571: 6F      	  ld   l,a
-C572: CD97C0  	  call  CompileWord     ; compile that word.
-C575: C9      	  ret
+C52E:         	DIVDivideMod16:
+C52E: C5      	 push  bc
+C52F: 42      	 ld   b,d     ; DE
+C530: 4B      	 ld   c,e
+C531: EB      	 ex   de,hl
+C532: 210000  	 ld   hl,0
+C535: 78      	 ld   a,b
+C536: 0608    	 ld   b,8
+C538:         	Div16_Loop1:
+C538: 17      	 rla
+C539: ED6A    	 adc  hl,hl
+C53B: ED52    	 sbc  hl,de
+C53D: 3001    	 jr   nc,Div16_NoAdd1
+C53F: 19      	 add  hl,de
+C540:         	Div16_NoAdd1:
+C540: 10F6    	 djnz  Div16_Loop1
+C542: 17      	 rla
+C543: 2F      	 cpl
+C544: 47      	 ld   b,a
+C545: 79      	 ld   a,c
+C546: 48      	 ld   c,b
+C547: 0608    	 ld   b,8
+C549:         	Div16_Loop2:
+C549: 17      	 rla
+C54A: ED6A    	 adc  hl,hl
+C54C: ED52    	 sbc  hl,de
+C54E: 3001    	 jr   nc,Div16_NoAdd2
+C550: 19      	 add  hl,de
+C551:         	Div16_NoAdd2:
+C551: 10F6    	 djnz  Div16_Loop2
+C553: 17      	 rla
+C554: 2F      	 cpl
+C555: 51      	 ld   d,c
+C556: 5F      	 ld   e,a
+C557: C1      	 pop  bc
+C558: C9      	 ret
+C559:         	MULTMultiply16:
+C559: C5      	  push  bc
+C55A: D5      	  push  de
+C55B: 44      	  ld   b,h        ; get multipliers in DE/BC
+C55C: 4D      	  ld   c,l
+C55D: 210000  	  ld   hl,0        ; zero total
+C560:         	__Core__Mult_Loop:
+C560: CB41    	  bit  0,c        ; lsb of shifter is non-zero
+C562: 2801    	  jr   z,__Core__Mult_Shift
+C564: 19      	  add  hl,de        ; add adder to total
+C565:         	__Core__Mult_Shift:
+C565: CB38    	  srl  b         ; shift BC right.
+C567: CB19    	  rr   c
+C569: EB      	  ex   de,hl        ; shift DE left
+C56A: 29      	  add  hl,hl
+C56B: EB      	  ex   de,hl
+C56C: 78      	  ld   a,b        ; loop back if BC is nonzero
+C56D: B1      	  or   c
+C56E: 20F0    	  jr   nz,__Core__Mult_Loop
+C570: D1      	  pop  de
+C571: C1      	  pop  bc
+C572: C9      	  ret
+C573:         	ConstantHandler:
+C573: 3EEB    	  ld   a,0xEB       ; compile ex de,hl
+C575: CDA6C0  	  call  CompileByte
+C578: 3E21    	  ld   a,0x21       ; compile ld hl,
+C57A: CDA6C0  	  call  CompileByte
+C57D: E1      	  pop  hl        ; address of word to compile
+C57E: 7E      	  ld   a,(hl)
+C57F: 23      	  inc  hl
+C580: 66      	  ld   h,(hl)
+C581: 6F      	  ld   l,a
+C582: CD97C0  	  call  CompileWord     ; compile that word.
+C585: C9      	  ret
               	
               	
-C576:         	VariableHandler:
-C576: 3EEB    	  ld   a,0xEB       ; compile ex de,hl
-C578: CDA6C0  	  call  CompileByte
-C57B: 3E21    	  ld   a,0x21       ; compile ld hl,
-C57D: CDA6C0  	  call  CompileByte
-C580: E1      	  pop  hl        ; address of word to compile
-C581: CD97C0  	  call  CompileWord     ; compile that word.
-C584: C9      	  ret
+C586:         	VariableHandler:
+C586: 3EEB    	  ld   a,0xEB       ; compile ex de,hl
+C588: CDA6C0  	  call  CompileByte
+C58B: 3E21    	  ld   a,0x21       ; compile ld hl,
+C58D: CDA6C0  	  call  CompileByte
+C590: E1      	  pop  hl        ; address of word to compile
+C591: CD97C0  	  call  CompileWord     ; compile that word.
+C594: C9      	  ret
               	
               	
-C585:         	FixAccessCodeWrite:
-C585: 3E2A    	  ld   a,0x2A       ; LD HL,(xxxx)
-C587: 3002    	  jr   nc,_FACIsRead     ; use Carry to decide what to update
-C589: 3E22    	  ld   a,0x22
-C58B:         	_FACIsRead:
+C595:         	FixAccessCodeWrite:
+C595: 3E2A    	  ld   a,0x2A       ; LD HL,(xxxx)
+C597: 3002    	  jr   nc,_FACIsRead     ; use Carry to decide what to update
+C599: 3E22    	  ld   a,0x22
+C59B:         	_FACIsRead:
               	  ;
-C58B: 2A12C0  	  ld   hl,(CodeNextFree)    ; we save one byte.
-C58E: 2B      	  dec  hl
-C58F: 2212C0  	  ld   (CodeNextFree),hl
+C59B: 2A12C0  	  ld   hl,(CodeNextFree)    ; we save one byte.
+C59E: 2B      	  dec  hl
+C59F: 2212C0  	  ld   (CodeNextFree),hl
               	  ;
-C592: 46      	  ld   b,(hl)
-C593: 2B      	  dec  hl
-C594: 4E      	  ld   c,(hl)
-C595: 70      	  ld   (hl),b
-C596: 2B      	  dec  hl
-C597: 71      	  ld   (hl),c
-C598: 2B      	  dec  hl
-C599: 77      	  ld   (hl),a
-C59A: C9      	  ret
-C59B:         	FreeSpace:
+C5A2: 46      	  ld   b,(hl)
+C5A3: 2B      	  dec  hl
+C5A4: 4E      	  ld   c,(hl)
+C5A5: 70      	  ld   (hl),b
+C5A6: 2B      	  dec  hl
+C5A7: 71      	  ld   (hl),c
+C5A8: 2B      	  dec  hl
+C5A9: 77      	  ld   (hl),a
+C5AA: C9      	  ret
+C5AB:         	ImageDraw:
+C5AB: 7D      	  ld  a,l       ; check in range 0..39 0..23
+C5AC: FE28    	  cp   40
+C5AE: D0      	  ret  nc
+C5AF: 7C      	  ld   a,h
+C5B0: FE18    	  cp   24
+C5B2: D0      	  ret  nc
+              	
+C5B3: CDE6C5  	  call  IDCalculatePos     ; calculate position on screen -> HL
+              	
+C5B6: 1A      	  ld   a,(de)       ; get X,Y size into A
+C5B7: 13      	  inc  de        ; advance into graphic data
+              	
+C5B8: 02      	  ld   (bc),a       ; write size out to save, so it's a graphic
+C5B9: 03      	  inc  bc        ; in its own right.
+              	  ;
+              	  ;   Draw one line A is size, HL screen pos, DE gfx data, BC store.
+              	  ;
+C5BA:         	_IDOuter:
+C5BA: F5      	  push  af        ; save height counter.
+C5BB: E5      	  push  hl        ; save screen position, start of line
+C5BC: E60F    	  and  $0F       ; make A a horizontal counter, e.g. 0..15
+C5BE: 2810    	  jr   z,_IDDoneBoth     ; width zero, nothing to do.
+C5C0:         	_IDInner:
+              	  ;
+              	  ;   Save/Copy one byte, go through this twice, once for colour RAM $3000-$33FF and once
+              	  ;   for char RAM $3400-$37FF
+              	  ;
+C5C0: F5      	  push  af        ; save A
+              	
+C5C1: 7E      	  ld   a,(hl)       ; get and save old value
+C5C2: 02      	  ld   (bc),a
+C5C3: 03      	  inc  bc
+              	
+C5C4: 1A      	  ld   a,(de)       ; copy out new value
+C5C5: 77      	  ld   (hl),a
+C5C6: 13      	  inc  de
+              	
+C5C7: F1      	  pop  af        ; restore A
+              	
+C5C8: CB54    	  bit  2,h       ; are we in $34xx e.g. have just written to colour RAM
+C5CA: 2004    	  jr   nz,_IDDoneBoth     ; if so we've done both.
+C5CC: CBD4    	  set  2,h       ; otherwise do the colour RAM copy
+C5CE: 18F0    	  jr   _IDInner
+              	  ;
+              	  ;   Done one character, now advance one right.
+              	  ;
+C5D0:         	_IDDoneBoth:
+C5D0: CB94    	  res  2,h       ; back to character RAM.
+C5D2: 23      	  inc  hl        ; next character to the right
+C5D3: 3D      	  dec  a        ; done the lot
+C5D4: 20EA    	  jr   nz,_IDInner      ; no, go back.
+              	
+C5D6: E1      	  pop  hl        ; restore start of line
+C5D7: 7D      	  ld   a,l       ; go down one line
+C5D8: C628    	  add  a,40
+C5DA: 6F      	  ld   l,a
+C5DB: 3001    	  jr   nc,_IDNoCarry
+C5DD: 24      	  inc  h
+C5DE:         	_IDNoCarry:
+C5DE: F1      	  pop  af        ; restore line counter
+C5DF: D610    	  sub  a,$10       ; decrement the upper nibble of the counter
+C5E1: FE10    	  cp   a,$10       ; until upper nibble is $00
+C5E3: 30D5    	  jr   nc,_IDOuter
+              	
+C5E5: C9      	  ret
+C5E6:         	IDCalculatePos:
+C5E6: D5      	  push  de
+C5E7: 7D      	  ld   a,l       ; save X in A
+C5E8: 6C      	  ld   l,h       ; HL = Y
+C5E9: 2600    	  ld   h,0
+              	
+C5EB: 29      	  add  hl,hl       ; HL = Y x 8
+C5EC: 29      	  add  hl,hl
+C5ED: 29      	  add  hl,hl
+C5EE: 5D      	  ld   e,l       ; DE = Y x 8
+C5EF: 54      	  ld  d,h
+C5F0: 29      	  add  hl,hl       ; HL = Y x 32
+C5F1: 29      	  add  hl,hl
+C5F2: 19      	  add  hl,de       ; HL = Y x 40
+              	
+C5F3: 5F      	  ld   e,a       ; DE = X
+C5F4: 1600    	  ld   d,0
+C5F6: 19      	  add  hl,de       ; HL = X + Y x 40
+              	
+C5F7: 112830  	  ld   de,$3028      ; now a screen position
+C5FA: 19      	  add  hl,de
+              	
+C5FB: D1      	  pop  de
+C5FC: C9      	  ret
+              	
+C5FD:         	DemoImage:
+C5FD: FF      	  .db  $FF   ; 3 wide 2 high
+C5FE: 41014202	  .db  65,1,66,2,67,3
+C602: 4303    	
+C604: 30103121	  .db  48,$10,49,$21,50,$32
+C608: 3232    	
+C60A:         	FreeSpace:
               	
               	; ***************************************************************************************
               	;
@@ -1612,8 +1725,8 @@ C59B:         	FreeSpace:
               	;
               	; ***************************************************************************************
               	
-C59B: FFFFFFFF		.org	$E000
-C59F: FF...   	
+C60A: FFFFFFFF		.org	$E000
+C60E: FF...   	
 E000: 50535200		.db  	"PSR",0 						; 4 bytes filler.
 E004: 009C00B0		.db  	0,$9C,0,$B0,0,$6C 				; 12 bytes ROM Identify
 E008: 006C    	
@@ -2500,9 +2613,7 @@ EE98: 8CA0838F
 EE9C: 8EAE838C	
 EEA0: 858192A0	
 EEA4: 938C8F97	
-EEA8: A0978192	
-EEAC: 8DAE9394	
-EEB0: 81929400	
+EEA8: 00      	
               	
               	; ***************************************************************************************
               	;
@@ -2511,315 +2622,321 @@ EEB0: 81929400
               	; ***************************************************************************************
               	
               		.include "vocabulary/dictionary.inc" 	; get length
-01C6:         	DictionarySize = 454
-EEB4: FFFFFFFF		.org 	CodeEnd-DictionarySize+1 		; set start pointer
-EEB8: FF...   	
-FE3A:         	DictionaryInstalledBase:
+01D3:         	DictionarySize = 467
+EEA9: FFFFFFFF		.org 	CodeEnd-DictionarySize+1 		; set start pointer
+EEAD: FF...   	
+FE2D:         	DictionaryInstalledBase:
               		.include "vocabulary/dictionary.asm" 	; pregenerated dictionary.
               	; <
-FE3A: 80      		.db	$80
-FE3B: A0C2    		.dw	word_1000
-FE3D: BC      		.db	$bc
+FE2D: 80      		.db	$80
+FE2E: A0C2    		.dw	word_1000
+FE30: BC      		.db	$bc
               	; =
-FE3E: 80      		.db	$80
-FE3F: B8C2    		.dw	word_1001
-FE41: BD      		.db	$bd
+FE31: 80      		.db	$80
+FE32: B8C2    		.dw	word_1001
+FE34: BD      		.db	$bd
               	; -
-FE42: 80      		.db	$80
-FE43: C7C2    		.dw	word_1002
-FE45: AD      		.db	$ad
+FE35: 80      		.db	$80
+FE36: C7C2    		.dw	word_1002
+FE38: AD      		.db	$ad
               	; +
-FE46: 80      		.db	$80
-FE47: D1C2    		.dw	word_1003
-FE49: AB      		.db	$ab
+FE39: 80      		.db	$80
+FE3A: D1C2    		.dw	word_1003
+FE3C: AB      		.db	$ab
               	; AND
-FE4A: 80      		.db	$80
-FE4B: D6C2    		.dw	word_1004
-FE4D: 010E84  		.db	$1,$e,$84
+FE3D: 80      		.db	$80
+FE3E: D6C2    		.dw	word_1004
+FE40: 010E84  		.db	$1,$e,$84
               	; OR
-FE50: 80      		.db	$80
-FE51: E0C2    		.dw	word_1005
-FE53: 0F92    		.db	$f,$92
+FE43: 80      		.db	$80
+FE44: E0C2    		.dw	word_1005
+FE46: 0F92    		.db	$f,$92
               	; XOR
-FE55: 80      		.db	$80
-FE56: EAC2    		.dw	word_1006
-FE58: 180F92  		.db	$18,$f,$92
+FE48: 80      		.db	$80
+FE49: EAC2    		.dw	word_1006
+FE4B: 180F92  		.db	$18,$f,$92
               	; /
-FE5B: 80      		.db	$80
-FE5C: F4C2    		.dw	word_1007
-FE5E: AF      		.db	$af
+FE4E: 80      		.db	$80
+FE4F: F4C2    		.dw	word_1007
+FE51: AF      		.db	$af
               	; MOD
-FE5F: 80      		.db	$80
-FE60: FEC2    		.dw	word_1008
-FE62: 0D0F84  		.db	$d,$f,$84
+FE52: 80      		.db	$80
+FE53: FEC2    		.dw	word_1008
+FE55: 0D0F84  		.db	$d,$f,$84
               	; !
-FE65: 80      		.db	$80
-FE66: 07C3    		.dw	word_1009
-FE68: A1      		.db	$a1
+FE58: 80      		.db	$80
+FE59: 07C3    		.dw	word_1009
+FE5B: A1      		.db	$a1
               	; @
-FE69: 80      		.db	$80
-FE6A: 0FC3    		.dw	word_1010
-FE6C: 80      		.db	$80
+FE5C: 80      		.db	$80
+FE5D: 0FC3    		.dw	word_1010
+FE5F: 80      		.db	$80
               	; +!
-FE6D: 80      		.db	$80
-FE6E: 17C3    		.dw	word_1011
-FE70: 2BA1    		.db	$2b,$a1
+FE60: 80      		.db	$80
+FE61: 17C3    		.dw	word_1011
+FE63: 2BA1    		.db	$2b,$a1
               	; C!
-FE72: 80      		.db	$80
-FE73: 23C3    		.dw	word_1012
-FE75: 03A1    		.db	$3,$a1
+FE65: 80      		.db	$80
+FE66: 23C3    		.dw	word_1012
+FE68: 03A1    		.db	$3,$a1
               	; C@
-FE77: 80      		.db	$80
-FE78: 28C3    		.dw	word_1013
-FE7A: 0380    		.db	$3,$80
+FE6A: 80      		.db	$80
+FE6B: 28C3    		.dw	word_1013
+FE6D: 0380    		.db	$3,$80
               	; P@
-FE7C: 80      		.db	$80
-FE7D: 2FC3    		.dw	word_1014
-FE7F: 1080    		.db	$10,$80
+FE6F: 80      		.db	$80
+FE70: 2FC3    		.dw	word_1014
+FE72: 1080    		.db	$10,$80
               	; P!
-FE81: 80      		.db	$80
-FE82: 37C3    		.dw	word_1015
-FE84: 10A1    		.db	$10,$a1
+FE74: 80      		.db	$80
+FE75: 37C3    		.dw	word_1015
+FE77: 10A1    		.db	$10,$a1
               	; ,
-FE86: 80      		.db	$80
-FE87: 3DC3    		.dw	word_1016
-FE89: AC      		.db	$ac
+FE79: 80      		.db	$80
+FE7A: 3DC3    		.dw	word_1016
+FE7C: AC      		.db	$ac
               	; ;
-FE8A: 81      		.db	$81
-FE8B: 43C3    		.dw	word_1017
-FE8D: BB      		.db	$bb
+FE7D: 81      		.db	$81
+FE7E: 43C3    		.dw	word_1017
+FE80: BB      		.db	$bb
               	; C,
-FE8E: 80      		.db	$80
-FE8F: 49C3    		.dw	word_1018
-FE91: 03AC    		.db	$3,$ac
+FE81: 80      		.db	$80
+FE82: 49C3    		.dw	word_1018
+FE84: 03AC    		.db	$3,$ac
               	; COPY
-FE93: 80      		.db	$80
-FE94: 50C3    		.dw	word_1019
-FE96: 030F1099		.db	$3,$f,$10,$99
+FE86: 80      		.db	$80
+FE87: 50C3    		.dw	word_1019
+FE89: 030F1099		.db	$3,$f,$10,$99
               	; FILL
-FE9A: 80      		.db	$80
-FE9B: 70C3    		.dw	word_1020
-FE9D: 06090C8C		.db	$6,$9,$c,$8c
+FE8D: 80      		.db	$80
+FE8E: 70C3    		.dw	word_1020
+FE90: 06090C8C		.db	$6,$9,$c,$8c
               	; HALT
-FEA1: 80      		.db	$80
-FEA2: 83C3    		.dw	word_1021
-FEA4: 08010C94		.db	$8,$1,$c,$94
+FE94: 80      		.db	$80
+FE95: 83C3    		.dw	word_1021
+FE97: 08010C94		.db	$8,$1,$c,$94
               	; BREAK
-FEA8: 80      		.db	$80
-FEA9: 8AC3    		.dw	word_1022
-FEAB: 02120501		.db	$2,$12,$5,$1,$8b
-FEAF: 8B      	
+FE9B: 80      		.db	$80
+FE9C: 8AC3    		.dw	word_1022
+FE9E: 02120501		.db	$2,$12,$5,$1,$8b
+FEA2: 8B      	
               	; *
-FEB0: 80      		.db	$80
-FEB1: 8FC3    		.dw	word_1023
-FEB3: AA      		.db	$aa
+FEA3: 80      		.db	$80
+FEA4: 8FC3    		.dw	word_1023
+FEA6: AA      		.db	$aa
               	; SWAP
-FEB4: 80      		.db	$80
-FEB5: 95C3    		.dw	word_1024
-FEB7: 13170190		.db	$13,$17,$1,$90
+FEA7: 80      		.db	$80
+FEA8: 95C3    		.dw	word_1024
+FEAA: 13170190		.db	$13,$17,$1,$90
               	; A>B
-FEBB: 80      		.db	$80
-FEBC: 9AC3    		.dw	word_1025
-FEBE: 013E82  		.db	$1,$3e,$82
+FEAE: 80      		.db	$80
+FEAF: 9AC3    		.dw	word_1025
+FEB1: 013E82  		.db	$1,$3e,$82
               	; A>C
-FEC1: 80      		.db	$80
-FEC2: A0C3    		.dw	word_1026
-FEC4: 013E83  		.db	$1,$3e,$83
+FEB4: 80      		.db	$80
+FEB5: A0C3    		.dw	word_1026
+FEB7: 013E83  		.db	$1,$3e,$83
               	; B>A
-FEC7: 80      		.db	$80
-FEC8: A6C3    		.dw	word_1027
-FECA: 023E81  		.db	$2,$3e,$81
+FEBA: 80      		.db	$80
+FEBB: A6C3    		.dw	word_1027
+FEBD: 023E81  		.db	$2,$3e,$81
               	; B>C
-FECD: 80      		.db	$80
-FECE: ACC3    		.dw	word_1028
-FED0: 023E83  		.db	$2,$3e,$83
+FEC0: 80      		.db	$80
+FEC1: ACC3    		.dw	word_1028
+FEC3: 023E83  		.db	$2,$3e,$83
               	; C>A
-FED3: 80      		.db	$80
-FED4: B2C3    		.dw	word_1029
-FED6: 033E81  		.db	$3,$3e,$81
+FEC6: 80      		.db	$80
+FEC7: B2C3    		.dw	word_1029
+FEC9: 033E81  		.db	$3,$3e,$81
               	; C>B
-FED9: 80      		.db	$80
-FEDA: B8C3    		.dw	word_1030
-FEDC: 033E82  		.db	$3,$3e,$82
+FECC: 80      		.db	$80
+FECD: B8C3    		.dw	word_1030
+FECF: 033E82  		.db	$3,$3e,$82
               	; PUSH
-FEDF: 81      		.db	$81
-FEE0: BEC3    		.dw	word_1031
-FEE2: 10151388		.db	$10,$15,$13,$88
+FED2: 81      		.db	$81
+FED3: BEC3    		.dw	word_1031
+FED5: 10151388		.db	$10,$15,$13,$88
               	; POP
-FEE6: 81      		.db	$81
-FEE7: C3C3    		.dw	word_1032
-FEE9: 100F90  		.db	$10,$f,$90
+FED9: 81      		.db	$81
+FEDA: C3C3    		.dw	word_1032
+FEDC: 100F90  		.db	$10,$f,$90
               	; A>R
-FEEC: 81      		.db	$81
-FEED: C9C3    		.dw	word_1033
-FEEF: 013E92  		.db	$1,$3e,$92
+FEDF: 81      		.db	$81
+FEE0: C9C3    		.dw	word_1033
+FEE2: 013E92  		.db	$1,$3e,$92
               	; R>A
-FEF2: 81      		.db	$81
-FEF3: CEC3    		.dw	word_1034
-FEF5: 123E81  		.db	$12,$3e,$81
+FEE5: 81      		.db	$81
+FEE6: CEC3    		.dw	word_1034
+FEE8: 123E81  		.db	$12,$3e,$81
               	; B>R
-FEF8: 81      		.db	$81
-FEF9: D3C3    		.dw	word_1035
-FEFB: 023E92  		.db	$2,$3e,$92
+FEEB: 81      		.db	$81
+FEEC: D3C3    		.dw	word_1035
+FEEE: 023E92  		.db	$2,$3e,$92
               	; R>B
-FEFE: 81      		.db	$81
-FEFF: D8C3    		.dw	word_1036
-FF01: 123E82  		.db	$12,$3e,$82
+FEF1: 81      		.db	$81
+FEF2: D8C3    		.dw	word_1036
+FEF4: 123E82  		.db	$12,$3e,$82
               	; C>R
-FF04: 81      		.db	$81
-FF05: DDC3    		.dw	word_1037
-FF07: 033E92  		.db	$3,$3e,$92
+FEF7: 81      		.db	$81
+FEF8: DDC3    		.dw	word_1037
+FEFA: 033E92  		.db	$3,$3e,$92
               	; R>C
-FF0A: 81      		.db	$81
-FF0B: E2C3    		.dw	word_1038
-FF0D: 123E83  		.db	$12,$3e,$83
+FEFD: 81      		.db	$81
+FEFE: E2C3    		.dw	word_1038
+FF00: 123E83  		.db	$12,$3e,$83
               	; AB>R
-FF10: 81      		.db	$81
-FF11: E7C3    		.dw	word_1039
-FF13: 01023E92		.db	$1,$2,$3e,$92
+FF03: 81      		.db	$81
+FF04: E7C3    		.dw	word_1039
+FF06: 01023E92		.db	$1,$2,$3e,$92
               	; R>AB
-FF17: 81      		.db	$81
-FF18: EDC3    		.dw	word_1040
-FF1A: 123E0182		.db	$12,$3e,$1,$82
+FF0A: 81      		.db	$81
+FF0B: EDC3    		.dw	word_1040
+FF0D: 123E0182		.db	$12,$3e,$1,$82
               	; ABC>R
-FF1E: 81      		.db	$81
-FF1F: F3C3    		.dw	word_1041
-FF21: 0102033E		.db	$1,$2,$3,$3e,$92
-FF25: 92      	
+FF11: 81      		.db	$81
+FF12: F3C3    		.dw	word_1041
+FF14: 0102033E		.db	$1,$2,$3,$3e,$92
+FF18: 92      	
               	; R>ABC
-FF26: 81      		.db	$81
-FF27: FAC3    		.dw	word_1042
-FF29: 123E0102		.db	$12,$3e,$1,$2,$83
-FF2D: 83      	
+FF19: 81      		.db	$81
+FF1A: FAC3    		.dw	word_1042
+FF1C: 123E0102		.db	$12,$3e,$1,$2,$83
+FF20: 83      	
               	; H
-FF2E: 80      		.db	$80
-FF2F: 01C4    		.dw	word_1043
-FF31: 88      		.db	$88
+FF21: 80      		.db	$80
+FF22: 01C4    		.dw	word_1043
+FF24: 88      		.db	$88
               	; $SYSTEM
-FF32: 80      		.db	$80
-FF33: 09C4    		.dw	word_1044
-FF35: 24131913		.db	$24,$13,$19,$13,$14,$5,$8d
-FF39: 14058D  	
+FF25: 80      		.db	$80
+FF26: 09C4    		.dw	word_1044
+FF28: 24131913		.db	$24,$13,$19,$13,$14,$5,$8d
+FF2C: 14058D  	
               	; $DICTIONARY
-FF3C: 80      		.db	$80
-FF3D: 11C4    		.dw	word_1045
-FF3F: 24040903		.db	$24,$4,$9,$3,$14,$9,$f,$e,$1,$12,$99
-FF43: 14090F0E	
-FF47: 011299  	
+FF2F: 80      		.db	$80
+FF30: 11C4    		.dw	word_1045
+FF32: 24040903		.db	$24,$4,$9,$3,$14,$9,$f,$e,$1,$12,$99
+FF36: 14090F0E	
+FF3A: 011299  	
               	; WARM.START
-FF4A: 80      		.db	$80
-FF4B: 19C4    		.dw	word_1046
-FF4D: 1701120D		.db	$17,$1,$12,$d,$2e,$13,$14,$1,$12,$94
-FF51: 2E131401	
-FF55: 1294    	
+FF3D: 80      		.db	$80
+FF3E: 19C4    		.dw	word_1046
+FF40: 1701120D		.db	$17,$1,$12,$d,$2e,$13,$14,$1,$12,$94
+FF44: 2E131401	
+FF48: 1294    	
               	; REPORT.ERROR
-FF57: 80      		.db	$80
-FF58: 1FC4    		.dw	word_1047
-FF5A: 1205100F		.db	$12,$5,$10,$f,$12,$14,$2e,$5,$12,$12,$f,$92
-FF5E: 12142E05	
-FF62: 12120F92	
+FF4A: 80      		.db	$80
+FF4B: 1FC4    		.dw	word_1047
+FF4D: 1205100F		.db	$12,$5,$10,$f,$12,$14,$2e,$5,$12,$12,$f,$92
+FF51: 12142E05	
+FF55: 12120F92	
               	; $COMPILER
-FF66: 80      		.db	$80
-FF67: 25C4    		.dw	word_1048
-FF69: 24030F0D		.db	$24,$3,$f,$d,$10,$9,$c,$5,$92
-FF6D: 10090C05	
-FF71: 92      	
+FF59: 80      		.db	$80
+FF5A: 25C4    		.dw	word_1048
+FF5C: 24030F0D		.db	$24,$3,$f,$d,$10,$9,$c,$5,$92
+FF60: 10090C05	
+FF64: 92      	
               	; CONSTANT
-FF72: 80      		.db	$80
-FF73: 2BC4    		.dw	word_1049
-FF75: 030F0E13		.db	$3,$f,$e,$13,$14,$1,$e,$94
-FF79: 14010E94	
+FF65: 80      		.db	$80
+FF66: 2BC4    		.dw	word_1049
+FF68: 030F0E13		.db	$3,$f,$e,$13,$14,$1,$e,$94
+FF6C: 14010E94	
               	; VARIABLE
-FF7D: 80      		.db	$80
-FF7E: 40C4    		.dw	word_1050
-FF80: 16011209		.db	$16,$1,$12,$9,$1,$2,$c,$85
-FF84: 01020C85	
+FF70: 80      		.db	$80
+FF71: 40C4    		.dw	word_1050
+FF73: 16011209		.db	$16,$1,$12,$9,$1,$2,$c,$85
+FF77: 01020C85	
               	; ARRAY
-FF88: 80      		.db	$80
-FF89: 55C4    		.dw	word_1051
-FF8B: 01121201		.db	$1,$12,$12,$1,$99
-FF8F: 99      	
+FF7B: 80      		.db	$80
+FF7C: 55C4    		.dw	word_1051
+FF7E: 01121201		.db	$1,$12,$12,$1,$99
+FF82: 99      	
               	; ADDRESS.OF
-FF90: 80      		.db	$80
-FF91: 71C4    		.dw	word_1052
-FF93: 01040412		.db	$1,$4,$4,$12,$5,$13,$13,$2e,$f,$86
-FF97: 0513132E	
-FF9B: 0F86    	
+FF83: 80      		.db	$80
+FF84: 71C4    		.dw	word_1052
+FF86: 01040412		.db	$1,$4,$4,$12,$5,$13,$13,$2e,$f,$86
+FF8A: 0513132E	
+FF8E: 0F86    	
               	; !!
-FF9D: 81      		.db	$81
-FF9E: 85C4    		.dw	word_1053
-FFA0: 21A1    		.db	$21,$a1
+FF90: 81      		.db	$81
+FF91: 85C4    		.dw	word_1053
+FF93: 21A1    		.db	$21,$a1
               	; @@
-FFA2: 81      		.db	$81
-FFA3: 96C4    		.dw	word_1054
-FFA5: 0080    		.db	$0,$80
+FF95: 81      		.db	$81
+FF96: 96C4    		.dw	word_1054
+FF98: 0080    		.db	$0,$80
               	; ---
-FFA7: 80      		.db	$80
-FFA8: 9FC4    		.dw	word_1055
-FFAA: 2D2DAD  		.db	$2d,$2d,$ad
+FF9A: 80      		.db	$80
+FF9B: 9FC4    		.dw	word_1055
+FF9D: 2D2DAD  		.db	$2d,$2d,$ad
               	; --
-FFAD: 80      		.db	$80
-FFAE: A5C4    		.dw	word_1056
-FFB0: 2DAD    		.db	$2d,$ad
+FFA0: 80      		.db	$80
+FFA1: A5C4    		.dw	word_1056
+FFA3: 2DAD    		.db	$2d,$ad
               	; ++
-FFB2: 80      		.db	$80
-FFB3: AAC4    		.dw	word_1057
-FFB5: 2BAB    		.db	$2b,$ab
+FFA5: 80      		.db	$80
+FFA6: AAC4    		.dw	word_1057
+FFA8: 2BAB    		.db	$2b,$ab
               	; +++
-FFB7: 80      		.db	$80
-FFB8: AFC4    		.dw	word_1058
-FFBA: 2B2BAB  		.db	$2b,$2b,$ab
+FFAA: 80      		.db	$80
+FFAB: AFC4    		.dw	word_1058
+FFAD: 2B2BAB  		.db	$2b,$2b,$ab
               	; 0-
-FFBD: 80      		.db	$80
-FFBE: B5C4    		.dw	word_1059
-FFC0: 30AD    		.db	$30,$ad
+FFB0: 80      		.db	$80
+FFB1: B5C4    		.dw	word_1059
+FFB3: 30AD    		.db	$30,$ad
               	; 0<
-FFC2: 80      		.db	$80
-FFC3: C0C4    		.dw	word_1060
-FFC5: 30BC    		.db	$30,$bc
+FFB5: 80      		.db	$80
+FFB6: C0C4    		.dw	word_1060
+FFB8: 30BC    		.db	$30,$bc
               	; 0=
-FFC7: 80      		.db	$80
-FFC8: CBC4    		.dw	word_1061
-FFCA: 30BD    		.db	$30,$bd
+FFBA: 80      		.db	$80
+FFBB: CBC4    		.dw	word_1061
+FFBD: 30BD    		.db	$30,$bd
               	; 2*
-FFCC: 80      		.db	$80
-FFCD: D6C4    		.dw	word_1062
-FFCF: 32AA    		.db	$32,$aa
+FFBF: 80      		.db	$80
+FFC0: D6C4    		.dw	word_1062
+FFC2: 32AA    		.db	$32,$aa
               	; 4*
-FFD1: 80      		.db	$80
-FFD2: DBC4    		.dw	word_1063
-FFD4: 34AA    		.db	$34,$aa
+FFC4: 80      		.db	$80
+FFC5: DBC4    		.dw	word_1063
+FFC7: 34AA    		.db	$34,$aa
               	; 8*
-FFD6: 80      		.db	$80
-FFD7: E1C4    		.dw	word_1064
-FFD9: 38AA    		.db	$38,$aa
+FFC9: 80      		.db	$80
+FFCA: E1C4    		.dw	word_1064
+FFCC: 38AA    		.db	$38,$aa
               	; 16*
-FFDB: 80      		.db	$80
-FFDC: E8C4    		.dw	word_1065
-FFDE: 3136AA  		.db	$31,$36,$aa
+FFCE: 80      		.db	$80
+FFCF: E8C4    		.dw	word_1065
+FFD1: 3136AA  		.db	$31,$36,$aa
               	; 2/
-FFE1: 80      		.db	$80
-FFE2: F0C4    		.dw	word_1066
-FFE4: 32AF    		.db	$32,$af
+FFD4: 80      		.db	$80
+FFD5: F0C4    		.dw	word_1066
+FFD7: 32AF    		.db	$32,$af
               	; 4/
-FFE6: 80      		.db	$80
-FFE7: F8C4    		.dw	word_1067
-FFE9: 34AF    		.db	$34,$af
+FFD9: 80      		.db	$80
+FFDA: F8C4    		.dw	word_1067
+FFDC: 34AF    		.db	$34,$af
               	; ABS
-FFEB: 80      		.db	$80
-FFEC: 04C5    		.dw	word_1068
-FFEE: 010293  		.db	$1,$2,$93
+FFDE: 80      		.db	$80
+FFDF: 04C5    		.dw	word_1068
+FFE1: 010293  		.db	$1,$2,$93
               	; BSWAP
-FFF1: 80      		.db	$80
-FFF2: 0DC5    		.dw	word_1069
-FFF4: 02131701		.db	$2,$13,$17,$1,$90
-FFF8: 90      	
+FFE4: 80      		.db	$80
+FFE5: 0DC5    		.dw	word_1069
+FFE7: 02131701		.db	$2,$13,$17,$1,$90
+FFEB: 90      	
               	; NOT
-FFF9: 80      		.db	$80
-FFFA: 14C5    		.dw	word_1070
-FFFC: 0E0F94  		.db	$e,$f,$94
+FFEC: 80      		.db	$80
+FFED: 14C5    		.dw	word_1070
+FFEF: 0E0F94  		.db	$e,$f,$94
+              	; IMAGE.DRAW
+FFF2: 80      		.db	$80
+FFF3: 1EC5    		.dw	word_1071
+FFF5: 090D0107		.db	$9,$d,$1,$7,$5,$2e,$4,$12,$1,$97
+FFF9: 052E0412	
+FFFD: 0197    	
 FFFF: 00      		.db	$00
 
 
-total time: 0.0090 sec.
+total time: 0.0074 sec.
 no errors
