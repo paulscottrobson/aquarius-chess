@@ -55,3 +55,10 @@ CurrentWord:
 ;	
 ErrorBuffer:
 	.ds 	17
+;
+; 		Random number generator
+;
+seed1:
+	.dw 	$13A7
+seed2:
+	.dw 	$FEDC

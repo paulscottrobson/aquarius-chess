@@ -100,6 +100,23 @@
 
 ; ***************************************************************************************
 ;
+;							Word that defines user compiled data
+;
+; ***************************************************************************************
+
+@executes data
+		ld 		hl,(CodeNextFree) 			; fix up definition to remove call address.
+		dec 	hl
+		dec 	hl
+		ld 		(CodeNextFree),hl 			; keeping the CALL opcode.
+		;
+		ld 		hl,VariableHandler 			; make it CALL VariableHandler
+		call 	CompileWord
+		ret
+@end		
+
+; ***************************************************************************************
+;
 ;							Word that defines an array of memory.
 ;
 ; ***************************************************************************************

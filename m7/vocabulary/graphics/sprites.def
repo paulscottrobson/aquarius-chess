@@ -1,0 +1,236 @@
+; ***************************************************************************************
+; ***************************************************************************************
+;
+;		Name : 		sprites.def
+;		Author :	Paul Robson (paul@robsons.org.uk)
+;		Date : 		18th October 2021
+;		Purpose :	Sprite Handler.
+;
+; ***************************************************************************************
+; ***************************************************************************************
+;
+;		A sprite group is a list of sprite addresses beginning with a length. 
+;		They are drawn out forwards and erased backwards. 
+;		Modifications are made before drawing out.
+;
+;		Sprite Structure (12 bytes)
+;
+; 		+0 		New X 			(if not -ve)
+;		+2 		New Y 			(if not -ve)
+; 		+4 		New Graphic 	(if not -ve)
+; 		+6 		X 			
+;		+8 		Y
+; 		+10 	Graphic 		(-ve if not drawn, copied back to +4 on erase)
+; 		+12 	Storage Space 	(1 + height * width * 2 bytes)
+;
+
+; ***************************************************************************************
+;
+;		 Draw sprites group list at HL, for each updating any X/Y/Graphic values
+;
+; ***************************************************************************************
+
+@calls sg.draw 
+		push 	bc
+		push 	de
+		push 	hl
+
+
+		ld 		c,(hl) 			; count in BC
+		inc 	hl
+		ld 		b,(hl)
+		inc 	hl
+
+_SGDLoop:
+		call 	CopySpriteData
+		call 	DrawOneSprite
+		inc 	hl 				
+		inc 	hl
+		dec 	bc
+		ld 		a,b
+		or 		c
+		jr 		nz,_SGDLoop
+
+		pop 	hl
+		pop 	de
+		pop 	bc
+		ret
+@end 
+
+; ***************************************************************************************
+;
+;		 					Erase sprites group list at HL.
+;
+; ***************************************************************************************
+
+@calls sg.erase
+		push 	bc
+		push 	de
+		push 	hl
+
+
+		ld 		c,(hl) 			; count in BC
+		inc 	hl
+		ld 		b,(hl)
+		dec 	hl
+
+		add 	hl,bc 			; advance to last.
+		add 	hl,bc
+_SEDLoop:
+		call 	EraseOneSprite
+		dec 	hl 				
+		dec 	hl
+		dec 	bc
+		ld 		a,b
+		or 		c
+		jr 		nz,_SEDLoop
+
+		pop 	hl
+		pop 	de
+		pop 	bc
+		ret
+@end 
+
+; ***************************************************************************************
+;
+; 								Update sprite data at (HL)
+;
+; ***************************************************************************************
+
+CopySpriteData:
+		push 	bc
+		push 	de
+		push 	hl
+		ld 		a,(hl) 						; point to sprite in HL and DE
+		inc 	hl
+		ld 		h,(hl)
+		ld 		l,a		
+		ld 		e,l
+		ld 		d,h
+		ld 		bc,6 						; HL points to the values, DE to the update values.
+		add 	hl,bc		
+		ex 		de,hl 						; HL is the update values, DE the target values.
+		ld 		b,3 						; update potentially three values
+_CSDLoop:
+		ld 		a,(hl) 						; check HL points to $FFFF
+		inc 	hl
+		and 	(hl) 						
+		inc 	a 							; zero if was $FF
+		jr 		z,_CSDNext
+
+		dec 	hl 							; HL/DE are first byte
+		ld 		a,(hl)
+		ld 		(de),a
+		ld 		(hl),$FF
+		inc 	de 							; second byte
+		inc 	hl
+		ld 		a,(hl)
+		ld 		(de),a
+		ld 		(hl),$FF
+		dec 	de 							; fix so both increments +2
+_CSDNext:
+		inc 	de
+		inc 	de
+		inc 	hl
+		djnz 	_CSDLoop		
+
+		pop 	hl
+		pop 	de
+		pop 	bc
+		ret
+
+; ***************************************************************************************
+;
+; 						Draw sprite at HL if graphic not $FFFF
+;
+; ***************************************************************************************
+
+DrawOneSprite:
+		push 	bc
+		push 	de
+		push 	hl
+
+		ld 		a,(hl) 						; point to sprite in HL and BC
+		inc 	hl
+		ld 		h,(hl)
+		ld 		l,a		
+
+		ld 		bc,12 						; point to storage space HL
+		add 	hl,bc
+
+		ld 		b,h 						; storage space in BC.
+		ld 		c,l
+
+		dec 	hl 							; graphic address in DE.
+		ld 		d,(hl)
+		dec 	hl
+		ld 		e,(hl)
+
+		ld 		a,d 						; if $FFFF do
+		and 	e
+		inc 	a
+		jr 		z,_DOSExit
+
+		dec 	hl 							; Y in A
+		dec 	hl
+		ld 		a,(hl) 
+		dec 	hl 							; X in L
+		dec 	hl
+		ld 		h,(hl)
+		ld 		l,a 						; HL = (X,Y)
+
+		call 	ImageDraw 					; draw the image copying the background
+
+_DOSExit:
+		pop 	hl
+		pop 	de
+		pop 	bc
+		ret
+
+; ***************************************************************************************
+;
+; 						Erase sprite at HL if graphic not $FFFF
+;
+; ***************************************************************************************
+
+EraseOneSprite:
+		push 	bc
+		push 	de
+		push 	hl
+
+
+		ld 		a,(hl) 						; point to sprite in HL and DE
+		inc 	hl
+		ld 		h,(hl)
+		ld 		l,a		
+
+		ld 		bc,12 						; point to storage space.
+		add 	hl,bc
+
+		ld 		d,h 						; storage space in DE, drawing fom here
+		ld 		e,l
+
+		ld 		bc,$0000 					; copy data to ROM.
+
+		dec 	hl 							; if graphic is $FFFF do nothing.
+		ld 		a,(hl)
+		dec 	hl
+		and 	(hl)
+		inc 	a
+		jr 		z,_EOSExit
+
+		dec 	hl 							; Y in A
+		dec 	hl
+		ld 		a,(hl) 
+		dec 	hl 							; X in L
+		dec 	hl
+		ld 		h,(hl)
+		ld 		l,a 						; HL = (X,Y)
+
+		call 	ImageDraw 					; draw the image copying the background
+
+_EOSExit:
+		pop 	hl
+		pop 	de
+		pop 	bc
+		ret

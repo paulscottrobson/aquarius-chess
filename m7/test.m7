@@ -1,4 +1,36 @@
-require stdlib,console,interface
+require stdlib,console,interface,sprites
 
+:graphic data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $50 c, 20 c, $50 c,]
+:graphic2 data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $60 c, 20 c, $60 c,]
 [con.clear]
 [slow]
+
+:group [32] array
+:spr1 [22] array 
+:spr2 [22] array 
+
+
+:rfill 960 times $3028 + a>b c! tend ;
+:pause 1000 times tend ;
+
+:test
+	is.hex group con.uprint 32 con.emit spr1 con.uprint
+	group sg.init 
+	spr1 group  sg.add
+	spr2 group  sg.add
+	graphic spr1 sp.image!
+	graphic2 spr2 sp.image!
+	4 spr1 sp.x! 6 spr1 sp.y!
+	24 spr2 sp.x! 7 spr2 sp.y!
+	rfill
+	10000 times
+		a>c 21 mod spr1 sp.y!
+		c>a 39 mod spr2 sp.x!
+		c>a 7 mod 4 + spr1 sp.x!
+		group sg.draw
+		pause
+		group sg.erase
+	tend
+;
+
+[test]

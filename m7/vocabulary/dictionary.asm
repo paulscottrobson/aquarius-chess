@@ -202,88 +202,104 @@
 	.db	$80
 	.dw	word_1050
 	.db	$16,$1,$12,$9,$1,$2,$c,$85
-; ARRAY
+; DATA
 	.db	$80
 	.dw	word_1051
+	.db	$4,$1,$14,$81
+; ARRAY
+	.db	$80
+	.dw	word_1052
 	.db	$1,$12,$12,$1,$99
 ; ADDRESS.OF
 	.db	$80
-	.dw	word_1052
+	.dw	word_1053
 	.db	$1,$4,$4,$12,$5,$13,$13,$2e,$f,$86
 ; !!
 	.db	$81
-	.dw	word_1053
+	.dw	word_1054
 	.db	$21,$a1
 ; @@
 	.db	$81
-	.dw	word_1054
+	.dw	word_1055
 	.db	$0,$80
 ; ---
 	.db	$80
-	.dw	word_1055
+	.dw	word_1056
 	.db	$2d,$2d,$ad
 ; --
 	.db	$80
-	.dw	word_1056
+	.dw	word_1057
 	.db	$2d,$ad
 ; ++
 	.db	$80
-	.dw	word_1057
+	.dw	word_1058
 	.db	$2b,$ab
 ; +++
 	.db	$80
-	.dw	word_1058
+	.dw	word_1059
 	.db	$2b,$2b,$ab
 ; 0-
 	.db	$80
-	.dw	word_1059
+	.dw	word_1060
 	.db	$30,$ad
 ; 0<
 	.db	$80
-	.dw	word_1060
+	.dw	word_1061
 	.db	$30,$bc
 ; 0=
 	.db	$80
-	.dw	word_1061
+	.dw	word_1062
 	.db	$30,$bd
 ; 2*
 	.db	$80
-	.dw	word_1062
+	.dw	word_1063
 	.db	$32,$aa
 ; 4*
 	.db	$80
-	.dw	word_1063
+	.dw	word_1064
 	.db	$34,$aa
 ; 8*
 	.db	$80
-	.dw	word_1064
+	.dw	word_1065
 	.db	$38,$aa
 ; 16*
 	.db	$80
-	.dw	word_1065
+	.dw	word_1066
 	.db	$31,$36,$aa
 ; 2/
 	.db	$80
-	.dw	word_1066
+	.dw	word_1067
 	.db	$32,$af
 ; 4/
 	.db	$80
-	.dw	word_1067
+	.dw	word_1068
 	.db	$34,$af
 ; ABS
 	.db	$80
-	.dw	word_1068
+	.dw	word_1069
 	.db	$1,$2,$93
 ; BSWAP
 	.db	$80
-	.dw	word_1069
+	.dw	word_1070
 	.db	$2,$13,$17,$1,$90
 ; NOT
 	.db	$80
-	.dw	word_1070
-	.db	$e,$f,$94
-; IMAGE.DRAW
-	.db	$80
 	.dw	word_1071
-	.db	$9,$d,$1,$7,$5,$2e,$4,$12,$1,$97
+	.db	$e,$f,$94
+; RANDOM
+	.db	$80
+	.dw	word_1072
+	.db	$12,$1,$e,$4,$f,$8d
+; IM.DRAW
+	.db	$80
+	.dw	word_1073
+	.db	$9,$d,$2e,$4,$12,$1,$97
+; SG.DRAW
+	.db	$80
+	.dw	word_1074
+	.db	$13,$7,$2e,$4,$12,$1,$97
+; SG.ERASE
+	.db	$80
+	.dw	word_1075
+	.db	$13,$7,$2e,$5,$12,$1,$13,$85
 	.db	$00

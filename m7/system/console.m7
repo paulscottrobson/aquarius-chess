@@ -147,7 +147,9 @@ r>abc ;
 // 		Keyboard routine in Aquarius ROM at $1EA2
 //
 :con.inkey
+		b>r c>r
 		[ $cd c, $1ea2 , $6f c, $26 c, $00 c, ] 		// CALL $1EA2 ; LD L,A ; LD H,$00
+		r>c r>b
 ;
 
 :con.get 
@@ -168,3 +170,9 @@ r>abc ;
 	r>a con.colour !! r>a con.pos !! r>a con.y !! r>a con.x !! 
 	c>r 
 ;
+
+//
+// 		Print numbers
+//
+:con.sprint is.sconvert con.print ;
+:con.uprint is.uconvert con.print ;

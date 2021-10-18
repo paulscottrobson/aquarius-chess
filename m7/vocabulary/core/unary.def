@@ -133,3 +133,27 @@ __negate:
 		ld 		l,a
 		ret
 @end
+
+; ***************************************************************************************
+
+@calls 	random
+	ex 		de,hl
+	push 	bc
+    ld 		hl,(seed1)
+    ld 		b,h
+    ld 		c,l
+    add 	hl,hl
+    add 	hl,hl
+    inc 	l
+    add 	hl,bc
+    ld 		(seed1),hl
+    ld 		hl,(seed2)
+    add 	hl,hl
+    sbc 	a,a
+    and 	%00101101
+    xor 	l
+    ld 		l,a
+    ld 		(seed2),hl
+    add 	hl,bc
+    pop 	bc
+    ret

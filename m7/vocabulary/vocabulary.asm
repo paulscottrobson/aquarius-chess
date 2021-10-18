@@ -520,9 +520,21 @@ word_1050:
   call  CompileWord
   ret
 ; --------------------------------------
-;             ARRAY
+;             DATA
 ; --------------------------------------
 word_1051:
+  ld   hl,(CodeNextFree)    ; fix up definition to remove call address.
+  dec  hl
+  dec  hl
+  ld   (CodeNextFree),hl    ; keeping the CALL opcode.
+  ;
+  ld   hl,VariableHandler    ; make it CALL VariableHandler
+  call  CompileWord
+  ret
+; --------------------------------------
+;             ARRAY
+; --------------------------------------
+word_1052:
   ld   hl,(CodeNextFree)    ; fix up definition to remove call address.
   dec  hl
   dec  hl
@@ -544,7 +556,7 @@ _MakeArray:
 ; --------------------------------------
 ;             ADDRESS.OF
 ; --------------------------------------
-word_1052:
+word_1053:
   push  de
   push  hl
   ld   hl,(CodeNextFree)    ; get previous code address
@@ -562,7 +574,7 @@ word_1052:
 ; --------------------------------------
 ;             !!
 ; --------------------------------------
-word_1053:
+word_1054:
   ld   hl,(CodeNextFree)    ; we save one byte.
   dec  hl
   ld   (CodeNextFree),hl
@@ -579,7 +591,7 @@ word_1053:
 ; --------------------------------------
 ;             @@
 ; --------------------------------------
-word_1054:
+word_1055:
   ld   hl,(CodeNextFree)    ; we save one byte.
   ;
   dec  hl
@@ -590,41 +602,41 @@ word_1054:
 ; --------------------------------------
 ;             ---
 ; --------------------------------------
-word_1055:
-	call	CopyFollowing
-	.db	endcopy_1055 - $ - 1
-  dec  hl
-  dec  hl
-endcopy_1055:
-; --------------------------------------
-;             --
-; --------------------------------------
 word_1056:
 	call	CopyFollowing
 	.db	endcopy_1056 - $ - 1
   dec  hl
+  dec  hl
 endcopy_1056:
 ; --------------------------------------
-;             ++
+;             --
 ; --------------------------------------
 word_1057:
 	call	CopyFollowing
 	.db	endcopy_1057 - $ - 1
-  inc  hl
+  dec  hl
 endcopy_1057:
 ; --------------------------------------
-;             +++
+;             ++
 ; --------------------------------------
 word_1058:
 	call	CopyFollowing
 	.db	endcopy_1058 - $ - 1
   inc  hl
-  inc  hl
 endcopy_1058:
+; --------------------------------------
+;             +++
+; --------------------------------------
+word_1059:
+	call	CopyFollowing
+	.db	endcopy_1059 - $ - 1
+  inc  hl
+  inc  hl
+endcopy_1059:
 ; --------------------------------------
 ;             0-
 ; --------------------------------------
-word_1059:
+word_1060:
 	call	CompileCallFollowing
 __negate:
   ld   a,h
@@ -638,7 +650,7 @@ __negate:
 ; --------------------------------------
 ;             0<
 ; --------------------------------------
-word_1060:
+word_1061:
 	call	CompileCallFollowing
   bit  7,h
   ld   hl,$0000
@@ -648,7 +660,7 @@ word_1060:
 ; --------------------------------------
 ;             0=
 ; --------------------------------------
-word_1061:
+word_1062:
 	call	CompileCallFollowing
   ld   a,h
   or   l
@@ -659,32 +671,22 @@ word_1061:
 ; --------------------------------------
 ;             2*
 ; --------------------------------------
-word_1062:
-	call	CopyFollowing
-	.db	endcopy_1062 - $ - 1
-  add  hl,hl
-endcopy_1062:
-; --------------------------------------
-;             4*
-; --------------------------------------
 word_1063:
 	call	CopyFollowing
 	.db	endcopy_1063 - $ - 1
   add  hl,hl
-  add  hl,hl
 endcopy_1063:
 ; --------------------------------------
-;             8*
+;             4*
 ; --------------------------------------
 word_1064:
 	call	CopyFollowing
 	.db	endcopy_1064 - $ - 1
   add  hl,hl
   add  hl,hl
-  add  hl,hl
 endcopy_1064:
 ; --------------------------------------
-;             16*
+;             8*
 ; --------------------------------------
 word_1065:
 	call	CopyFollowing
@@ -692,32 +694,42 @@ word_1065:
   add  hl,hl
   add  hl,hl
   add  hl,hl
-  add  hl,hl
 endcopy_1065:
 ; --------------------------------------
-;             2/
+;             16*
 ; --------------------------------------
 word_1066:
 	call	CopyFollowing
 	.db	endcopy_1066 - $ - 1
-  sra  h
-  rr   l
+  add  hl,hl
+  add  hl,hl
+  add  hl,hl
+  add  hl,hl
 endcopy_1066:
 ; --------------------------------------
-;             4/
+;             2/
 ; --------------------------------------
 word_1067:
 	call	CopyFollowing
 	.db	endcopy_1067 - $ - 1
   sra  h
   rr   l
+endcopy_1067:
+; --------------------------------------
+;             4/
+; --------------------------------------
+word_1068:
+	call	CopyFollowing
+	.db	endcopy_1068 - $ - 1
   sra  h
   rr   l
-endcopy_1067:
+  sra  h
+  rr   l
+endcopy_1068:
 ; --------------------------------------
 ;             ABS
 ; --------------------------------------
-word_1068:
+word_1069:
 	call	CompileCallFollowing
   bit  7,h
   ret  z
@@ -725,17 +737,17 @@ word_1068:
 ; --------------------------------------
 ;             BSWAP
 ; --------------------------------------
-word_1069:
+word_1070:
 	call	CopyFollowing
-	.db	endcopy_1069 - $ - 1
+	.db	endcopy_1070 - $ - 1
   ld   a,l
   ld   l,h
   ld   h,a
-endcopy_1069:
+endcopy_1070:
 ; --------------------------------------
 ;             NOT
 ; --------------------------------------
-word_1070:
+word_1071:
 	call	CompileCallFollowing
   ld   a,h
   cpl
@@ -745,21 +757,111 @@ word_1070:
   ld   l,a
   ret
 ; --------------------------------------
-;             IMAGE.DRAW
+;             RANDOM
 ; --------------------------------------
-word_1071:
+word_1072:
 	call	CompileCallFollowing
-  ld  bc,DemoImage
+ ex   de,hl
+ push  bc
+    ld   hl,(seed1)
+    ld   b,h
+    ld   c,l
+    add  hl,hl
+    add  hl,hl
+    inc  l
+    add  hl,bc
+    ld   (seed1),hl
+    ld   hl,(seed2)
+    add  hl,hl
+    sbc  a,a
+    and  %00101101
+    xor  l
+    ld   l,a
+    ld   (seed2),hl
+    add  hl,bc
+    pop  bc
+    ret
+; --------------------------------------
+;             IM.DRAW
+; --------------------------------------
+word_1073:
+	call	CompileCallFollowing
+  push  bc
+  push  de
+  push  hl
 
-  ld  h,l
-  ld  l,e
+  ld   h,l
+  ld   l,e
 
-  ld  e,c
-  ld  d,b
+  ld   e,c
+  ld   d,b
 
-  ld  bc,$F000
+  ld   bc,$0000
 
-  jp  ImageDraw
+  call  ImageDraw
+  pop  hl
+  pop  de
+  pop  bc
+  ret
+; --------------------------------------
+;             SG.DRAW
+; --------------------------------------
+word_1074:
+	call	CompileCallFollowing
+  push  bc
+  push  de
+  push  hl
+
+
+  ld   c,(hl)    ; count in BC
+  inc  hl
+  ld   b,(hl)
+  inc  hl
+
+_SGDLoop:
+  call  CopySpriteData
+  call  DrawOneSprite
+  inc  hl
+  inc  hl
+  dec  bc
+  ld   a,b
+  or   c
+  jr   nz,_SGDLoop
+
+  pop  hl
+  pop  de
+  pop  bc
+  ret
+; --------------------------------------
+;             SG.ERASE
+; --------------------------------------
+word_1075:
+	call	CompileCallFollowing
+  push  bc
+  push  de
+  push  hl
+
+
+  ld   c,(hl)    ; count in BC
+  inc  hl
+  ld   b,(hl)
+  dec  hl
+
+  add  hl,bc    ; advance to last.
+  add  hl,bc
+_SEDLoop:
+  call  EraseOneSprite
+  dec  hl
+  dec  hl
+  dec  bc
+  ld   a,b
+  or   c
+  jr   nz,_SEDLoop
+
+  pop  hl
+  pop  de
+  pop  bc
+  ret
 
 
 
@@ -866,10 +968,10 @@ _FACIsRead:
   ret
 ImageDraw:
   ld  a,l       ; check in range 0..39 0..23
-  cp   40
+  cp   24
   ret  nc
   ld   a,h
-  cp   24
+  cp   40
   ret  nc
 
   call  IDCalculatePos     ; calculate position on screen -> HL
@@ -932,9 +1034,8 @@ _IDNoCarry:
   ret
 IDCalculatePos:
   push  de
-  ld   a,l       ; save X in A
-  ld   l,h       ; HL = Y
-  ld   h,0
+  ld   a,h       ; save X in A
+  ld   h,0       ; HL = Y
 
   add  hl,hl       ; HL = Y x 8
   add  hl,hl
@@ -954,8 +1055,130 @@ IDCalculatePos:
 
   pop  de
   ret
+CopySpriteData:
+  push  bc
+  push  de
+  push  hl
+  ld   a,(hl)       ; point to sprite in HL and DE
+  inc  hl
+  ld   h,(hl)
+  ld   l,a
+  ld   e,l
+  ld   d,h
+  ld   bc,6       ; HL points to the values, DE to the update values.
+  add  hl,bc
+  ex   de,hl       ; HL is the update values, DE the target values.
+  ld   b,3       ; update potentially three values
+_CSDLoop:
+  ld   a,(hl)       ; check HL points to $FFFF
+  inc  hl
+  and  (hl)
+  inc  a        ; zero if was $FF
+  jr   z,_CSDNext
 
-DemoImage:
-  .db  $FF   ; 3 wide 2 high
-  .db  65,1,66,2,67,3
-  .db  48,$10,49,$21,50,$32
+  dec  hl        ; HL/DE are first byte
+  ld   a,(hl)
+  ld   (de),a
+  ld   (hl),$FF
+  inc  de        ; second byte
+  inc  hl
+  ld   a,(hl)
+  ld   (de),a
+  ld   (hl),$FF
+  dec  de        ; fix so both increments +2
+_CSDNext:
+  inc  de
+  inc  de
+  inc  hl
+  djnz  _CSDLoop
+
+  pop  hl
+  pop  de
+  pop  bc
+  ret
+
+
+DrawOneSprite:
+  push  bc
+  push  de
+  push  hl
+
+  ld   a,(hl)       ; point to sprite in HL and BC
+  inc  hl
+  ld   h,(hl)
+  ld   l,a
+
+  ld   bc,12       ; point to storage space HL
+  add  hl,bc
+
+  ld   b,h       ; storage space in BC.
+  ld   c,l
+
+  dec  hl        ; graphic address in DE.
+  ld   d,(hl)
+  dec  hl
+  ld   e,(hl)
+
+  ld   a,d       ; if $FFFF do
+  and  e
+  inc  a
+  jr   z,_DOSExit
+
+  dec  hl        ; Y in A
+  dec  hl
+  ld   a,(hl)
+  dec  hl        ; X in L
+  dec  hl
+  ld   h,(hl)
+  ld   l,a       ; HL = (X,Y)
+
+  call  ImageDraw      ; draw the image copying the background
+
+_DOSExit:
+  pop  hl
+  pop  de
+  pop  bc
+  ret
+
+
+EraseOneSprite:
+  push  bc
+  push  de
+  push  hl
+
+
+  ld   a,(hl)       ; point to sprite in HL and DE
+  inc  hl
+  ld   h,(hl)
+  ld   l,a
+
+  ld   bc,12       ; point to storage space.
+  add  hl,bc
+
+  ld   d,h       ; storage space in DE, drawing fom here
+  ld   e,l
+
+  ld   bc,$0000      ; copy data to ROM.
+
+  dec  hl        ; if graphic is $FFFF do nothing.
+  ld   a,(hl)
+  dec  hl
+  and  (hl)
+  inc  a
+  jr   z,_EOSExit
+
+  dec  hl        ; Y in A
+  dec  hl
+  ld   a,(hl)
+  dec  hl        ; X in L
+  dec  hl
+  ld   h,(hl)
+  ld   l,a       ; HL = (X,Y)
+
+  call  ImageDraw      ; draw the image copying the background
+
+_EOSExit:
+  pop  hl
+  pop  de
+  pop  bc
+  ret

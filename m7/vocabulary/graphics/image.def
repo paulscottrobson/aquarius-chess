@@ -1,7 +1,7 @@
 ; ***************************************************************************************
 ; ***************************************************************************************
 ;
-;		Name : 		sprites.def
+;		Name : 		image.def
 ;		Author :	Paul Robson (paul@robsons.org.uk)
 ;		Date : 		18th October 2021
 ;		Purpose :	Image Drawer
@@ -15,18 +15,24 @@
 ;
 ; ***************************************************************************************
 
-@calls image.draw
-;		ld 	bc,DemoImage
+@calls im.draw
+		push 	bc
+		push 	de
+		push 	hl
 
-		ld 	h,l 
-		ld 	l,e 
+		ld 		h,l 
+		ld 		l,e 
 
-		ld 	e,c
-		ld 	d,b
+		ld 		e,c
+		ld 		d,b
 
-		ld 	bc,$0000
+		ld 		bc,$0000
 
-		jp 	ImageDraw
+		call 	ImageDraw
+		pop 	hl
+		pop 	de
+		pop 	bc
+		ret
 @end
 
 
@@ -44,10 +50,10 @@
 
 ImageDraw:
 		ld		a,l 						; check in range 0..39 0..23
-		cp 		40
+		cp 		24
 		ret 	nc
 		ld 		a,h
-		cp 		24
+		cp 		40
 		ret 	nc
 
 		call 	IDCalculatePos 				; calculate position on screen -> HL
@@ -113,9 +119,8 @@ _IDNoCarry:
 ;
 IDCalculatePos:
 		push 	de
-		ld 		a,l 						; save X in A
-		ld 		l,h 						; HL = Y
-		ld 		h,0
+		ld 		a,h 						; save X in A
+		ld 		h,0 						; HL = Y
 
 		add 	hl,hl 						; HL = Y x 8
 		add 	hl,hl
