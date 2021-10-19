@@ -1,0 +1,6 @@
+require stdlib,console,showset
+
+[con.clear]
+[slow]
+
+[show.gfx]	
