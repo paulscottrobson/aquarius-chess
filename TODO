@@ -1,5 +1,7 @@
 TODO List
 ---------
+Emulator to read in m7source.bin rather than it being assembled in situ.
+
 Fixes ?
 ======
 Postie (speed)

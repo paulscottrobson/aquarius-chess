@@ -1,0 +1,27 @@
+// ***************************************************************************************
+// ***************************************************************************************
+//
+//		Name : 		showset.m7
+//		Author :	Paul Robson (paul@robsons.org.uk)
+//		Date : 		16th October 2021
+//		Purpose :	Show Aquarius GFX 00-1F and 80-FF
+//
+// ***************************************************************************************
+// ***************************************************************************************
+
+require console
+
+:_show_pos variable
+
+:_show_one
+	_show_pos @@ 4/ 4/ 2* ++ 40 * a>r
+	_show_pos @@ 15 and 2* r>b + $3031 +
+	c>b c! $400 + $70 swap c!
+	1 _show_pos +!
+;
+:show.gfx
+	0 con.ink 4 con.paper con.clear
+	7 con.ink 0 con.paper 0 _show_pos !!
+	256 times $FF xor a>c
+		4/ 4/ a>b --- or $18 and if _show_one then
+	tend ;

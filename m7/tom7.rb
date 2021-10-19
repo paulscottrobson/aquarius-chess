@@ -32,7 +32,7 @@ class CodeObject
 			l[7..].strip().split(",").each do |r|
 				unless @required.key? r
 					puts("\tRequired '#{r}'")
-					process_block(open("system/#{r}.m7")) 
+					process_block(open("../m7/system/#{r}.m7")) 
 					@required[r] = true
 				end
 			end			

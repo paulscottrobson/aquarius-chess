@@ -1,9 +1,7 @@
-require stdlib,console,interface,sprites,control
+require stdlib,console,interface,sprites,control,showset
 
 :graphic data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $50 c, 20 c, $50 c,]
 :graphic2 data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $60 c, 20 c, $60 c,]
-[con.clear]
-[slow]
 
 :group [32] array
 :spr1 [22] array 
@@ -61,4 +59,7 @@ require stdlib,console,interface,sprites,control
 	forever
 ;
 
-[test2]
+[con.clear]
+[slow]
+
+[show.gfx]	
