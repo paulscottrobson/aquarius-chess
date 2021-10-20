@@ -152,3 +152,10 @@ void HWXLoadDirectory(BYTE8 *target) {
 	//fabgl::resumeInterrupts();
 }
 
+// ****************************************************************************
+// 								Import M7 Source
+// ****************************************************************************
+
+BYTE8 HWXImportM7Source(void) {
+	return 0;
+}

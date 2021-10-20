@@ -249,4 +249,8 @@ case 0xf3: /**** $f3:prompt ****/
 	H = 0x40;L = 0x00; HWLoadPrompt();
 	CYCLES(0);break;
 
+case 0xff: /**** $ff:import a ****/
+	A = HWXImportM7Source();;
+	CYCLES(0);break;
+
 

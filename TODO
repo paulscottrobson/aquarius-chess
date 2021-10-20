@@ -1,7 +1,7 @@
 TODO List
 ---------
-Emulator to read in m7source.bin rather than it being assembled in situ.
-
+M7 to load using pseudo opweration.
+RAM Loading ?
 Fixes ?
 ======
 Postie (speed)

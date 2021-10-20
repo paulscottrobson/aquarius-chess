@@ -29,6 +29,9 @@
 #define MKSTORAGE()	mkdir("storage")
 #endif
 
+static BYTE8 m7Buffer[65536];
+static int m7BufferPtr = -1;
+
 // ****************************************************************************
 //
 //								Write to VRAM
@@ -141,3 +144,17 @@ void HWXLoadDirectory(BYTE8 *target) {
 	*target = '\0';
 }
 
+// ****************************************************************************
+// 								Import M7 Source
+// ****************************************************************************
+
+BYTE8 HWXImportM7Source(void) {
+	if (m7BufferPtr < 0) {
+		FILE *f = fopen("m7source.bin","rb");
+		fread(m7Buffer,1,sizeof(m7Buffer),f);
+		fclose(f);
+		m7BufferPtr = 0;
+	}
+	if (m7Buffer[m7BufferPtr] == 0) return 0;
+	return m7Buffer[m7BufferPtr++];
+}

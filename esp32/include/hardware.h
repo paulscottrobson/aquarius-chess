@@ -29,6 +29,7 @@ int  HWXIsKeyPressed(int keyNumber);
 void HWXLoadDirectory(BYTE8 *target);
 WORD16 HWXLoadFile(char * fileName,BYTE8 *target);
 WORD16 HWXGetSystemClock(void);
+BYTE8 HWXImportM7Source(void);
 
 #define LOADFILENAME (0x3851)
 

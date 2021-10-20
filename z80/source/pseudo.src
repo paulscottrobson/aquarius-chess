@@ -26,3 +26,6 @@ EDF2 	"TNAME" 0
 EDF3 	"PROMPT" 0
 		H = 0x40;L = 0x00;
 		HWLoadPrompt()		
+
+EDFF 	"IMPORT A" 0
+		A = HWXImportM7Source();		
