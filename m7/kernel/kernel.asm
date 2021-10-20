@@ -17,26 +17,60 @@
 
 Main:
 		ld 		sp,(StackPointer)			; reset Stack Pointer
-		ld 		hl,testCode
-		call 	CompileStream
+		ld 		hl,wordBuffer
+_MainRead:
+		.db 	$ED,$FF 					; read character
+		or 		a 							; warm start if zero
+		jr 		z,WarmStart
+		ld 		b,a 						; save
+		and 	$3F
+		cp 		$20 						; check if it is space
+		jr 		z,_MainRead 				; if so, go round again
+_MainCopy:
+		ld 		(hl),b 						; copy word out.
+		inc 	hl
+		.db 	$ED,$FF 					; read character
+		or 		a 							; end if zero.
+		jr 		z,_MainHaveWord
+		ld 		b,a				
+		and 	$3F
+		cp 		$20 						; check if it is space
+		jr 		nz,_MainCopy 				; if not keep copying
+_MainHaveWord:		
+		ld 		(hl),$00 					; mark word end.
+		ld 		hl,wordBuffer 				; compile it
+		call 	CompileOne
+		jr 		_MainRead 					; and loop round.
+
+; ***************************************************************************************
 ;
-; 		Warm Start
+; 										Warm Start
 ;
+; ***************************************************************************************
+
 WarmStart:
 		xor 	a
 		ld 		(ErrorBuffer),a
+
+; ***************************************************************************************
 ;
-; 		Access the user interface
+; 								Access the user interface
 ;
+; ***************************************************************************************
+
 Interface:		
 		ld 		hl,ErrorBuffer 				; point HL to Error Buffer
 		ld 		sp,(StackPointer)			; reset Stack Pointer
 		ld 		bc,(InformationBlock+2)
 		push 	bc
 		ret
+
+; ***************************************************************************************
 ;
-; 		The default 'user interface'
+; 							The default 'user interface' - nothing.
 ;
+; ***************************************************************************************
+
 InterfaceHandler:		
 		ld 		de,$EEEE
 		ld 		bc,$EEEE

@@ -6,8 +6,11 @@ endif
 
 all: m7.dat
 
-run: m7.dat
+kernel:
+	make -B -C ..$(S)m7
 	cp ..$(S)m7$(S)m7.rom .
+
+run: m7.dat
 	..$(S)emulator$(S)aqnext m7.rom run
 
 m7.dat:	

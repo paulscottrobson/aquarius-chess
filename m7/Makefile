@@ -7,11 +7,11 @@ endif
 all: m7.rom
 
 run: m7.rom
+	ruby tom7.rb test.m7
 	..$(S)emulator$(S)aqnext m7.rom run
 
 m7.rom:	m7.asm
 	cd vocabulary && ruby builder.rb
-	ruby tom7.rb test.m7
 	zasm -u m7.asm
 	
 

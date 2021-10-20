@@ -1,7 +1,7 @@
 require stdlib,console,interface,sprites,control,showset
 
-:graphic data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $50 c, 20 c, $50 c,]
-:graphic2 data [ $22 c, 192 c, $30 c, 193 c, $30 c, 20 c, $60 c, 20 c, $60 c,]
+:graphic data [ $22 c, 192 c, $00 c, 193 c, $00 c, 20 c, $50 c, 20 c, $50 c,]
+:graphic2 data [ $22 c, 192 c, $00 c, 193 c, $00 c, 20 c, $60 c, 20 c, $60 c,]
 
 :group [32] array
 :spr1 [22] array 
@@ -9,7 +9,7 @@ require stdlib,console,interface,sprites,control,showset
 
 
 :rfill 960 times $3028 + a>b c! tend ;
-:pause 1000 times tend ;
+:pause 5000 times tend ;
 
 :test
 	is.hex group con.uprint 32 con.emit spr1 con.uprint
@@ -21,12 +21,14 @@ require stdlib,console,interface,sprites,control,showset
 	4 spr1 sp.x! 6 spr1 sp.y!
 	24 spr2 sp.x! 7 spr2 sp.y!
 	rfill
-	spr2 sp.hide
+	$43 im.colour
+//	spr2 sp.hide
 	10000 times
 		a>c 21 mod spr1 sp.y!
 		c>a 39 mod spr2 sp.x!
 		c>a 7 mod 4 + spr1 sp.x!
-		group sg.draw
+		group sg.update
+		pause
 		0 0 con.move 3 con.ink
 		spr1 sp.x@ con.uprint con.space
 		spr1 sp.y@ con.uprint con.space
@@ -35,7 +37,6 @@ require stdlib,console,interface,sprites,control,showset
 		spr2 sp.image@ con.uprint con.space
 		spr2 sp.visible con.uprint con.space
 		con.cr
-		group sg.erase
 	tend
 ;
 
@@ -62,4 +63,4 @@ require stdlib,console,interface,sprites,control,showset
 [con.clear]
 [slow]
 
-[show.gfx]	
+[test]	

@@ -35,6 +35,17 @@
 		ret
 @end
 
+; ***************************************************************************************
+;
+;				Sets the image default colour (e.g. when $00 colour byte)
+;
+; ***************************************************************************************
+
+@calls im.colour
+		ld 	 	a,l
+		ld 		(imageDefaultColour),a
+		ret
+@end
 
 ; ***************************************************************************************
 ;
@@ -83,6 +94,12 @@ _IDInner:
 		inc 	bc
 
 		ld 		a,(de) 						; copy out new value
+		or 		a 							; zero ?
+		jr 		nz,_IDNotDefault 			; can't be default
+		bit 	2,h 						; in char RAM, can't be default
+		jr 		z,_IDNotDefault
+		ld 		a,(imageDefaultColour)		; load default colour
+_IDNotDefault:		
 		ld 		(hl),a
 		inc 	de
 

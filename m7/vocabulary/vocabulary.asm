@@ -831,9 +831,17 @@ word_1074:
   pop  bc
   ret
 ; --------------------------------------
-;             SG.DRAW
+;             IM.COLOUR
 ; --------------------------------------
 word_1075:
+	call	CompileCallFollowing
+  ld    a,l
+  ld   (imageDefaultColour),a
+  ret
+; --------------------------------------
+;             SG.DRAW
+; --------------------------------------
+word_1076:
 	call	CompileCallFollowing
   push  bc
   push  de
@@ -862,12 +870,16 @@ _SGDLoop:
 ; --------------------------------------
 ;             SG.ERASE
 ; --------------------------------------
-word_1076:
+word_1077:
 	call	CompileCallFollowing
   push  bc
   push  de
   push  hl
 
+  ld   a,(imageDefaultColour)
+  push  af     ; save sprite default colour
+  xor  a      ; zero it, just in case we are restoring $00.
+  ld   (imageDefaultColour),a
 
   ld   c,(hl)    ; count in BC
   inc  hl
@@ -884,6 +896,9 @@ _SEDLoop:
   ld   a,b
   or   c
   jr   nz,_SEDLoop
+
+  pop  af     ; restore default colour
+  ld   (imageDefaultColour),a
 
   pop  hl
   pop  de
@@ -1028,6 +1043,12 @@ _IDInner:
   inc  bc
 
   ld   a,(de)       ; copy out new value
+  or   a        ; zero ?
+  jr   nz,_IDNotDefault    ; can't be default
+  bit  2,h       ; in char RAM, can't be default
+  jr   z,_IDNotDefault
+  ld   a,(imageDefaultColour)  ; load default colour
+_IDNotDefault:
   ld   (hl),a
   inc  de
 

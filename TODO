@@ -1,7 +1,8 @@
 TODO List
 ---------
-M7 to load using pseudo opweration.
-RAM Loading ?
+Work on graphics etc.
+RAM Loading/Copying when not built for ROM.
+Allocate variable/array from RAM not ROM.
 Fixes ?
 ======
 Postie (speed)

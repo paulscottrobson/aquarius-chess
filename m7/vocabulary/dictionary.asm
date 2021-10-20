@@ -298,12 +298,16 @@
 	.db	$80
 	.dw	word_1074
 	.db	$9,$d,$2e,$4,$12,$1,$97
-; SG.DRAW
+; IM.COLOUR
 	.db	$80
 	.dw	word_1075
+	.db	$9,$d,$2e,$3,$f,$c,$f,$15,$92
+; SG.DRAW
+	.db	$80
+	.dw	word_1076
 	.db	$13,$7,$2e,$4,$12,$1,$97
 ; SG.ERASE
 	.db	$80
-	.dw	word_1076
+	.dw	word_1077
 	.db	$13,$7,$2e,$5,$12,$1,$13,$85
 	.db	$00

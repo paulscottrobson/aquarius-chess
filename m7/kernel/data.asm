@@ -51,6 +51,11 @@ DictionaryBase:
 CurrentWord:
 	.dw 	0
 ;
+; 		Buffer for reading word
+;
+wordBuffer:
+	.ds 	17
+;
 ;		Buffer for error messages
 ;	
 ErrorBuffer:
@@ -62,3 +67,8 @@ seed1:
 	.dw 	$13A7
 seed2:
 	.dw 	$FEDC
+;
+;		Image Default Colour
+;	
+imageDefaultColour:
+	.db 	$75

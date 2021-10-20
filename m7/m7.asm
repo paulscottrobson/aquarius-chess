@@ -54,11 +54,6 @@ FreeSpace:
 	.org 	$E010
 	jp 		start 							; BIOS enters here.
 
-
-	.org 	$E100
-testCode:
-	.incbin "m7source.bin"
-
 ; ***************************************************************************************
 ;
 ; 				Load the Dictionary into High memory, it works down.

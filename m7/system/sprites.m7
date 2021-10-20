@@ -26,6 +26,13 @@
 ;
 
 //
+// 		Update sprites
+//
+:sg.update
+	sg.erase sg.draw
+;
+
+//
 // 		Read X Y and Image
 //
 :sp.x@ b>r 6 + @ r>b ;

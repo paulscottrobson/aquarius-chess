@@ -68,6 +68,10 @@ _SGDLoop:
 		push 	de
 		push 	hl
 
+		ld 		a,(imageDefaultColour)
+		push 	af 				; save sprite default colour
+		xor 	a 			 	; zero it, just in case we are restoring $00.
+		ld 		(imageDefaultColour),a
 
 		ld 		c,(hl) 			; count in BC
 		inc 	hl
@@ -84,6 +88,9 @@ _SEDLoop:
 		ld 		a,b
 		or 		c
 		jr 		nz,_SEDLoop
+
+		pop 	af  			; restore default colour
+		ld 		(imageDefaultColour),a
 
 		pop 	hl
 		pop 	de

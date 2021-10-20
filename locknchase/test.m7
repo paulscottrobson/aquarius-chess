@@ -1,4 +1,4 @@
-require stdlib,console,showset
+require stdlib,console,showset,interface
 
 [con.clear]
 [slow]
