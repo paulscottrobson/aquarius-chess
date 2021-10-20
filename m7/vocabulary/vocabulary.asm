@@ -817,8 +817,8 @@ word_1074:
   push  de
   push  hl
 
-  ld   h,l
-  ld   l,e
+  ld   h,e
+  ld   l,l
 
   ld   e,c
   ld   d,b

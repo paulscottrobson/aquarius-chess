@@ -20,7 +20,7 @@ require console
 	1 _show_pos +!
 ;
 :show.gfx
-	0 con.ink 4 con.paper con.clear
+	0 con.ink 13 con.paper con.clear
 	7 con.ink 0 con.paper 0 _show_pos !!
 	256 times $FF xor a>c
 		4/ 4/ a>b --- or $18 and if _show_one then

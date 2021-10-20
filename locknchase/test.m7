@@ -1,6 +1,87 @@
 require stdlib,console,showset,interface
 
+:_g0 [0] array [ $22 c, $B7 , $B5 , $AD , $A5 , ] ;
+:_g1 [0] array [ $22 c, $20 , $B5 , $20 , $A5 , ] ;
+:_g2 [0] array [ $22 c, $F3 , $B5 , $AD , $A4 , ] ;
+:_g3 [0] array [ $22 c, $F3 , $B5 , $AC , $A5 , ] ;
+:_g4 [0] array [ $22 c, $F5 , $B5 , $20 , $A5 , ] ;
+:_g5 [0] array [ $22 c, $F7 , $B1 , $AC , $A5 , ] ;
+:_g6 [0] array [ $22 c, $F7 , $B1 , $AD , $A5 , ] ;
+:_g7 [0] array [ $22 c, $A3 , $B5 , $20 , $A5 , ] ;
+:_g8 [0] array [ $22 c, $F7 , $B5 , $AD , $A5 , ] ;
+:_g9 [0] array [ $22 c, $F7 , $B5 , $AC , $A5 , ] ;
+
+:digits [0] array [
+	_g0 , _g1 , _g2 , _g3 , _g4 , _g5 , _g6 , _g7 , _g8 , _g9 , ]
+
+:_t0 [0] array [ $22 c, $7020 , $7020 , $7020 , $7020 , ] 		// 0 Space
+:_t1 [0] array [ $22 c, $60E0 , $6020 , $6020 , $6020 , ] 		// 1 Dot
+:_t2 [0] array [ $22 c, $3024 , $3024 , $3024 , $3024 , ] 		// 2 Dollar
+:_t3 [0] array [ $22 c, $30C1 , $30C0 , $30EF , $30BF , ] 		// 3 Crown
+:_t4 [0] array [ $22 c, $10B0 , $10E0 , $1020 , $1020 , ] 		// 4 Open Gate
+:_t5 [0] array [ $22 c, $10F0 , $10F0 , $1020 , $1020 , ] 		// 5 Closed Gate
+:_t6 [0] array [ $22 c, $3020 , $3020 , $30F0 , $30F0 , ] 		// 6 Top Shut Door
+:_t7 [0] array [ $22 c, $30A3 , $30A3 , $3020 , $3020 , ] 		// 7 Bottom Shut Door
+:_t8 [0] array [ $22 c, $74F0 , $74F0 , $7420 , $7420 , ] 		// 8 Horiz wall
+:_t9 [0] array [ $22 c, $7481 , $7420 , $7481 , $7420 , ] 		// 9 Vert wall
+
+:tiles [0] array [
+	_t0 , _t1 , _t2 , _t3 , _t4 , _t5 , _t6 , _t7 , _t8 , _t9 , ]
+
+:_s0 [0] array [ $22 c, $70EE , $70BD , $10EB , $10B7 , ] 		// Player 1a
+:_s1 [0] array [ $22 c, $70F8 , $70F4 , $10BB , $10E7 , ] 		// Player 1b
+:_s2 [0] array [ $22 c, $00AB , $00A7 , $00BB , $00BB , ] 		// EnemyL a
+:_s3 [0] array [ $22 c, $00AB , $00A7 , $00FB , $00F7 , ] 		// EnemyL b
+:_s4 [0] array [ $22 c, $00AB , $00A7 , $00E7 , $00E7 , ] 		// EnemyR a
+:_s5 [0] array [ $22 c, $00AB , $00A7 , $00FB , $00F7 , ] 		// EnemyR b
+
+:map [ 384 ] array 
+
+:map.unpack 
+	b>r 8* 4* map + a>c r>a
+	19 times
+		swap a>r c@ 15 and swap c>a c!
+		c>a ++ a>c
+		r>a ++ swap
+	tend
+;
+
+:map.reset 
+	abc>r
+	352 a>c map $00 fill
+	"0888868888888888880 0 map.unpack
+	"0911111111111111190 1 map.unpack 
+	"0918881888181818190 2 map.unpack
+	"0911111111111111190 3 map.unpack
+	"8818881818181818888 4 map.unpack
+	"9111191910191911119 5 map.unpack
+	"8818181818181818188 6 map.unpack
+	"9111111111111111119 7 map.unpack
+	"8818181818181818188 8 map.unpack
+	"0911111111111111190 9 map.unpack 
+	"0888888888888887880 10 map.unpack
+	r>abc
+;
+
+:map.repaint.cell
+		ab>r
+			8* 4* + map + c@ 2* tiles + @ a>c
+		r>ab ab>r
+			2* swap 2* swap im.draw
+		r>ab
+;
+
+:map.repaint.column
+	11 times map.repaint.cell tend
+;
+
+:map.repaint 
+	con.clear
+	19 times map.repaint.column tend ;
+
 [con.clear]
 [slow]
+[map.reset]
+[map.repaint]
+[map is.hex con.uprint con.get]
 
-[show.gfx]	

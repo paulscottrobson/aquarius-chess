@@ -1,6 +1,6 @@
               	; --------------------------------------
               	; zasm: assemble "m7.asm"
-              	; date: 2021-10-20 15:35:46
+              	; date: 2021-10-20 17:17:34
               	; --------------------------------------
 
 
@@ -1626,8 +1626,8 @@ C5A5: C5      	  push  bc
 C5A6: D5      	  push  de
 C5A7: E5      	  push  hl
               	
-C5A8: 65      	  ld   h,l
-C5A9: 6B      	  ld   l,e
+C5A8: 63      	  ld   h,e
+C5A9: 6D      	  ld   l,l
               	
 C5AA: 59      	  ld   e,c
 C5AB: 50      	  ld   d,b
@@ -2409,5 +2409,5 @@ FFFB: 12011385
 FFFF: 00      		.db	$00
 
 
-total time: 0.0150 sec.
+total time: 0.0072 sec.
 no errors

@@ -203,8 +203,17 @@ class KernelROM < StandardROM
 	end
 end 
 
+class CharacterROM < StandardROM
+	def initialize(binary_file)
+		super
+		base = 0xA5 * 8
+		@data[base+6] = 0
+		@data[base+7] = 0
+	end
+end
+
 if __FILE__ == $0 
-	StandardROM.new("aquarius.chr").import_font("carton.ch8").export_include("character_rom.h")
+	CharacterROM.new("aquarius.chr").import_font("carton.ch8").export_include("character_rom.h")
 	KernelROM.new("aquarius.rom").export_include("kernel_rom.h")
 	EncodedROM.new("add tarmin.bin").export_include("tarmin_rom.h")
 
